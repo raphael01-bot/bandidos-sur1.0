@@ -3050,9 +3050,9 @@
                             <input type="url"
                                    data-block-video="${idx}"
                                    value="${escapeHtml(block.videoUrl || '')}"
-                                   placeholder="Pega enlace de YouTube, Shorts, Google Drive, MP4 o súbelo desde tu celular..."
+                                   placeholder="Pega enlace (YouTube, Shorts, Drive, MP4) o sube desde tu celular..."
                                    class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
-                            <p id="upload-status-${idx}" class="hidden text-[11px] font-semibold text-purple-300"></p>
+                            <div id="upload-status-${idx}" class="hidden text-[11px] text-purple-200"></div>
                         </div>
                     ` : ''}
 
@@ -3062,6 +3062,58 @@
                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
                 </div>
             `).join('');
+        }
+
+        async function ensureSupabaseVideoBucket(cfg) {
+            const candidateBuckets = ['rutinas-videos', 'videos', 'rutinas', 'media', 'public'];
+            try {
+                // 1. Verificar qué buckets públicos existen ya en el proyecto
+                const listRes = await fetch(`${cfg.url}/storage/v1/bucket`, {
+                    headers: {
+                        'apikey': cfg.key,
+                        'Authorization': `Bearer ${cfg.key}`
+                    }
+                });
+                if (listRes.ok) {
+                    const buckets = await listRes.json();
+                    if (Array.isArray(buckets) && buckets.length > 0) {
+                        const exact = buckets.find(b => b.id === 'rutinas-videos' || b.name === 'rutinas-videos');
+                        if (exact) return exact.id || exact.name;
+                        const anyPublic = buckets.find(b => b.public === true);
+                        if (anyPublic) return anyPublic.id || anyPublic.name;
+                    }
+                }
+
+                // 2. Intentar crear el bucket público "rutinas-videos" automáticamente
+                const createRes = await fetch(`${cfg.url}/storage/v1/bucket`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': cfg.key,
+                        'Authorization': `Bearer ${cfg.key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: 'rutinas-videos',
+                        name: 'rutinas-videos',
+                        public: true
+                    })
+                });
+                if (createRes.ok) return 'rutinas-videos';
+            } catch (e) {
+                console.warn('No se pudo listar/crear bucket automáticamente:', e);
+            }
+            return candidateBuckets[0];
+        }
+
+        function copySupabaseStorageSqlFix() {
+            const sqlScript = `insert into storage.buckets (id, name, public) values ('rutinas-videos', 'rutinas-videos', true) on conflict (id) do update set public = true;\ncreate policy "Permitir subir videos publicos" on storage.objects for insert with check (bucket_id = 'rutinas-videos');\ncreate policy "Permitir ver videos publicos" on storage.objects for select using (bucket_id = 'rutinas-videos');\ncreate policy "Permitir actualizar videos publicos" on storage.objects for update using (bucket_id = 'rutinas-videos');`;
+            const tmp = document.createElement('textarea');
+            tmp.value = sqlScript;
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            showToast('SQL copiado. Pégalo en Supabase > SQL Editor y dale Run.');
         }
 
         async function handleMobileVideoUpload(event, blockIndex) {
@@ -3084,7 +3136,7 @@
                 const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '');
                 const stId = document.getElementById('routine-student-id').value || 'atleta';
                 const fileName = `${stId}_${Date.now()}.${ext || 'mp4'}`;
-                const bucketName = 'rutinas-videos';
+                const bucketName = await ensureSupabaseVideoBucket(cfg);
                 const uploadUrl = `${cfg.url}/storage/v1/object/${bucketName}/${encodeURIComponent(fileName)}`;
 
                 const res = await fetch(uploadUrl, {
@@ -3099,8 +3151,12 @@
                 });
 
                 if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error(errText || `Error HTTP ${res.status}`);
+                    let errDetail = `HTTP ${res.status}`;
+                    try {
+                        const errJson = await res.json();
+                        errDetail = errJson.message || errJson.error || errDetail;
+                    } catch (_) {}
+                    throw new Error(errDetail);
                 }
 
                 const publicUrl = `${cfg.url}/storage/v1/object/public/${bucketName}/${encodeURIComponent(fileName)}`;
@@ -3113,9 +3169,19 @@
             } catch (err) {
                 console.error('Error subiendo video:', err);
                 if (statusEl) {
-                    statusEl.innerHTML = `<span class="text-rose-400"><i class="fa-solid fa-circle-exclamation mr-1"></i>No se pudo subir. Verifica que exista el bucket público "rutinas-videos" en Supabase Storage.</span>`;
+                    statusEl.innerHTML = `
+                        <div class="p-2.5 mt-1 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 space-y-2">
+                            <p><i class="fa-solid fa-circle-exclamation mr-1"></i><strong>Supabase bloqueó la subida (${escapeHtml(err.message || 'Sin permisos')}).</strong></p>
+                            <p class="text-[11px] text-zinc-300">Activa el almacenamiento en 10 segundos: entra a tu panel de <strong>Supabase → SQL Editor</strong>, pega el código y presiona <strong>Run</strong>:</p>
+                            <button type="button" onclick="copySupabaseStorageSqlFix()"
+                                    class="px-3 py-1.5 rounded-lg bg-bandido-orange hover:bg-bandido-orange-hover text-black text-[11px] font-extrabold uppercase cursor-pointer inline-flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>Copiar Código SQL de Activación</span>
+                            </button>
+                        </div>
+                    `;
                 }
-                showToast('Error al subir el video. Revisa el bucket "rutinas-videos" en Supabase.', true);
+                showToast('Falta activar los permisos de Storage en Supabase.', true);
             }
         }
 
