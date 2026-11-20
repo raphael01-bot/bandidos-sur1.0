@@ -1002,13 +1002,15 @@
         const EVAL_CATEGORIES = [
             {
                 id: 'pull',
-                title: 'Tirón (Pull)',
+                title: 'Tirón / Jalón (Pull)',
                 icon: 'fa-arrow-up',
                 fields: [
                     { key: 'pullups', label: 'Pull-ups estrictas (reps)', placeholder: 'Ej. 12' },
                     { key: 'chinups', label: 'Chin-ups (reps)', placeholder: 'Ej. 15' },
                     { key: 'australian', label: 'Australian Pull-ups (reps)', placeholder: 'Ej. 20' },
-                    { key: 'muscleup', label: 'Muscle-ups (reps)', placeholder: 'Ej. 3' }
+                    { key: 'muscleup', label: 'Muscle-ups (reps)', placeholder: 'Ej. 3' },
+                    { key: 'pull_iso', label: 'Isométrico Pull / Hold (seg)', placeholder: 'Ej. 30s barbilla arriba' },
+                    { key: 'pull_aereos', label: 'Aéreos / Explosivos (reps)', placeholder: 'Ej. 8' }
                 ]
             },
             {
@@ -1017,20 +1019,27 @@
                 icon: 'fa-hand-fist',
                 fields: [
                     { key: 'pushups', label: 'Lagartijas estrictas (reps)', placeholder: 'Ej. 30' },
+                    { key: 'pushups_prog', label: 'Lagartija progresión (tipo/reps)', placeholder: 'Ej. Diamante / Archer 10' },
                     { key: 'dips', label: 'Fondos en paralelas (reps)', placeholder: 'Ej. 20' },
                     { key: 'pike', label: 'Pike Push-ups (reps)', placeholder: 'Ej. 12' },
-                    { key: 'hspu', label: 'Handstand Push-ups (reps)', placeholder: 'Ej. 5' }
+                    { key: 'hspu', label: 'Handstand Push-ups (reps)', placeholder: 'Ej. 5' },
+                    { key: 'push_iso', label: 'Isométrico Push / Hold (seg)', placeholder: 'Ej. 35s soporte/abajo' }
                 ]
             },
             {
                 id: 'core',
-                title: 'Core & Pierna',
+                title: 'Core, Pierna & Acondicionamiento',
                 icon: 'fa-fire',
                 fields: [
-                    { key: 'lsit', label: 'L-Sit Hold (segundos)', placeholder: 'Ej. 20s' },
+                    { key: 'lsit', label: 'L-Sit suelo (segundos)', placeholder: 'Ej. 20s' },
+                    { key: 'lsit_paralelas', label: 'L-Sit en paralelas (segundos)', placeholder: 'Ej. 25s' },
+                    { key: 'legraises', label: 'Leg Raises / Elevación piernas (reps)', placeholder: 'Ej. 15' },
                     { key: 'toestobar', label: 'Toes to Bar (reps)', placeholder: 'Ej. 12' },
                     { key: 'plank', label: 'Plancha abdominal (seg)', placeholder: 'Ej. 90s' },
-                    { key: 'pistols', label: 'Pistol Squats (reps/pierna)', placeholder: 'Ej. 8' }
+                    { key: 'squats', label: 'Sentadilla libre (reps)', placeholder: 'Ej. 50' },
+                    { key: 'pistols', label: 'Pistol Squats (reps/pierna)', placeholder: 'Ej. 8' },
+                    { key: 'boxjump', label: 'Box Jump / Saltos al cajón (reps)', placeholder: 'Ej. 20' },
+                    { key: 'burpees', label: 'Burpees (reps)', placeholder: 'Ej. 25' }
                 ]
             },
             {
