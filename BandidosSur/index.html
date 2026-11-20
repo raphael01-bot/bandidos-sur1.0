@@ -608,6 +608,9 @@
                 <input type="hidden" id="routine-student-id" />
                 <datalist id="calisthenics-exercises-datalist"></datalist>
 
+                <!-- Indicador de Nivel de Plan (Video VIP vs Plan General) -->
+                <div id="routine-plan-tier-banner" class="p-3.5 rounded-2xl border flex items-center justify-between gap-3"></div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-bandido-orange mb-1">Objetivo / Enfoque</label>
@@ -649,13 +652,13 @@
                     </div>
                 </div>
 
-                <!-- Contenedor de Bloques de Texto Libre -->
+                <!-- Contenedor de Bloques de Texto Libre y Videos -->
                 <div id="routine-blocks-container" class="space-y-4"></div>
 
                 <button type="button" onclick="addRoutineTextBlock()"
                         class="w-full py-3 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-dashed border-bandido-orange/50 text-xs font-bold uppercase tracking-wider text-bandido-orange transition cursor-pointer flex items-center justify-center gap-2">
                     <i class="fa-solid fa-plus"></i>
-                    <span>Agregar Bloque</span>
+                    <span>Agregar Bloque / Día</span>
                 </button>
             </div>
 
@@ -806,7 +809,7 @@
                             Administrar Planes y Precios
                         </h3>
                     </div>
-                    <p class="text-xs text-zinc-400 mt-0.5">Actualiza precios, edita planes existentes o agrega nuevas modalidades.</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">Actualiza precios, activa videos VIP por plan o agrega nuevas modalidades.</p>
                 </div>
                 <button onclick="closePlansModal()" class="p-2 rounded-xl bg-bandido-card hover:bg-zinc-800 text-zinc-400 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -884,6 +887,22 @@
                                class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
                     </div>
 
+                    <!-- Checkbox de Beneficio Plus: Videos Demostrativos de Rutina -->
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl bg-bandido-card border border-bandido-orange/30 cursor-pointer select-none">
+                        <input type="checkbox"
+                               id="plan-videos-input"
+                               class="w-4 h-4 accent-orange-500 rounded cursor-pointer" />
+                        <div class="text-xs">
+                            <span class="font-bold text-white flex items-center gap-1.5">
+                                <i class="fa-solid fa-video text-bandido-orange"></i>
+                                <span>Incluye Videos Demostrativos de la Rutina del Día (Plus VIP)</span>
+                            </span>
+                            <span class="block text-[11px] text-zinc-400 mt-0.5">
+                                Si está desactivado (ej. Plan General), el alumno solo verá los ejercicios escritos sin video.
+                            </span>
+                        </div>
+                    </label>
+
                     <div class="flex justify-end">
                         <button type="submit"
                                 id="save-plan-submit-btn"
@@ -936,7 +955,7 @@
         const PLANS_CLOUD_RECORD_ID = '__bandidos_plans_config__';
         const ROUTINE_CLIPBOARD_KEY = 'bandidos_sur_routine_clipboard';
 
-        // Catálogo base oficial de planes de Bandidos Sur
+        // Catálogo base oficial de planes de Bandidos Sur (con soporte para videos VIP en planes personalizados/superiores)
         const DEFAULT_GYM_PLANS = {
             general_lv: {
                 name: 'Plan General (Lunes a Viernes)',
@@ -944,7 +963,8 @@
                 daysDuration: 30,
                 category: 'Mensualidades',
                 badge: 'Mensual · L-V',
-                description: 'Acceso a entrenamientos grupales de calistenia de lunes a viernes.'
+                allowsVideos: false,
+                description: 'Acceso a entrenamientos grupales de calistenia de lunes a viernes. Incluye visualización de rutina escrita.'
             },
             general_ld: {
                 name: 'Plan General (Lunes a Domingo)',
@@ -952,23 +972,26 @@
                 daysDuration: 30,
                 category: 'Mensualidades',
                 badge: 'Mensual · L-D',
-                description: 'Acceso completo toda la semana (lunes a domingo) en horarios abiertos.'
+                allowsVideos: false,
+                description: 'Acceso completo toda la semana (lunes a domingo) en horarios abiertos. Incluye visualización de rutina escrita.'
             },
             personalizado: {
                 name: 'Plan Personalizado',
                 price: 600,
                 daysDuration: 30,
                 category: 'Mensualidades',
-                badge: 'Personalizado',
-                description: 'Programación individualizada según objetivos y evaluación mensual.'
+                badge: 'Personalizado + Videos',
+                allowsVideos: true,
+                description: 'Programación individualizada, evaluación mensual y videos demostrativos de cada rutina.'
             },
             avanzado: {
                 name: 'Plan Avanzado (Skills & Lastre)',
                 price: 750,
                 daysDuration: 30,
                 category: 'Mensualidades',
-                badge: 'Avanzado',
-                description: 'Enfoque técnico en estáticos (Planche, Front Lever, Handstand) y lastre.'
+                badge: 'Avanzado + Videos',
+                allowsVideos: true,
+                description: 'Enfoque técnico en estáticos (Planche, Front Lever, Handstand), lastre y videos demostrativos.'
             },
             clase_dia: {
                 name: 'Clase por Día',
@@ -976,6 +999,7 @@
                 daysDuration: 1,
                 category: 'Clases por Día',
                 badge: 'Visita · 1 Día',
+                allowsVideos: false,
                 description: 'Pase individual válido por una sesión grupal.'
             },
             clase_personalizada: {
@@ -983,16 +1007,18 @@
                 price: 70,
                 daysDuration: 1,
                 category: 'Clases por Día',
-                badge: 'Sesión · 1 Día',
-                description: 'Sesión individual guiada por entrenador.'
+                badge: 'Sesión + Video',
+                allowsVideos: true,
+                description: 'Sesión individual guiada por entrenador con video demostrativo.'
             },
             clase_avanzada: {
                 name: 'Clase Personalizada Avanzada',
                 price: 100,
                 daysDuration: 1,
                 category: 'Clases por Día',
-                badge: 'Avanzada · 1 Día',
-                description: 'Sesión técnica especializada en movimientos avanzados.'
+                badge: 'Avanzada + Video',
+                allowsVideos: true,
+                description: 'Sesión técnica especializada en movimientos avanzados con video demostrativo.'
             }
         };
 
@@ -1055,19 +1081,157 @@
             }
         ];
 
-        const CALISTHENICS_SUGGESTIONS = [
-            'Pull-ups', 'Chin-ups', 'Australian Pull-ups', 'Muscle-ups',
-            'Retracciones escapulares', 'Protracciones escapulares',
-            'Fondos en paralelas (Dips)', 'Lagartijas (Push-ups)', 'Lagartijas inclinadas',
-            'Pike Push-ups', 'Handstand Push-ups', 'L-Sit Hold', 'Hollow Body Hold',
-            'Front Lever Hold', 'Back Lever Hold', 'Tuck Planche Hold', 'Pistol Squats'
-        ];
-
         let students = [];
         let activeRenewStudentId = null;
         let activeDeleteStudentId = null;
         let currentRoutineDraft = { goal: '', notes: '', blocks: [] };
         let alertDismissed = false;
+
+        // =================================================================
+        // DETERMINAR SI UN PLAN INCLUYE VIDEOS DEMOSTRATIVOS (VIP)
+        // =================================================================
+        function planSupportsVideos(planKey) {
+            if (!planKey) return false;
+            const plan = GYM_PLANS[planKey];
+            if (plan && typeof plan.allowsVideos === 'boolean') {
+                return plan.allowsVideos;
+            }
+            // Fallback inteligente por nombre de plan
+            const nameLower = (plan?.name || planKey).toLowerCase();
+            if (nameLower.includes('general') || planKey === 'clase_dia') return false;
+            if (
+                nameLower.includes('personalizado') ||
+                nameLower.includes('personalizada') ||
+                nameLower.includes('avanzado') ||
+                nameLower.includes('avanzada') ||
+                nameLower.includes('vip') ||
+                nameLower.includes('pro') ||
+                nameLower.includes('elite') ||
+                (plan && Number(plan.price) >= 600)
+            ) {
+                return true;
+            }
+            return false;
+        }
+
+        // =================================================================
+        // PARSEADOR DE ENLACES DE VIDEO (YouTube, Shorts, Drive, Vimeo, MP4)
+        // =================================================================
+        function parseVideoEmbedInfo(rawUrl) {
+            const url = (rawUrl || '').trim();
+            if (!url) return null;
+
+            // 1. YouTube estándar, Shorts o youtu.be
+            const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (ytMatch && ytMatch[1]) {
+                return {
+                    type: 'iframe',
+                    provider: 'YouTube',
+                    embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`,
+                    originalUrl: url
+                };
+            }
+
+            // 2. Google Drive (/file/d/ID/view)
+            const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch && driveMatch[1]) {
+                return {
+                    type: 'iframe',
+                    provider: 'Google Drive',
+                    embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
+                    originalUrl: url
+                };
+            }
+
+            // 3. Vimeo
+            const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+            if (vimeoMatch && vimeoMatch[1]) {
+                return {
+                    type: 'iframe',
+                    provider: 'Vimeo',
+                    embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
+                    originalUrl: url
+                };
+            }
+
+            // 4. Archivo directo (.mp4, .webm, .mov)
+            if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)) {
+                return {
+                    type: 'video',
+                    provider: 'Video Directo',
+                    embedUrl: url,
+                    originalUrl: url
+                };
+            }
+
+            // 5. Enlace externo (Instagram Reels, TikTok, etc.)
+            return {
+                type: 'external',
+                provider: 'Enlace de Video',
+                embedUrl: url,
+                originalUrl: url
+            };
+        }
+
+        function renderVideoPlayerHtml(videoUrl, blockTitle = 'Rutina') {
+            const info = parseVideoEmbedInfo(videoUrl);
+            if (!info) return '';
+
+            if (info.type === 'iframe') {
+                return `
+                    <div class="rounded-xl overflow-hidden border border-bandido-orange/40 bg-black shadow-lg">
+                        <div class="px-3 py-2 bg-bandido-orange/15 border-b border-bandido-orange/30 flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>Video Demostrativo · ${escapeHtml(blockTitle)}</span>
+                            </span>
+                            <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
+                               class="text-[11px] font-bold text-zinc-300 hover:text-white underline">
+                                Abrir <i class="fa-solid fa-arrow-up-right-from-square ml-0.5 text-[10px]"></i>
+                            </a>
+                        </div>
+                        <div class="relative w-full aspect-video bg-black">
+                            <iframe src="${escapeHtml(info.embedUrl)}"
+                                    class="absolute inset-0 w-full h-full"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (info.type === 'video') {
+                return `
+                    <div class="rounded-xl overflow-hidden border border-bandido-orange/40 bg-black shadow-lg">
+                        <div class="px-3 py-2 bg-bandido-orange/15 border-b border-bandido-orange/30 flex items-center justify-between">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>Video Demostrativo · ${escapeHtml(blockTitle)}</span>
+                            </span>
+                        </div>
+                        <video src="${escapeHtml(info.embedUrl)}" controls playsinline class="w-full max-h-80 bg-black"></video>
+                    </div>
+                `;
+            }
+
+            // Enlace externo (Instagram / TikTok / otro)
+            return `
+                <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
+                   class="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-bandido-orange/20 to-bandido-dark border border-bandido-orange/50 hover:border-bandido-orange transition group">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-bandido-orange text-black flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            <i class="fa-solid fa-play text-sm"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-bandido-orange">Ver Video Demostrativo del Día</p>
+                            <p class="text-[11px] text-zinc-300 truncate">${escapeHtml(info.originalUrl)}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-bandido-orange shrink-0"></i>
+                </a>
+            `;
+        }
 
         // =================================================================
         // UTILIDADES DE FECHAS Y FORMATO
@@ -1192,6 +1356,12 @@
                 if (rawPlans) {
                     const parsed = JSON.parse(rawPlans);
                     if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+                        // Asegurar que los planes existentes conserven allowsVideos si no lo tenían definido
+                        Object.entries(parsed).forEach(([k, v]) => {
+                            if (typeof v.allowsVideos !== 'boolean') {
+                                v.allowsVideos = planSupportsVideos(k);
+                            }
+                        });
                         GYM_PLANS = parsed;
                     }
                 }
@@ -1250,6 +1420,11 @@
                         if (Array.isArray(rows) && rows.length > 0) {
                             const plansRow = rows.find(r => r.id === PLANS_CLOUD_RECORD_ID || r.payload?._isPlansConfig);
                             if (plansRow && plansRow.payload?.plans && Object.keys(plansRow.payload.plans).length > 0) {
+                                Object.entries(plansRow.payload.plans).forEach(([k, v]) => {
+                                    if (typeof v.allowsVideos !== 'boolean') {
+                                        v.allowsVideos = planSupportsVideos(k);
+                                    }
+                                });
                                 GYM_PLANS = plansRow.payload.plans;
                                 localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(GYM_PLANS));
                             }
@@ -1306,7 +1481,7 @@
                         phone: '5512345678',
                         level: 'Intermedio',
                         trainingDays: '5 días (Lun a Vie)',
-                        planKey: 'general_lv',
+                        planKey: 'personalizado',
                         payDate: addDaysToDateStr(today, -28),
                         endDate: addDaysToDateStr(today, 2),
                         evaluations: [],
@@ -1316,6 +1491,7 @@
                             blocks: [
                                 {
                                     title: 'Día 1 — Tirón y Empuje',
+                                    videoUrl: '',
                                     text: 'Retracciones escapulares / 10 reps\nProtracciones escapulares / 10 reps\nHold / 20 seg\n4 series'
                                 }
                             ]
@@ -1388,7 +1564,10 @@
 
             select.innerHTML = Object.entries(groups).map(([cat, items]) => `
                 <optgroup label="${escapeHtml(cat)}">
-                    ${items.map(p => `<option value="${escapeHtml(p.key)}">${escapeHtml(p.name)} — $${p.price}</option>`).join('')}
+                    ${items.map(p => {
+                        const hasVid = planSupportsVideos(p.key);
+                        return `<option value="${escapeHtml(p.key)}">${escapeHtml(p.name)} — $${p.price}${hasVid ? ' (Incluye Videos)' : ''}</option>`;
+                    }).join('')}
                 </optgroup>
             `).join('');
 
@@ -1416,6 +1595,7 @@
             document.getElementById('edit-plan-key').value = '';
             document.getElementById('plan-days-input').value = 30;
             document.getElementById('plan-category-input').value = 'Mensualidades';
+            document.getElementById('plan-videos-input').checked = false;
             document.getElementById('plan-form-heading').textContent = '+ Agregar Nuevo Plan o Clase';
             document.getElementById('cancel-edit-plan-btn').classList.add('hidden');
             document.getElementById('save-plan-submit-btn').innerHTML = `<i class="fa-solid fa-plus"></i><span>Agregar Plan al Catálogo</span>`;
@@ -1431,6 +1611,7 @@
             document.getElementById('plan-category-input').value = plan.category || 'Mensualidades';
             document.getElementById('plan-badge-input').value = plan.badge || '';
             document.getElementById('plan-desc-input').value = plan.description || '';
+            document.getElementById('plan-videos-input').checked = planSupportsVideos(planKey);
 
             document.getElementById('plan-form-heading').textContent = `Editando: ${plan.name}`;
             document.getElementById('cancel-edit-plan-btn').classList.remove('hidden');
@@ -1446,6 +1627,7 @@
             const category = document.getElementById('plan-category-input').value;
             const badge = document.getElementById('plan-badge-input').value.trim() || `${daysDuration} días`;
             const description = document.getElementById('plan-desc-input').value.trim() || 'Plan de entrenamiento Bandidos Sur.';
+            const allowsVideos = Boolean(document.getElementById('plan-videos-input').checked);
 
             if (!name) return;
 
@@ -1456,6 +1638,7 @@
                 daysDuration,
                 category,
                 badge,
+                allowsVideos,
                 description
             };
 
@@ -1495,30 +1678,37 @@
             const listEl = document.getElementById('plans-catalog-list');
             if (!listEl) return;
 
-            listEl.innerHTML = Object.entries(GYM_PLANS).map(([key, plan]) => `
-                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <p class="text-xs sm:text-sm font-bold text-white">${escapeHtml(plan.name)}</p>
-                            <span class="px-2 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange text-xs font-extrabold">$${plan.price} MXN</span>
-                            <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px] font-semibold">${plan.daysDuration} día(s)</span>
+            listEl.innerHTML = Object.entries(GYM_PLANS).map(([key, plan]) => {
+                const hasVid = planSupportsVideos(key);
+                return `
+                    <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <p class="text-xs sm:text-sm font-bold text-white">${escapeHtml(plan.name)}</p>
+                                <span class="px-2 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange text-xs font-extrabold">$${plan.price} MXN</span>
+                                <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px] font-semibold">${plan.daysDuration} día(s)</span>
+                                ${hasVid
+                                    ? `<span class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-extrabold"><i class="fa-solid fa-video mr-1"></i>+ Videos Rutina</span>`
+                                    : `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-400 text-[10px] font-semibold">Solo Rutina Escrita</span>`
+                                }
+                            </div>
+                            <p class="text-[11px] text-zinc-400 mt-1">${escapeHtml(plan.description || '')}</p>
                         </div>
-                        <p class="text-[11px] text-zinc-400 mt-1">${escapeHtml(plan.description || '')}</p>
+                        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            <button type="button" onclick="startEditPlan('${key}')"
+                                    class="px-3 py-1.5 rounded-lg bg-bandido-card hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen"></i>
+                                <span>Editar</span>
+                            </button>
+                            <button type="button" onclick="deletePlanFromCatalog('${key}')"
+                                    title="Eliminar plan"
+                                    class="p-2 rounded-lg bg-bandido-card hover:bg-rose-500/20 border border-bandido-border text-zinc-400 hover:text-rose-400 transition cursor-pointer">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                        <button type="button" onclick="startEditPlan('${key}')"
-                                class="px-3 py-1.5 rounded-lg bg-bandido-card hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
-                            <i class="fa-solid fa-pen"></i>
-                            <span>Editar Precio / Plan</span>
-                        </button>
-                        <button type="button" onclick="deletePlanFromCatalog('${key}')"
-                                title="Eliminar plan"
-                                class="p-2 rounded-lg bg-bandido-card hover:bg-rose-500/20 border border-bandido-border text-zinc-400 hover:text-rose-400 transition cursor-pointer">
-                            <i class="fa-solid fa-trash text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // =================================================================
@@ -1755,10 +1945,14 @@
             tbody.innerHTML = filtered.map(st => {
                 const safeName = String(st.name || 'Atleta').trim() || 'Atleta';
                 const plan = GYM_PLANS[st.planKey] || { name: 'Plan Personalizado', price: 0 };
+                const hasVideoBenefit = planSupportsVideos(st.planKey);
                 const status = getMembershipStatus(st);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
                 const historyCount = Array.isArray(st.routineHistory) ? st.routineHistory.length : 0;
                 const hasRoutine = st.routine && Array.isArray(st.routine.blocks) && st.routine.blocks.length > 0;
+                const videoCount = hasRoutine
+                    ? st.routine.blocks.filter(b => b && b.videoUrl && b.videoUrl.trim()).length
+                    : 0;
 
                 return `
                     <tr class="hover:bg-zinc-900/60 transition">
@@ -1777,7 +1971,13 @@
                             </div>
                         </td>
                         <td class="px-5 py-4">
-                            <p class="text-xs font-bold text-white">${escapeHtml(plan.name)} <span class="text-bandido-orange">($${plan.price})</span></p>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <p class="text-xs font-bold text-white">${escapeHtml(plan.name)} <span class="text-bandido-orange">($${plan.price})</span></p>
+                                ${hasVideoBenefit
+                                    ? `<span class="px-1.5 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-extrabold" title="Incluye videos demostrativos"><i class="fa-solid fa-video mr-1"></i>VIP Video</span>`
+                                    : `<span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px] font-semibold">Solo Rutina</span>`
+                                }
+                            </div>
                             <p class="text-[11px] text-zinc-400 mt-0.5"><i class="fa-solid fa-calendar-days text-zinc-500 mr-1"></i>${escapeHtml(st.trainingDays || 'Sin definir')}</p>
                         </td>
                         <td class="px-5 py-4 text-xs">
@@ -1807,7 +2007,7 @@
                                 <button onclick="openRoutineModal('${st.id}')"
                                         class="px-2.5 py-1.5 rounded-lg ${hasRoutine ? 'bg-bandido-orange/15 border-bandido-orange/40 text-bandido-orange' : 'bg-bandido-dark border-bandido-border text-zinc-200'} hover:bg-zinc-800 border text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
                                     <i class="fa-solid fa-dumbbell"></i>
-                                    <span>Rutina</span>
+                                    <span>Rutina${hasVideoBenefit && videoCount > 0 ? ` · ${videoCount} <i class="fa-solid fa-video text-[10px]"></i>` : ''}</span>
                                 </button>
                             </div>
                         </td>
@@ -1844,6 +2044,7 @@
             mobileList.innerHTML = filtered.map(st => {
                 const safeName = String(st.name || 'Atleta').trim() || 'Atleta';
                 const plan = GYM_PLANS[st.planKey] || { name: 'Plan Personalizado', price: 0 };
+                const hasVideoBenefit = planSupportsVideos(st.planKey);
                 const status = getMembershipStatus(st);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
                 const historyCount = Array.isArray(st.routineHistory) ? st.routineHistory.length : 0;
@@ -1857,7 +2058,13 @@
                                 </div>
                                 <div class="min-w-0">
                                     <h4 class="text-sm font-bold text-white truncate">${escapeHtml(safeName)}</h4>
-                                    <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(plan.name)} · $${plan.price}</p>
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                        <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(plan.name)} · $${plan.price}</p>
+                                        ${hasVideoBenefit
+                                            ? `<span class="px-1.5 py-0.2 rounded bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[9px] font-extrabold"><i class="fa-solid fa-video mr-0.5"></i>Video</span>`
+                                            : ''
+                                        }
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end gap-1 shrink-0">
@@ -1952,6 +2159,7 @@
         function handlePlanChange(autoFillDays = false) {
             const planKey = document.getElementById('student-plan-select').value;
             const plan = GYM_PLANS[planKey];
+            const hasVideoBenefit = planSupportsVideos(planKey);
             const box = document.getElementById('plan-details-box');
             if (plan && box) {
                 box.innerHTML = `
@@ -1960,6 +2168,16 @@
                         <span class="px-2 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange font-extrabold">$${plan.price} MXN</span>
                     </div>
                     <p class="text-zinc-400 mt-1">${escapeHtml(plan.description)}</p>
+                    <div class="mt-2 pt-2 border-t border-bandido-border/80 flex items-center gap-2">
+                        ${hasVideoBenefit
+                            ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/15 border border-purple-500/40 text-purple-300 text-[11px] font-bold">
+                                   <i class="fa-solid fa-video"></i> Plus Activo: Este alumno podrá ver el video demostrativo de cada día.
+                               </span>`
+                            : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-300 text-[11px] font-semibold">
+                                   <i class="fa-solid fa-list-check text-bandido-orange"></i> Plan Estándar: El alumno visualizará únicamente su rutina escrita.
+                               </span>`
+                        }
+                    </div>
                 `;
             }
             if (autoFillDays && !document.getElementById('student-days').value) {
@@ -2110,7 +2328,6 @@
         function openDeleteModal(studentId) {
             const st = students.find(s => String(s.id) === String(studentId));
             if (!st) {
-                // Si el registro está corrupto o sin ID válido, eliminarlo directamente
                 students = students.filter(s => s && String(s.id) !== String(studentId));
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(students));
                 renderAll();
@@ -2241,23 +2458,68 @@
         }
 
         // =================================================================
-        // CREADOR DE RUTINAS POR BLOQUES Y COMPARTIR POR PRIVADO
+        // CREADOR DE RUTINAS POR BLOQUES + VIDEOS DEMOSTRATIVOS POR DÍA
         // =================================================================
         function openRoutineModal(studentId) {
             const st = students.find(s => s.id === studentId);
             if (!st) return;
 
+            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
+            const hasVideoBenefit = planSupportsVideos(st.planKey);
+
             document.getElementById('routine-student-id').value = st.id;
             document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
-            document.getElementById('routine-student-subtitle').textContent = `${st.trainingDays || 'Entrenamiento'} · Nivel ${st.level || 'Básico'}`;
+            document.getElementById('routine-student-subtitle').textContent = `${plan.name} · ${st.trainingDays || 'Entrenamiento'} · Nivel ${st.level || 'Básico'}`;
+
+            // Banner informativo sobre el acceso a videos del alumno
+            const tierBanner = document.getElementById('routine-plan-tier-banner');
+            if (hasVideoBenefit) {
+                tierBanner.className = 'p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+                tierBanner.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-purple-300">
+                                Plus de Video Activo (${escapeHtml(plan.name)})
+                            </p>
+                            <p class="text-[11px] text-zinc-300 mt-0.5">
+                                Puedes pegar un enlace de video (YouTube, Shorts, Google Drive, Vimeo o MP4) en cada día/bloque y el alumno lo verá directo en su rutina.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                tierBanner.className = 'p-3.5 rounded-2xl bg-bandido-dark border border-bandido-border flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+                tierBanner.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-zinc-800 text-zinc-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-zinc-200">
+                                Modo Rutina Escrita (${escapeHtml(plan.name)})
+                            </p>
+                            <p class="text-[11px] text-zinc-400 mt-0.5">
+                                Este alumno tiene Plan General, por lo que solo visualizará los ejercicios escritos. Cambia su plan a Personalizado o superior para habilitar videos.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
 
             const existing = st.routine || { goal: '', notes: '', blocks: [] };
             currentRoutineDraft = {
                 goal: existing.goal || '',
                 notes: existing.notes || '',
                 blocks: Array.isArray(existing.blocks) && existing.blocks.length > 0
-                    ? existing.blocks.map(b => ({ title: b.title || '', text: b.text || '' }))
-                    : [{ title: 'Día 1 — Tirón y Empuje', text: '' }]
+                    ? existing.blocks.map(b => ({
+                        title: b.title || '',
+                        videoUrl: b.videoUrl || '',
+                        text: b.text || ''
+                    }))
+                    : [{ title: 'Día 1 — Tirón y Empuje', videoUrl: '', text: '' }]
             };
 
             document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
@@ -2285,43 +2547,111 @@
             currentRoutineDraft.goal = document.getElementById('routine-goal-input').value;
             currentRoutineDraft.notes = document.getElementById('routine-notes-input').value;
             const titleInputs = document.querySelectorAll('[data-block-title]');
+            const videoInputs = document.querySelectorAll('[data-block-video]');
             const textInputs = document.querySelectorAll('[data-block-text]');
-            currentRoutineDraft.blocks = Array.from(titleInputs).map((inp, idx) => ({
-                title: inp.value,
-                text: textInputs[idx]?.value || ''
-            }));
+
+            currentRoutineDraft.blocks = Array.from(titleInputs).map((inp, idx) => {
+                const existingVideo = currentRoutineDraft.blocks[idx]?.videoUrl || '';
+                const videoInputEl = document.querySelector(`[data-block-video="${idx}"]`);
+                return {
+                    title: inp.value,
+                    videoUrl: videoInputEl ? videoInputEl.value : existingVideo,
+                    text: textInputs[idx]?.value || ''
+                };
+            });
         }
 
         function renderRoutineBlocksEditor() {
-            const container = document.getElementById('routine-blocks-container');
-            container.innerHTML = currentRoutineDraft.blocks.map((block, idx) => `
-                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 flex-1">
-                            <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold uppercase shrink-0">
-                                Bloque ${idx + 1}
-                            </span>
-                            <input type="text"
-                                   data-block-title="${idx}"
-                                   value="${escapeHtml(block.title)}"
-                                   placeholder="Ej. Día ${idx + 1} — Tirón (Pull)"
-                                   class="w-full px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
-                        </div>
-                        ${currentRoutineDraft.blocks.length > 1 ? `
-                            <button type="button" onclick="removeRoutineBlock(${idx})"
-                                    title="Eliminar bloque"
-                                    class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        ` : ''}
-                    </div>
+            const stId = document.getElementById('routine-student-id').value;
+            const st = students.find(s => s.id === stId);
+            const hasVideoBenefit = st ? planSupportsVideos(st.planKey) : false;
 
-                    <textarea data-block-text="${idx}"
-                              rows="6"
-                              placeholder="Escribe los circuitos seguidos, por ejemplo:&#10;Pull up - 12 reps&#10;Push up - 10 reps&#10;4 series&#10;&#10;Fondos - 20 reps&#10;Muscle up - 10 reps&#10;3 series"
-                              class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
-                </div>
-            `).join('');
+            const container = document.getElementById('routine-blocks-container');
+            container.innerHTML = currentRoutineDraft.blocks.map((block, idx) => {
+                const videoPreview = (hasVideoBenefit && block.videoUrl && block.videoUrl.trim())
+                    ? parseVideoEmbedInfo(block.videoUrl.trim())
+                    : null;
+
+                return `
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold uppercase shrink-0">
+                                    Bloque ${idx + 1}
+                                </span>
+                                <input type="text"
+                                       data-block-title="${idx}"
+                                       value="${escapeHtml(block.title)}"
+                                       placeholder="Ej. Día ${idx + 1} — Tirón (Pull)"
+                                       class="w-full px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
+                            </div>
+                            ${currentRoutineDraft.blocks.length > 1 ? `
+                                <button type="button" onclick="removeRoutineBlock(${idx})"
+                                        title="Eliminar bloque"
+                                        class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        ${hasVideoBenefit ? `
+                            <div class="p-3 rounded-xl bg-bandido-card border border-purple-500/35 space-y-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-video"></i>
+                                        <span>Video Demostrativo del Día (Opcional)</span>
+                                    </label>
+                                    ${videoPreview ? `
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                            <i class="fa-solid fa-check mr-1"></i>${escapeHtml(videoPreview.provider)} detectado
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="url"
+                                           data-block-video="${idx}"
+                                           value="${escapeHtml(block.videoUrl || '')}"
+                                           oninput="updateBlockVideoStatus(${idx}, this.value)"
+                                           placeholder="Pega enlace de YouTube, Shorts, Google Drive, Vimeo o MP4..."
+                                           class="w-full px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
+                                    <a id="video-test-link-${idx}"
+                                       href="${escapeHtml(block.videoUrl || '#')}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       title="Probar video en nueva pestaña"
+                                       class="${block.videoUrl && block.videoUrl.trim() ? 'flex' : 'hidden'} px-3 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-200 text-xs font-bold items-center gap-1 shrink-0">
+                                        <i class="fa-solid fa-play text-[10px]"></i>
+                                        <span>Probar</span>
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <textarea data-block-text="${idx}"
+                                  rows="6"
+                                  placeholder="Escribe los circuitos seguidos, por ejemplo:&#10;Pull up - 12 reps&#10;Push up - 10 reps&#10;4 series&#10;&#10;Fondos - 20 reps&#10;Muscle up - 10 reps&#10;3 series"
+                                  class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBlockVideoStatus(idx, urlValue) {
+            if (currentRoutineDraft.blocks[idx]) {
+                currentRoutineDraft.blocks[idx].videoUrl = urlValue;
+            }
+            const testBtn = document.getElementById(`video-test-link-${idx}`);
+            if (testBtn) {
+                const clean = (urlValue || '').trim();
+                if (clean) {
+                    testBtn.href = clean;
+                    testBtn.classList.remove('hidden');
+                    testBtn.classList.add('flex');
+                } else {
+                    testBtn.classList.add('hidden');
+                    testBtn.classList.remove('flex');
+                }
+            }
         }
 
         function addRoutineTextBlock() {
@@ -2329,6 +2659,7 @@
             const nextNum = currentRoutineDraft.blocks.length + 1;
             currentRoutineDraft.blocks.push({
                 title: `Día ${nextNum} — `,
+                videoUrl: '',
                 text: ''
             });
             renderRoutineBlocksEditor();
@@ -2357,7 +2688,9 @@
                 currentRoutineDraft = {
                     goal: copied.goal || '',
                     notes: copied.notes || '',
-                    blocks: Array.isArray(copied.blocks) ? copied.blocks.map(b => ({ ...b })) : []
+                    blocks: Array.isArray(copied.blocks)
+                        ? copied.blocks.map(b => ({ title: b.title || '', videoUrl: b.videoUrl || '', text: b.text || '' }))
+                        : []
                 };
                 document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
                 document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
@@ -2375,7 +2708,11 @@
             currentRoutineDraft = {
                 goal: source.routine.goal || '',
                 notes: source.routine.notes || '',
-                blocks: (source.routine.blocks || []).map(b => ({ ...b }))
+                blocks: (source.routine.blocks || []).map(b => ({
+                    title: b.title || '',
+                    videoUrl: b.videoUrl || '',
+                    text: b.text || ''
+                }))
             };
             document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
             document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
@@ -2394,8 +2731,12 @@
                 notes: currentRoutineDraft.notes.trim(),
                 updatedAt: getTodayStr(),
                 blocks: currentRoutineDraft.blocks
-                    .filter(b => b.title.trim() || b.text.trim())
-                    .map(b => ({ title: b.title.trim(), text: b.text.trim() }))
+                    .filter(b => b.title.trim() || b.text.trim() || (b.videoUrl && b.videoUrl.trim()))
+                    .map(b => ({
+                        title: b.title.trim(),
+                        videoUrl: (b.videoUrl || '').trim(),
+                        text: b.text.trim()
+                    }))
             };
 
             st.routine = cleanRoutine;
@@ -2463,7 +2804,10 @@
                 listEl.innerHTML = itemsToShow.map((entry, idx) => {
                     const blocksHtml = (entry.routine?.blocks || []).map(b => `
                         <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/80 space-y-1.5">
-                            <p class="text-xs font-bold text-bandido-orange">${escapeHtml(b.title || 'Bloque')}</p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-xs font-bold text-bandido-orange">${escapeHtml(b.title || 'Bloque')}</p>
+                                ${b.videoUrl ? `<span class="text-[10px] font-bold text-purple-300"><i class="fa-solid fa-video mr-1"></i>Con video adjunto</span>` : ''}
+                            </div>
                             <pre class="text-xs text-zinc-200 whitespace-pre-wrap font-sans leading-relaxed">${escapeHtml(b.text || '')}</pre>
                         </div>
                     `).join('');
@@ -2558,13 +2902,21 @@
         }
 
         async function buildPrivateRoutineUrl(student) {
+            const hasVideoBenefit = planSupportsVideos(student.planKey);
+            const planName = GYM_PLANS[student.planKey]?.name || '';
             const payload = {
                 id: student.id,
                 n: student.name,
                 l: student.level || 'Básico',
+                p: planName,
+                v: hasVideoBenefit ? 1 : 0,
                 g: student.routine?.goal || '',
                 o: student.routine?.notes || '',
-                b: (student.routine?.blocks || []).map(blk => ({ t: blk.title, x: blk.text }))
+                b: (student.routine?.blocks || []).map(blk => ({
+                    t: blk.title,
+                    x: blk.text,
+                    u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                }))
             };
             const token = await encodeRoutinePayload(payload);
             const baseUrl = window.location.href.split('#')[0].split('?')[0];
@@ -2574,13 +2926,21 @@
         async function previewStudentRoutine() {
             const st = await saveStudentRoutine(true);
             if (!st) return;
+            const hasVideoBenefit = planSupportsVideos(st.planKey);
+            const planName = GYM_PLANS[st.planKey]?.name || '';
             const payload = {
                 id: st.id,
                 n: st.name,
                 l: st.level || 'Básico',
+                p: planName,
+                v: hasVideoBenefit ? 1 : 0,
                 g: st.routine?.goal || '',
                 o: st.routine?.notes || '',
-                b: (st.routine?.blocks || []).map(blk => ({ t: blk.title, x: blk.text }))
+                b: (st.routine?.blocks || []).map(blk => ({
+                    t: blk.title,
+                    x: blk.text,
+                    u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                }))
             };
             closeRoutineModal();
             renderAthletePrivateView(payload, true);
@@ -2657,11 +3017,16 @@
 
             const container = document.getElementById('athlete-routine-content');
             const blocks = Array.isArray(payload.b) ? payload.b : [];
+            const canSeeVideos = payload.v === 1 || payload.v === true;
 
             const blocksHtml = blocks.length === 0
                 ? `<div class="p-6 rounded-2xl bg-bandido-card border border-bandido-border text-center text-xs text-zinc-400">Aún no hay bloques cargados en esta rutina.</div>`
                 : blocks.map((blk, bIdx) => {
                     const circuits = parseBlockCircuits(blk.x || '');
+                    const videoHtml = (canSeeVideos && blk.u && blk.u.trim())
+                        ? renderVideoPlayerHtml(blk.u.trim(), blk.t || `Día ${bIdx + 1}`)
+                        : '';
+
                     const circuitsHtml = circuits.map((c, cIdx) => `
                         <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border/90 space-y-2.5">
                             <div class="flex items-center justify-between gap-2">
@@ -2681,10 +3046,14 @@
 
                     return `
                         <section class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-3.5 shadow-lg">
-                            <div class="flex items-center gap-2.5 border-b border-bandido-border pb-2.5">
-                                <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase">Bloque ${bIdx + 1}</span>
-                                <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(blk.t || `Día ${bIdx + 1}`)}</h3>
+                            <div class="flex items-center justify-between gap-2.5 border-b border-bandido-border pb-2.5">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase shrink-0">Bloque ${bIdx + 1}</span>
+                                    <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white truncate">${escapeHtml(blk.t || `Día ${bIdx + 1}`)}</h3>
+                                </div>
+                                ${videoHtml ? `<span class="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-extrabold uppercase shrink-0"><i class="fa-solid fa-video mr-1"></i>Video</span>` : ''}
                             </div>
+                            ${videoHtml}
                             <div class="space-y-3">
                                 ${circuitsHtml}
                             </div>
@@ -2694,10 +3063,17 @@
 
             container.innerHTML = `
                 <div class="p-5 rounded-2xl bg-gradient-to-br from-bandido-card to-bandido-dark border border-bandido-orange/40 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
-                            Nivel ${escapeHtml(payload.l || 'Básico')}
-                        </span>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
+                                Nivel ${escapeHtml(payload.l || 'Básico')}
+                            </span>
+                            ${payload.p ? `
+                                <span class="px-2.5 py-0.5 rounded-full ${canSeeVideos ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'bg-zinc-800 text-zinc-300'} text-[10px] font-bold">
+                                    ${canSeeVideos ? '<i class="fa-solid fa-video mr-1"></i>' : ''}${escapeHtml(payload.p)}
+                                </span>
+                            ` : ''}
+                        </div>
                         <span class="text-[11px] text-zinc-400">Bandidos Sur</span>
                     </div>
                     <h2 class="font-display text-2xl font-bold uppercase text-white">${escapeHtml(payload.n || 'Atleta')}</h2>
@@ -2777,6 +3153,7 @@
             const match = hash.match(/rutina=([^&]+)/);
             if (!match) return false;
             try {
+                loadLocalPlans();
                 const decoded = await decodeRoutinePayload(decodeURIComponent(match[1]));
                 if (decoded && decoded.n) {
                     if (decoded.id) {
@@ -2791,14 +3168,22 @@
                                 renderAthleteBlockedView(liveStudent.name || decoded.n, 'expired');
                                 return true;
                             }
+                            const hasVideoBenefit = planSupportsVideos(liveStudent.planKey);
+                            const planName = GYM_PLANS[liveStudent.planKey]?.name || decoded.p || '';
                             const freshPayload = {
                                 id: liveStudent.id,
                                 n: liveStudent.name,
                                 l: liveStudent.level || decoded.l || 'Básico',
+                                p: planName,
+                                v: hasVideoBenefit ? 1 : 0,
                                 g: liveStudent.routine?.goal ?? decoded.g ?? '',
                                 o: liveStudent.routine?.notes ?? decoded.o ?? '',
                                 b: Array.isArray(liveStudent.routine?.blocks)
-                                    ? liveStudent.routine.blocks.map(blk => ({ t: blk.title, x: blk.text }))
+                                    ? liveStudent.routine.blocks.map(blk => ({
+                                        t: blk.title,
+                                        x: blk.text,
+                                        u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                                    }))
                                     : (decoded.b || [])
                             };
                             renderAthletePrivateView(freshPayload, false);
