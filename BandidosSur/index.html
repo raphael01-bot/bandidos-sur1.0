@@ -63,11 +63,11 @@
     <!-- ===================================================================== -->
     <!-- BARRA SUPERIOR DE NAVEGACIÓN                                          -->
     <!-- ===================================================================== -->
-    <header class="sticky top-0 z-40 bg-bandido-black/90 backdrop-blur-md border-b border-bandido-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <header class="sticky top-0 z-40 bg-bandido-black/95 backdrop-blur-md border-b border-bandido-border">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
             <!-- Identidad del Gimnasio -->
-            <div class="flex items-center gap-3.5">
-                <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
+            <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                <div class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
                     <img src="image_2191ee.png"
                          alt="Logo Bandidos Sur"
                          class="w-full h-full object-cover"
@@ -158,25 +158,25 @@
                         <path d="M 74 164 C 72 154, 74 146, 78 142 C 82 148, 84 156, 82 164 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" />
                     </svg>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-display text-xl sm:text-2xl font-bold tracking-wide uppercase text-white">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <h1 class="font-display text-lg sm:text-2xl font-bold tracking-wide uppercase text-white truncate">
                             BANDIDOS <span class="text-bandido-orange">SUR</span>
                         </h1>
                         <span class="hidden md:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30">
                             Calistenia Pura
                         </span>
                     </div>
-                    <p class="text-xs text-zinc-400">Panel del Entrenador · Control de Alumnos y Progreso</p>
+                    <p class="text-[11px] sm:text-xs text-zinc-400 truncate">Panel del Entrenador · Alumnos y Progreso</p>
                 </div>
             </div>
 
             <!-- Controles Superiores -->
-            <div class="flex items-center gap-2.5 sm:gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <!-- Indicador de Guardado Persistente -->
-                <div id="sync-status" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-[11px] font-medium text-zinc-400" title="Estado de guardado automático">
-                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="sync-text">Conectando...</span>
+                <div id="sync-status" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-[10px] sm:text-[11px] font-medium text-zinc-400" title="Estado de guardado automático">
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                    <span id="sync-text" class="hidden xs:inline sm:inline">Guardado</span>
                 </div>
 
                 <!-- Botón Respaldo JSON -->
@@ -197,15 +197,15 @@
                         </span>
                     </button>
 
-                    <!-- Desplegable de Notificaciones -->
-                    <div id="notifications-panel" class="hidden absolute right-0 mt-2.5 w-80 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
+                    <!-- Desplegable de Notificaciones (Responsivo en móvil y escritorio) -->
+                    <div id="notifications-panel" class="hidden fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-18 sm:top-auto mt-2 sm:mt-2.5 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
                         <div class="px-4 py-3 border-b border-bandido-border flex items-center justify-between bg-bandido-dark">
                             <div>
                                 <h3 class="text-xs font-bold uppercase tracking-wider text-white">Alertas de Mensualidad</h3>
                                 <p id="notif-summary" class="text-[11px] text-bandido-orange font-medium mt-0.5">Todo al día</p>
                             </div>
                             <button onclick="filterExpiringSoon()" class="text-[11px] font-semibold text-zinc-400 hover:text-white underline cursor-pointer">
-                                Ver en tabla
+                                Ver en lista
                             </button>
                         </div>
                         <div id="notif-list" class="p-3 max-h-80 overflow-y-auto space-y-2.5">
@@ -223,9 +223,9 @@
                     <span>@bandidos.sur</span>
                 </a>
 
-                <!-- Botón Nuevo Alumno -->
+                <!-- Botón Nuevo Alumno (Desktop/Tablet) -->
                 <button onclick="openStudentModal()"
-                        class="px-4 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-bold text-xs sm:text-sm transition shadow-lg shadow-orange-500/20 flex items-center gap-2 cursor-pointer">
+                        class="hidden sm:flex px-4 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-bold text-xs sm:text-sm transition shadow-lg shadow-orange-500/20 items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-user-plus"></i>
                     <span>Nuevo Alumno</span>
                 </button>
@@ -233,16 +233,22 @@
         </div>
     </header>
 
+    <!-- Botón Flotante Rápido para Celular (Agregar Alumno con un toque) -->
+    <button onclick="openStudentModal()"
+            class="sm:hidden fixed bottom-5 right-5 z-40 px-4 py-3.5 rounded-2xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-extrabold text-sm shadow-2xl shadow-orange-500/35 flex items-center gap-2 active:scale-95 transition cursor-pointer">
+        <i class="fa-solid fa-user-plus text-base"></i>
+        <span>Nuevo Alumno</span>
+    </button>
+
     <!-- ===================================================================== -->
     <!-- CONTENIDO PRINCIPAL                                                   -->
     <!-- ===================================================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-
-        <!-- Banner de Alerta Automática (<= 3 días para expirar) -->
-        <div id="expiration-alert-banner" class="hidden rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-bandido-card border border-amber-500/40 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 sm:pb-10 space-y-5 sm:space-y-6">
+        <!-- Banner Automático de Aviso (Mensualidades <= 3 días) -->
+        <div id="expiration-alert-banner" class="hidden p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                    <i class="fa-solid fa-bell text-lg"></i>
                 </div>
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wider text-amber-300">Recordatorio de Cobro Próximo</p>
@@ -329,9 +335,10 @@
             </div>
         </section>
 
-        <!-- Tabla Principal de Alumnos -->
+        <!-- Tabla Principal de Alumnos (Desktop) + Tarjetas Táctiles (Celular) -->
         <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
-            <div class="overflow-x-auto">
+            <!-- Vista de Tabla para Tablets y Computadoras -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-bandido-dark border-b border-bandido-border text-[11px] font-bold uppercase tracking-wider text-zinc-400">
@@ -347,6 +354,11 @@
                         <!-- Filas generadas dinámicamente -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Vista de Tarjetas Optimizadas para Celular -->
+            <div id="students-mobile-list" class="md:hidden divide-y divide-bandido-border">
+                <!-- Tarjetas generadas dinámicamente en móvil -->
             </div>
 
             <!-- Estado Vacío -->
@@ -478,25 +490,25 @@
     <!-- ===================================================================== -->
     <!-- MODAL 2: EVALUACIÓN MENSUAL DE CALISTENIA                             -->
     <!-- ===================================================================== -->
-    <div id="eval-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto">
-        <div class="w-full max-w-5xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto">
+    <div id="eval-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/85 backdrop-blur-sm p-0 sm:p-5 overflow-y-auto">
+        <div class="w-full max-w-5xl rounded-t-3xl sm:rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto max-h-[94vh] flex flex-col">
             <!-- Header del Modal de Evaluación -->
-            <div class="px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-4">
-                <div>
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-3 shrink-0">
+                <div class="min-w-0">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-fire text-bandido-orange"></i>
-                        <h2 id="eval-student-title" class="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-white">
+                        <i class="fa-solid fa-fire text-bandido-orange shrink-0"></i>
+                        <h2 id="eval-student-title" class="font-display text-base sm:text-xl font-bold uppercase tracking-wide text-white truncate">
                             Evaluación Física
                         </h2>
                     </div>
-                    <p id="eval-student-subtitle" class="text-xs text-zinc-400 mt-0.5"></p>
+                    <p id="eval-student-subtitle" class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 truncate"></p>
                 </div>
-                <button onclick="closeEvalModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl bg-bandido-card border border-bandido-border cursor-pointer">
+                <button onclick="closeEvalModal()" class="text-zinc-400 hover:text-white p-2.5 rounded-xl bg-bandido-card border border-bandido-border cursor-pointer shrink-0">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <form id="eval-form" onsubmit="saveEvaluation(event)" class="p-5 sm:p-6 space-y-5 max-h-[82vh] overflow-y-auto">
+            <form id="eval-form" onsubmit="saveEvaluation(event)" class="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
                 <input type="hidden" id="eval-student-id" />
 
                 <!-- Selector de Historial o Nueva Evaluación -->
@@ -1209,6 +1221,82 @@
             }
         }
 
+        function openStudentModal(studentId = null) {
+            const modal = document.getElementById('student-modal');
+            const title = document.getElementById('student-modal-title');
+            const form = document.getElementById('student-form');
+            if (!modal || !form) return;
+
+            form.reset();
+            document.getElementById('student-id').value = '';
+
+            if (studentId) {
+                const st = students.find(s => s.id === studentId);
+                if (st) {
+                    title.textContent = `Editar Alumno — ${st.name}`;
+                    document.getElementById('student-id').value = st.id;
+                    document.getElementById('student-name').value = st.name || '';
+                    document.getElementById('student-phone').value = st.phone || '';
+                    document.getElementById('student-level').value = st.level || 'Básico';
+                    document.getElementById('student-days').value = st.days || '';
+                    document.getElementById('student-plan-select').value = st.planId || 'general_lv';
+                    document.getElementById('student-pay-date').value = st.payDate || formatDateISO(new Date());
+                    handlePlanChange(false);
+                }
+            } else {
+                title.textContent = 'Nuevo Alumno — Bandidos Sur';
+                document.getElementById('student-plan-select').value = 'general_lv';
+                document.getElementById('student-pay-date').value = formatDateISO(new Date());
+                handlePlanChange(true);
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStudentModal() {
+            const modal = document.getElementById('student-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handlePlanChange(updateDefaultDays = false) {
+            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
+            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
+            const detailsBox = document.getElementById('plan-details-box');
+            const daysInput = document.getElementById('student-days');
+
+            if (updateDefaultDays && daysInput) {
+                daysInput.value = plan.defaultDays;
+            }
+
+            if (detailsBox) {
+                detailsBox.innerHTML = `
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-bold text-white">${escapeHTML(plan.name)}</span>
+                        <span class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-bandido-orange text-black">${escapeHTML(plan.price)}</span>
+                    </div>
+                    <ul class="space-y-1 text-[11px] text-zinc-300">
+                        ${plan.benefits.map(b => `<li class="flex items-start gap-1.5"><i class="fa-solid fa-check text-bandido-orange mt-0.5 text-[10px]"></i><span>${escapeHTML(b)}</span></li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            updateCalculatedEndDate();
+        }
+
+        function updateCalculatedEndDate() {
+            const payDate = document.getElementById('student-pay-date')?.value;
+            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
+            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
+            const endDate = calculateEndDate(payDate, plan.type);
+            const display = document.getElementById('calculated-end-date');
+            if (display) {
+                display.textContent = endDate ? formatDateHuman(endDate) : '—';
+            }
+        }
+
         async function saveStudent(e) {
             e.preventDefault();
             const id = document.getElementById('student-id').value;
@@ -1516,6 +1604,7 @@
             updateDashboardStatsAndAlerts();
 
             const tbody = document.getElementById('students-table-body');
+            const mobileList = document.getElementById('students-mobile-list');
             const emptyState = document.getElementById('empty-state');
             if (!tbody) return;
 
@@ -1537,12 +1626,14 @@
 
             if (filtered.length === 0) {
                 tbody.innerHTML = '';
+                if (mobileList) mobileList.innerHTML = '';
                 if (emptyState) emptyState.classList.remove('hidden');
                 return;
             }
 
             if (emptyState) emptyState.classList.add('hidden');
 
+            // 1. Renderizado en Tabla (Tablet / Escritorio)
             tbody.innerHTML = filtered.map(st => {
                 const statusInfo = getMembershipStatus(st.endDate);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
@@ -1611,85 +1702,72 @@
                     </tr>
                 `;
             }).join('');
-        }
 
-        function openStudentModal(studentId = null) {
-            const modal = document.getElementById('student-modal');
-            const titleEl = document.getElementById('student-modal-title');
-            const form = document.getElementById('student-form');
-            if (!modal || !form) return;
+            // 2. Renderizado en Tarjetas Táctiles (Celulares)
+            if (mobileList) {
+                mobileList.innerHTML = filtered.map(st => {
+                    const statusInfo = getMembershipStatus(st.endDate);
+                    const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
+                    const lastEval = evalCount > 0 ? st.evaluations[evalCount - 1] : null;
 
-            form.reset();
-            document.getElementById('student-id').value = '';
+                    return `
+                        <div class="p-4 space-y-3 bg-bandido-card">
+                            <div class="flex items-start justify-between gap-2.5">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 rounded-xl bg-bandido-dark border border-bandido-border flex items-center justify-center font-display font-bold text-bandido-orange text-sm shrink-0">
+                                        ${escapeHTML((st.name || 'A').charAt(0).toUpperCase())}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-white text-sm truncate">${escapeHTML(st.name)}</p>
+                                        <p class="text-[11px] text-zinc-400 truncate">
+                                            ${escapeHTML(st.level || 'Básico')}${st.phone ? ` · ${escapeHTML(st.phone)}` : ''}
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border shrink-0 ${statusInfo.badgeClass}">
+                                    ${statusInfo.label}
+                                </span>
+                            </div>
 
-            if (studentId) {
-                const st = students.find(s => s.id === studentId);
-                if (!st) return;
-                titleEl.textContent = 'Editar Alumno';
-                document.getElementById('student-id').value = st.id;
-                document.getElementById('student-name').value = st.name || '';
-                document.getElementById('student-phone').value = st.phone || '';
-                document.getElementById('student-level').value = st.level || 'Básico';
-                document.getElementById('student-plan-select').value = st.planId || 'general_lv';
-                document.getElementById('student-days').value = st.days || '';
-                document.getElementById('student-pay-date').value = st.payDate || formatDateISO(new Date());
-                renderPlanDescription(st.planId || 'general_lv');
-            } else {
-                titleEl.textContent = 'Nuevo Alumno — Bandidos Sur';
-                const todayISO = formatDateISO(new Date());
-                document.getElementById('student-pay-date').value = todayISO;
-                document.getElementById('student-plan-select').value = 'general_lv';
-                handlePlanChange(true);
-            }
+                            <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border space-y-1.5 text-xs">
+                                <p class="font-semibold text-white">${escapeHTML(st.fee || 'Plan General — $450')}</p>
+                                <p class="text-zinc-400">
+                                    <i class="fa-solid fa-calendar-check text-bandido-orange mr-1"></i>
+                                    ${escapeHTML(st.days || 'No especificado')}
+                                </p>
+                                <div class="flex items-center justify-between pt-1 border-t border-bandido-border/70 text-[11px] text-zinc-400">
+                                    <span>Pago: <strong class="text-zinc-200">${formatDateHuman(st.payDate)}</strong></span>
+                                    <span>Vence: <strong class="text-bandido-orange">${formatDateHuman(st.endDate)}</strong></span>
+                                </div>
+                            </div>
 
-            updateCalculatedEndDate();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+                            <div class="flex items-center justify-between gap-2 pt-0.5">
+                                <button onclick="openEvalModal('${st.id}')"
+                                        class="flex-1 py-2.5 px-3 rounded-xl bg-bandido-dark active:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-white flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-dumbbell text-bandido-orange"></i>
+                                    <span>Evaluación (${evalCount})</span>
+                                </button>
 
-        function closeStudentModal() {
-            const modal = document.getElementById('student-modal');
-            if (!modal) return;
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function handlePlanChange(autoFillDays = false) {
-            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
-            renderPlanDescription(planId);
-            const daysInput = document.getElementById('student-days');
-            if (daysInput && (autoFillDays || !daysInput.value.trim())) {
-                const plan = GYM_PLANS[planId];
-                if (plan && plan.defaultDays) {
-                    daysInput.value = plan.defaultDays;
-                }
-            }
-            updateCalculatedEndDate();
-        }
-
-        function renderPlanDescription(planId) {
-            const box = document.getElementById('plan-details-box');
-            if (!box) return;
-            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
-            box.innerHTML = `
-                <div class="flex items-center justify-between gap-2 mb-1.5">
-                    <span class="text-xs font-bold text-bandido-orange uppercase tracking-wider">${escapeHTML(plan.name)}</span>
-                    <span class="text-sm font-display font-bold text-white">${escapeHTML(plan.price)}</span>
-                </div>
-                <ul class="space-y-1 text-xs text-zinc-300 list-disc list-inside">
-                    ${plan.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}
-                </ul>
-            `;
-        }
-
-        function updateCalculatedEndDate() {
-            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
-            const payDate = document.getElementById('student-pay-date')?.value;
-            const previewEl = document.getElementById('calculated-end-date');
-            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
-            const endDate = calculateEndDate(payDate, plan.type);
-            if (previewEl) {
-                previewEl.textContent = endDate ? formatDateHuman(endDate) : '—';
+                                <button onclick="openRenewModal('${st.id}')"
+                                        title="Renovar pago"
+                                        class="p-2.5 rounded-xl bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30 text-xs font-bold cursor-pointer">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button onclick="openStudentModal('${st.id}')"
+                                        title="Editar alumno"
+                                        class="p-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-zinc-300 text-xs cursor-pointer">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="openDeleteModal('${st.id}')"
+                                        title="Eliminar alumno"
+                                        class="p-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-zinc-400 hover:text-rose-400 text-xs cursor-pointer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            ${lastEval ? `<p class="text-[11px] text-zinc-400 truncate">Última evaluación: ${escapeHTML(lastEval.monthLabel)}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
