@@ -1085,7 +1085,7 @@
         /**
          * Inicialización: detecta si el usuario abrió un enlace privado (#rutina=... o ?rutina=...) o el panel de admin
          */
-        function checkAndRenderSharedRoutine() {
+        async function checkAndRenderSharedRoutine() {
             let sharedRoutineParam = null;
 
             // 1. Revisar hash (#rutina=...) — inmune a recortes de parámetros en WhatsApp y servidores estáticos
@@ -1102,7 +1102,7 @@
             }
 
             if (sharedRoutineParam) {
-                const decoded = decodeRoutinePayload(sharedRoutineParam);
+                const decoded = await decodeRoutinePayload(sharedRoutineParam);
                 if (decoded) {
                     showAthleteRoutineScreen(decoded, false);
                     return true;
@@ -1116,7 +1116,7 @@
         });
 
         window.onload = async function() {
-            if (checkAndRenderSharedRoutine()) {
+            if (await checkAndRenderSharedRoutine()) {
                 return;
             }
 
