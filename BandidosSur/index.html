@@ -2929,7 +2929,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-purple-200">Plan con Plus de Videos Demostrativos Activo</p>
-                            <p class="text-[11px] text-zinc-300">Puedes pegar un enlace (YouTube, Drive, MP4) o subir un video directo desde tu celular en cada día.</p>
+                            <p class="text-[11px] text-zinc-300">Pega el enlace del video (YouTube, Shorts, Drive, Instagram, TikTok o MP4) en cada día.</p>
                         </div>
                     </div>
                     <span class="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 text-[10px] font-extrabold uppercase shrink-0">VIP Video</span>
@@ -3031,28 +3031,20 @@
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <label class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
                                     <i class="fa-solid fa-video"></i>
-                                    <span>Video Demostrativo del Día (Plus VIP)</span>
+                                    <span>Enlace de Video Demostrativo (Plus VIP)</span>
                                 </label>
-                                <div class="flex items-center gap-2">
-                                    <label class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold cursor-pointer flex items-center gap-1.5 transition shadow">
-                                        <i class="fa-solid fa-mobile-screen-button"></i>
-                                        <span>Subir desde Celular / Archivos</span>
-                                        <input type="file" accept="video/*" onchange="handleMobileVideoUpload(event, ${idx})" class="hidden" />
-                                    </label>
-                                    ${block.videoUrl ? `
-                                        <a href="${escapeHtml(block.videoUrl)}" target="_blank" rel="noopener noreferrer"
-                                           class="px-2 py-1 rounded-lg bg-bandido-card border border-purple-500/40 text-[10px] font-bold text-purple-200 hover:text-white">
-                                            Probar <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
-                                        </a>
-                                    ` : ''}
-                                </div>
+                                ${block.videoUrl ? `
+                                    <a href="${escapeHtml(block.videoUrl)}" target="_blank" rel="noopener noreferrer"
+                                       class="px-2 py-1 rounded-lg bg-bandido-card border border-purple-500/40 text-[10px] font-bold text-purple-200 hover:text-white">
+                                        Probar enlace <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
+                                    </a>
+                                ` : ''}
                             </div>
                             <input type="url"
                                    data-block-video="${idx}"
                                    value="${escapeHtml(block.videoUrl || '')}"
-                                   placeholder="Pega enlace (YouTube, Shorts, Drive, MP4) o sube desde tu celular..."
+                                   placeholder="Pega aquí la URL del video (YouTube, Shorts, Drive, Instagram, MP4)..."
                                    class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
-                            <div id="upload-status-${idx}" class="hidden text-[11px] text-purple-200"></div>
                         </div>
                     ` : ''}
 
@@ -3062,127 +3054,6 @@
                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
                 </div>
             `).join('');
-        }
-
-        async function ensureSupabaseVideoBucket(cfg) {
-            const candidateBuckets = ['rutinas-videos', 'videos', 'rutinas', 'media', 'public'];
-            try {
-                // 1. Verificar qué buckets públicos existen ya en el proyecto
-                const listRes = await fetch(`${cfg.url}/storage/v1/bucket`, {
-                    headers: {
-                        'apikey': cfg.key,
-                        'Authorization': `Bearer ${cfg.key}`
-                    }
-                });
-                if (listRes.ok) {
-                    const buckets = await listRes.json();
-                    if (Array.isArray(buckets) && buckets.length > 0) {
-                        const exact = buckets.find(b => b.id === 'rutinas-videos' || b.name === 'rutinas-videos');
-                        if (exact) return exact.id || exact.name;
-                        const anyPublic = buckets.find(b => b.public === true);
-                        if (anyPublic) return anyPublic.id || anyPublic.name;
-                    }
-                }
-
-                // 2. Intentar crear el bucket público "rutinas-videos" automáticamente
-                const createRes = await fetch(`${cfg.url}/storage/v1/bucket`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': cfg.key,
-                        'Authorization': `Bearer ${cfg.key}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: 'rutinas-videos',
-                        name: 'rutinas-videos',
-                        public: true
-                    })
-                });
-                if (createRes.ok) return 'rutinas-videos';
-            } catch (e) {
-                console.warn('No se pudo listar/crear bucket automáticamente:', e);
-            }
-            return candidateBuckets[0];
-        }
-
-        function copySupabaseStorageSqlFix() {
-            const sqlScript = `insert into storage.buckets (id, name, public) values ('rutinas-videos', 'rutinas-videos', true) on conflict (id) do update set public = true;\ncreate policy "Permitir subir videos publicos" on storage.objects for insert with check (bucket_id = 'rutinas-videos');\ncreate policy "Permitir ver videos publicos" on storage.objects for select using (bucket_id = 'rutinas-videos');\ncreate policy "Permitir actualizar videos publicos" on storage.objects for update using (bucket_id = 'rutinas-videos');`;
-            const tmp = document.createElement('textarea');
-            tmp.value = sqlScript;
-            document.body.appendChild(tmp);
-            tmp.select();
-            document.execCommand('copy');
-            document.body.removeChild(tmp);
-            showToast('SQL copiado. Pégalo en Supabase > SQL Editor y dale Run.');
-        }
-
-        async function handleMobileVideoUpload(event, blockIndex) {
-            const file = event.target.files?.[0];
-            if (!file) return;
-
-            const cfg = getSupabaseConfig();
-            if (!cfg.enabled) {
-                showToast('Configura primero la nube compartida para subir videos.', true);
-                return;
-            }
-
-            const statusEl = document.getElementById(`upload-status-${blockIndex}`);
-            if (statusEl) {
-                statusEl.classList.remove('hidden');
-                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Subiendo video (${(file.size / (1024 * 1024)).toFixed(1)} MB) a la nube de Bandidos Sur...`;
-            }
-
-            try {
-                const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '');
-                const stId = document.getElementById('routine-student-id').value || 'atleta';
-                const fileName = `${stId}_${Date.now()}.${ext || 'mp4'}`;
-                const bucketName = await ensureSupabaseVideoBucket(cfg);
-                const uploadUrl = `${cfg.url}/storage/v1/object/${bucketName}/${encodeURIComponent(fileName)}`;
-
-                const res = await fetch(uploadUrl, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': cfg.key,
-                        'Authorization': `Bearer ${cfg.key}`,
-                        'Content-Type': file.type || 'video/mp4',
-                        'x-upsert': 'true'
-                    },
-                    body: file
-                });
-
-                if (!res.ok) {
-                    let errDetail = `HTTP ${res.status}`;
-                    try {
-                        const errJson = await res.json();
-                        errDetail = errJson.message || errJson.error || errDetail;
-                    } catch (_) {}
-                    throw new Error(errDetail);
-                }
-
-                const publicUrl = `${cfg.url}/storage/v1/object/public/${bucketName}/${encodeURIComponent(fileName)}`;
-                syncDraftFromInputs();
-                if (currentRoutineDraft.blocks[blockIndex]) {
-                    currentRoutineDraft.blocks[blockIndex].videoUrl = publicUrl;
-                }
-                renderRoutineBlocksEditor();
-                showToast('¡Video subido desde tu celular y listo para el alumno!');
-            } catch (err) {
-                console.error('Error subiendo video:', err);
-                if (statusEl) {
-                    statusEl.innerHTML = `
-                        <div class="p-2.5 mt-1 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 space-y-2">
-                            <p><i class="fa-solid fa-circle-exclamation mr-1"></i><strong>Supabase bloqueó la subida (${escapeHtml(err.message || 'Sin permisos')}).</strong></p>
-                            <p class="text-[11px] text-zinc-300">Activa el almacenamiento en 10 segundos: entra a tu panel de <strong>Supabase → SQL Editor</strong>, pega el código y presiona <strong>Run</strong>:</p>
-                            <button type="button" onclick="copySupabaseStorageSqlFix()"
-                                    class="px-3 py-1.5 rounded-lg bg-bandido-orange hover:bg-bandido-orange-hover text-black text-[11px] font-extrabold uppercase cursor-pointer inline-flex items-center gap-1.5">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>Copiar Código SQL de Activación</span>
-                            </button>
-                        </div>
-                    `;
-                }
-                showToast('Falta activar los permisos de Storage en Supabase.', true);
-            }
         }
 
         function addRoutineTextBlock() {
