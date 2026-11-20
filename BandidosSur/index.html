@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bandidos Sur — Panel de Administración & Calistenia</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter & Oswald -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    },
+                    colors: {
+                        bandido: {
+                            black: '#09090b',
+                            dark: '#121215',
+                            card: '#18181c',
+                            border: '#27272a',
+                            orange: '#f97316',
+                            'orange-hover': '#ea580c',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* Scrollbar personalizado estilo oscuro/naranja */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f97316;
+        }
+    </style>
+</head>
+<body class="bg-bandido-black text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-bandido-orange selection:text-black">
+
+    <!-- ===================================================================== -->
+    <!-- BARRA SUPERIOR DE NAVEGACIÓN                                          -->
+    <!-- ===================================================================== -->
+    <header class="sticky top-0 z-40 bg-bandido-black/90 backdrop-blur-md border-b border-bandido-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <!-- Identidad del Gimnasio -->
+            <div class="flex items-center gap-3.5">
+                <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
+                    <img src="image_2191ee.png"
+                         alt="Logo Bandidos Sur"
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                    <!-- Ilustración vectorial fiel del logo original de Bandidos Sur (Oni + Graffiti Naranja) -->
+                    <svg viewBox="0 0 200 200" class="hidden w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="oniSkin" cx="42%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#ffd9e8" />
+                                <stop offset="55%" stop-color="#f59ab9" />
+                                <stop offset="100%" stop-color="#d46b90" />
+                            </radialGradient>
+                            <linearGradient id="graffitiOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ffd000" />
+                                <stop offset="55%" stop-color="#ff8c00" />
+                                <stop offset="100%" stop-color="#e65100" />
+                            </linearGradient>
+                            <linearGradient id="hornGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#fffdf7" />
+                                <stop offset="70%" stop-color="#e8dcc5" />
+                                <stop offset="100%" stop-color="#cbb894" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Fondo circular gris metálico -->
+                        <circle cx="100" cy="100" r="100" fill="#b4b6ba" />
+
+                        <!-- Graffiti Naranja Superior Izquierdo ("B") -->
+                        <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+                            <path d="M 38 14 C 66 6, 94 22, 86 46 C 82 58, 62 62, 54 64 C 74 64, 88 74, 82 90 C 76 105, 45 96, 36 86 L 26 98 L 16 92 L 32 72 C 22 62, 24 38, 38 14 Z" fill="url(#graffitiOrange)" />
+                            <!-- Goteo graffiti izquierdo -->
+                            <path d="M 34 86 L 34 108 C 34 113, 41 113, 41 108 L 41 88 Z" fill="url(#graffitiOrange)" />
+                            <path d="M 52 94 L 52 104 C 52 108, 58 108, 58 104 L 58 95 Z" fill="url(#graffitiOrange)" />
+                            <!-- Hueco interno B -->
+                            <path d="M 48 34 C 60 32, 68 40, 62 48 C 56 54, 44 50, 48 34 Z" fill="#b4b6ba" />
+                        </g>
+
+                        <!-- Graffiti Naranja Inferior Derecho ("S") -->
+                        <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+                            <path d="M 134 126 C 158 122, 186 130, 188 152 C 190 172, 165 180, 148 184 L 148 196 L 138 196 L 138 164 L 128 164 L 128 192 L 118 192 L 118 148 C 118 134, 124 128, 134 126 Z" fill="url(#graffitiOrange)" />
+                            <!-- Goteo graffiti derecho -->
+                            <path d="M 164 176 L 164 191 C 164 195, 170 195, 170 191 L 170 174 Z" fill="url(#graffitiOrange)" />
+                        </g>
+
+                        <!-- Cabello negro superior de la máscara Oni -->
+                        <path d="M 54 88 C 52 44, 132 36, 146 78 C 150 92, 145 106, 138 112 L 58 104 Z" fill="#18181b" stroke="#09090b" stroke-width="3.5" />
+                        <path d="M 86 48 Q 98 62 110 74" stroke="#3f3f46" stroke-width="3" fill="none" stroke-linecap="round" />
+
+                        <!-- Cuerno Izquierdo -->
+                        <path d="M 66 66 C 58 44, 62 24, 71 14 C 77 28, 82 46, 83 64 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                        <path d="M 68 48 Q 74 44 79 47" stroke="#cbb894" stroke-width="2" fill="none" />
+
+                        <!-- Cuerno Derecho -->
+                        <path d="M 132 72 C 146 58, 164 52, 180 54 C 172 72, 160 88, 142 94 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                        <path d="M 150 68 Q 156 75 154 83" stroke="#cbb894" stroke-width="2" fill="none" />
+
+                        <!-- Oreja Oni derecha -->
+                        <path d="M 136 102 C 154 96, 164 112, 152 132 C 144 144, 132 144, 126 136 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                        <path d="M 140 112 C 148 112, 148 124, 139 128" stroke="#9d4264" stroke-width="2.5" fill="none" stroke-linecap="round" />
+
+                        <!-- Rostro Principal de la Máscara Oni -->
+                        <path d="M 56 86 C 54 66, 76 58, 92 70 C 106 58, 132 66, 136 90 C 140 112, 136 144, 120 164 C 104 182, 74 180, 58 160 C 46 144, 48 112, 56 86 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.5" stroke-linejoin="round" />
+
+                        <!-- Brillos blancos característicos en frente y pómulos -->
+                        <ellipse cx="74" cy="76" rx="8" ry="4" transform="rotate(-18 74 76)" fill="#ffffff" opacity="0.85" />
+                        <ellipse cx="110" cy="78" rx="9" ry="4.5" transform="rotate(15 110 78)" fill="#ffffff" opacity="0.85" />
+                        <ellipse cx="62" cy="116" rx="6" ry="3.5" transform="rotate(-25 62 116)" fill="#ffffff" opacity="0.8" />
+                        <ellipse cx="116" cy="122" rx="7" ry="4" transform="rotate(20 116 122)" fill="#ffffff" opacity="0.8" />
+
+                        <!-- Cejas fruncidas y Ojos blancos intensos -->
+                        <path d="M 56 96 Q 74 106 86 102" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
+                        <path d="M 126 102 Q 108 108 96 103" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
+                        <path d="M 60 100 C 68 106, 78 106, 83 103 C 78 111, 66 111, 60 100 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+                        <path d="M 122 104 C 114 109, 104 109, 99 105 C 104 113, 116 113, 122 104 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+
+                        <!-- Nariz Oni -->
+                        <path d="M 82 118 C 86 112, 96 112, 100 120 C 96 125, 86 125, 82 118 Z" fill="#d46b90" stroke="#111111" stroke-width="2.8" />
+
+                        <!-- Boca abierta, dientes y colmillos -->
+                        <path d="M 56 134 C 74 126, 106 128, 122 140 C 118 164, 88 172, 64 158 C 56 152, 54 142, 56 134 Z" fill="#4a1525" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                        <!-- Lengua -->
+                        <path d="M 68 152 C 78 144, 96 146, 106 156 C 94 166, 76 164, 68 152 Z" fill="#e11d48" stroke="#111111" stroke-width="2.2" />
+                        <!-- Dientes superiores -->
+                        <path d="M 68 132 L 73 141 L 78 131 L 84 141 L 90 131 L 96 141 L 102 133" fill="#ffffff" stroke="#111111" stroke-width="2.2" stroke-linejoin="round" />
+                        <!-- Colmillos inferiores prominentes -->
+                        <path d="M 58 148 C 46 142, 40 130, 42 120 C 50 126, 58 134, 64 142 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
+                        <path d="M 106 156 C 114 144, 118 132, 116 122 C 108 130, 102 140, 98 150 Z" fill="#d4a017" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
+                        <path d="M 74 164 C 72 154, 74 146, 78 142 C 82 148, 84 156, 82 164 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-display text-xl sm:text-2xl font-bold tracking-wide uppercase text-white">
+                            BANDIDOS <span class="text-bandido-orange">SUR</span>
+                        </h1>
+                        <span class="hidden md:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30">
+                            Calistenia Pura
+                        </span>
+                    </div>
+                    <p class="text-xs text-zinc-400">Panel del Entrenador · Control de Alumnos y Progreso</p>
+                </div>
+            </div>
+
+            <!-- Controles Superiores -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <!-- Indicador de Guardado Persistente -->
+                <div id="sync-status" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-[11px] font-medium text-zinc-400" title="Estado de guardado automático">
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span id="sync-text">Conectando...</span>
+                </div>
+
+                <!-- Botón Respaldo JSON -->
+                <button onclick="exportBackupJSON()"
+                        class="p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
+                        title="Descargar respaldo de alumnos (.json)">
+                    <i class="fa-solid fa-download text-sm"></i>
+                </button>
+
+                <!-- Campana de Alertas de Vencimiento (<= 3 días) -->
+                <div class="relative">
+                    <button onclick="toggleNotificationsPanel()"
+                            class="relative p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
+                            title="Avisos de vencimiento (≤ 3 días)">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                        <span id="notif-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-bandido-orange text-black text-[11px] font-extrabold flex items-center justify-center shadow-lg">
+                            0
+                        </span>
+                    </button>
+
+                    <!-- Desplegable de Notificaciones -->
+                    <div id="notifications-panel" class="hidden absolute right-0 mt-2.5 w-80 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
+                        <div class="px-4 py-3 border-b border-bandido-border flex items-center justify-between bg-bandido-dark">
+                            <div>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Alertas de Mensualidad</h3>
+                                <p id="notif-summary" class="text-[11px] text-bandido-orange font-medium mt-0.5">Todo al día</p>
+                            </div>
+                            <button onclick="filterExpiringSoon()" class="text-[11px] font-semibold text-zinc-400 hover:text-white underline cursor-pointer">
+                                Ver en tabla
+                            </button>
+                        </div>
+                        <div id="notif-list" class="p-3 max-h-80 overflow-y-auto space-y-2.5">
+                            <p class="text-xs text-zinc-400 text-center py-6">Cargando avisos...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Instagram Oficial -->
+                <a href="https://www.instagram.com/bandidos.sur?avpt=dXprMWdlbHJjaGxo"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="hidden md:flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-semibold text-zinc-300 hover:text-bandido-orange transition">
+                    <i class="fa-brands fa-instagram text-base text-bandido-orange"></i>
+                    <span>@bandidos.sur</span>
+                </a>
+
+                <!-- Botón Nuevo Alumno -->
+                <button onclick="openStudentModal()"
+                        class="px-4 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-bold text-xs sm:text-sm transition shadow-lg shadow-orange-500/20 flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Nuevo Alumno</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- CONTENIDO PRINCIPAL                                                   -->
+    <!-- ===================================================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+        <!-- Banner de Alerta Automática (<= 3 días para expirar) -->
+        <div id="expiration-alert-banner" class="hidden rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-bandido-card border border-amber-500/40 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-300">Recordatorio de Cobro Próximo</p>
+                    <p id="alert-banner-text" class="text-sm text-white font-medium mt-0.5"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 self-end sm:self-center">
+                <button onclick="filterExpiringSoon()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold transition cursor-pointer">
+                    Filtrar por vencer
+                </button>
+                <button onclick="dismissAlertBanner()" class="p-1.5 rounded-xl text-zinc-400 hover:text-white transition cursor-pointer" title="Cerrar aviso">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tarjetas de Resumen (KPIs) -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Total Alumnos</span>
+                    <div class="w-9 h-9 rounded-xl bg-bandido-orange/15 text-bandido-orange flex items-center justify-center">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <p id="stat-total" class="font-display text-3xl font-bold text-white mt-2">0</p>
+                <p class="text-xs text-zinc-500 mt-1">Atletas registrados</p>
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Activos</span>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <p id="stat-active" class="font-display text-3xl font-bold text-emerald-400 mt-2">0</p>
+                <p class="text-xs text-zinc-500 mt-1">Mensualidad vigente</p>
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Por Vencer (≤ 3d)</span>
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <p id="stat-expiring" class="font-display text-3xl font-bold text-amber-400 mt-2">0</p>
+                <p class="text-xs text-zinc-500 mt-1">Próximos a corte</p>
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Vencidos</span>
+                    <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                    </div>
+                </div>
+                <p id="stat-expired" class="font-display text-3xl font-bold text-rose-400 mt-2">0</p>
+                <p class="text-xs text-zinc-500 mt-1">Requieren renovación</p>
+            </div>
+        </section>
+
+        <!-- Barra de Búsqueda y Filtros -->
+        <section class="p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+                <input type="text"
+                       id="search-input"
+                       oninput="renderTable()"
+                       placeholder="Buscar alumno por nombre, plan, días de entrenamiento o teléfono..."
+                       class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange transition" />
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <select id="filter-status"
+                        onchange="renderTable()"
+                        class="px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
+                    <option value="all">Todos los estados</option>
+                    <option value="active">Activos</option>
+                    <option value="expiring">Por vencer (≤ 3 días)</option>
+                    <option value="expired">Vencidos</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Tabla Principal de Alumnos -->
+        <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-bandido-dark border-b border-bandido-border text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                            <th class="px-5 py-4">Alumno</th>
+                            <th class="px-5 py-4">Plan & Días de Entreno</th>
+                            <th class="px-5 py-4">Fecha Pago / Vence</th>
+                            <th class="px-5 py-4">Estatus</th>
+                            <th class="px-5 py-4">Progreso Mensual</th>
+                            <th class="px-5 py-4 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body" class="divide-y divide-bandido-border text-sm">
+                        <!-- Filas generadas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estado Vacío -->
+            <div id="empty-state" class="hidden py-14 px-4 text-center">
+                <div class="w-14 h-14 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-dumbbell text-2xl"></i>
+                </div>
+                <h3 class="text-base font-bold text-white">No se encontraron alumnos</h3>
+                <p class="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
+                    Agrega tu primer atleta con el botón <span class="text-bandido-orange font-semibold">+ Nuevo Alumno</span> o ajusta los filtros de búsqueda.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: AGREGAR / EDITAR ALUMNO                                      -->
+    <!-- ===================================================================== -->
+    <div id="student-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="w-full max-w-xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto">
+            <div class="px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-bandido-orange"></span>
+                    <h2 id="student-modal-title" class="font-display text-lg font-bold uppercase tracking-wide text-white">
+                        Nuevo Alumno — Bandidos Sur
+                    </h2>
+                </div>
+                <button onclick="closeStudentModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-lg cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="student-form" onsubmit="saveStudent(event)" class="p-6 space-y-4">
+                <input type="hidden" id="student-id" />
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nombre Completo *</label>
+                        <input type="text"
+                               id="student-name"
+                               required
+                               placeholder="Ej. Carlos Mendoza"
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">WhatsApp / Teléfono</label>
+                        <input type="text"
+                               id="student-phone"
+                               placeholder="Ej. 55 1234 5678"
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nivel Actual</label>
+                        <select id="student-level"
+                                class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange">
+                            <option value="Básico">Básico (Fundamentos)</option>
+                            <option value="Intermedio">Intermedio (Progresiones)</option>
+                            <option value="Avanzado">Avanzado (Skills & Lastre)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Días que puede entrenar *</label>
+                        <input type="text"
+                               id="student-days"
+                               required
+                               placeholder="Ej. 5 días (Lunes a Viernes)"
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                </div>
+
+                <!-- Selector Oficial de Planes Bandidos Sur -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Plan o Clase Contratada *</label>
+                    <select id="student-plan-select"
+                            onchange="handlePlanChange(true)"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange">
+                        <option value="general_lv">Plan General (Lunes a Viernes) — $450</option>
+                        <option value="general_ld">Plan General (Lunes a Domingo) — $480</option>
+                        <option value="personalizado">Plan Personalizado — $600</option>
+                        <option value="avanzado">Plan Avanzado (Skills & Lastre) — $750</option>
+                        <option value="clase_dia">Clase por Día — $50</option>
+                        <option value="clase_personalizada">Clase Personalizada — $70</option>
+                        <option value="clase_avanzada">Clase Personalizada Avanzada — $100</option>
+                    </select>
+
+                    <!-- Ficha descriptiva automática del plan -->
+                    <div id="plan-details-box" class="mt-2.5 p-3.5 rounded-xl bg-bandido-dark/90 border border-bandido-orange/30">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Fecha de Pago y Cálculo Automático de Vencimiento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Fecha de Pago *</label>
+                        <input type="date"
+                               id="student-pay-date"
+                               required
+                               onchange="updateCalculatedEndDate()"
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border flex flex-col justify-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Vencimiento Automático</span>
+                        <span id="calculated-end-date" class="text-sm font-bold text-bandido-orange mt-0.5">—</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-bandido-border flex items-center justify-end gap-3">
+                    <button type="button"
+                            onclick="closeStudentModal()"
+                            class="px-4 py-2.5 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-300 transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/20 cursor-pointer">
+                        Guardar Alumno
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: EVALUACIÓN MENSUAL DE CALISTENIA                             -->
+    <!-- ===================================================================== -->
+    <div id="eval-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto">
+        <div class="w-full max-w-5xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto">
+            <!-- Header del Modal de Evaluación -->
+            <div class="px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-bandido-orange"></i>
+                        <h2 id="eval-student-title" class="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-white">
+                            Evaluación Física
+                        </h2>
+                    </div>
+                    <p id="eval-student-subtitle" class="text-xs text-zinc-400 mt-0.5"></p>
+                </div>
+                <button onclick="closeEvalModal()" class="text-zinc-400 hover:text-white p-2 rounded-xl bg-bandido-card border border-bandido-border cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="eval-form" onsubmit="saveEvaluation(event)" class="p-5 sm:p-6 space-y-5 max-h-[82vh] overflow-y-auto">
+                <input type="hidden" id="eval-student-id" />
+
+                <!-- Selector de Historial o Nueva Evaluación -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3.5 p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
+                    <div class="md:col-span-2">
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-bandido-orange mb-1">Registro Mensual</label>
+                        <select id="eval-history-select"
+                                onchange="loadSelectedEvaluation()"
+                                class="w-full px-3.5 py-2 rounded-xl bg-bandido-card border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange">
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Etiqueta del Mes *</label>
+                        <input type="text"
+                               id="eval-month-label"
+                               required
+                               placeholder="Ej. Mes 1 - Evaluación"
+                               class="w-full px-3.5 py-2 rounded-xl bg-bandido-card border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Fecha *</label>
+                            <input type="date"
+                                   id="eval-date"
+                                   required
+                                   class="w-full px-2.5 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Peso (kg)</label>
+                            <input type="number"
+                                   step="0.1"
+                                   id="eval-weight"
+                                   placeholder="72.5"
+                                   class="w-full px-2.5 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenedor Dinámico de Categorías (Tirón, Empuje, Pierna, Core, Cardio) -->
+                <div id="eval-categories-container">
+                    <!-- Generado por buildEvaluationFormHTML() -->
+                </div>
+
+                <!-- Notas del Entrenador -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Observaciones y Objetivos del Mes</label>
+                    <textarea id="eval-notes"
+                              rows="2"
+                              placeholder="Anota correcciones técnicas, progresiones desbloqueadas o metas para el siguiente mes..."
+                              class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange"></textarea>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-3 border-t border-bandido-border flex items-center justify-end gap-3">
+                    <button type="button"
+                            onclick="closeEvalModal()"
+                            class="px-4 py-2.5 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-300 transition cursor-pointer">
+                        Cerrar
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/20 cursor-pointer flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Guardar Evaluación</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: RENOVACIÓN RÁPIDA DE MENSUALIDAD                             -->
+    <!-- ===================================================================== -->
+    <div id="renew-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="w-full max-w-md rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden">
+            <div class="px-5 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between">
+                <h3 class="font-display text-base font-bold uppercase tracking-wide text-white">
+                    <i class="fa-solid fa-rotate text-bandido-orange mr-2"></i>Renovar Pago
+                </h3>
+                <button onclick="closeRenewModal()" class="text-zinc-400 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <p id="renew-student-name" class="text-base font-bold text-white"></p>
+                    <p id="renew-student-plan" class="text-xs text-bandido-orange font-medium mt-0.5"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nueva Fecha de Pago</label>
+                    <input type="date"
+                           id="renew-date-input"
+                           onchange="updateRenewPreview()"
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                </div>
+
+                <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border flex items-center justify-between">
+                    <span class="text-xs text-zinc-400">Nuevo vencimiento:</span>
+                    <span id="renew-new-end-date" class="text-sm font-bold text-emerald-400">—</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button onclick="closeRenewModal()" class="px-4 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-bold text-zinc-300 cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmRenewal()" class="px-4 py-2 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase cursor-pointer">
+                        Confirmar Renovación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: CONFIRMAR ELIMINACIÓN                                        -->
+    <!-- ===================================================================== -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="w-full max-w-sm rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl p-6 text-center space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-trash-can text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-white">¿Eliminar alumno?</h3>
+                <p class="text-xs text-zinc-400 mt-1">
+                    Se borrará permanentemente a <span id="delete-student-name" class="text-white font-bold"></span> y todo su historial de evaluaciones.
+                </p>
+            </div>
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-bold text-zinc-300 cursor-pointer">
+                    Cancelar
+                </button>
+                <button onclick="confirmDeleteStudent()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- LÓGICA COMPLETA DE BANDIDOS SUR + GUARDADO PERSISTENTE                -->
+    <!-- ===================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bandidos-sur-gym';
+        const hasCloudConfig = typeof __firebase_config !== 'undefined';
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let useIndexedDBFallback = false;
+        let idbInstance = null;
+
+        /**
+         * CATÁLOGO OFICIAL DE PLANES Y CLASES - BANDIDOS SUR
+         */
+        const GYM_PLANS = {
+            general_lv: {
+                id: 'general_lv',
+                name: 'Plan General (Lun a Vie)',
+                price: '$450',
+                type: 'monthly',
+                defaultDays: '5 días (Lunes a Viernes)',
+                benefits: [
+                    'Acceso al gym de lunes a viernes',
+                    'Rutina básica de calistenia',
+                    'Correcciones generales'
+                ]
+            },
+            general_ld: {
+                id: 'general_ld',
+                name: 'Plan General (Lun a Dom)',
+                price: '$480',
+                type: 'monthly',
+                defaultDays: '7 días (Lunes a Domingo)',
+                benefits: [
+                    'Acceso al gym de lunes a domingo',
+                    'Rutina básica de calistenia',
+                    'Correcciones generales'
+                ]
+            },
+            personalizado: {
+                id: 'personalizado',
+                name: 'Plan Personalizado',
+                price: '$600',
+                type: 'monthly',
+                defaultDays: '5 a 6 días por semana',
+                benefits: [
+                    'Todo lo del Plan General + rutina individual',
+                    'Seguimiento semanal y mediciones mensuales',
+                    'Corrección constante y WhatsApp para dudas'
+                ]
+            },
+            avanzado: {
+                id: 'avanzado',
+                name: 'Plan Avanzado (Skills & Lastre)',
+                price: '$750',
+                type: 'monthly',
+                defaultDays: '6 días por semana',
+                benefits: [
+                    'Todo lo del Plan Personalizado',
+                    'Rutinas específicas de skills (Front Lever, OAP, Muscle-Up, Handstand, HSPU)',
+                    'Programación de entrenamiento con lastre'
+                ]
+            },
+            clase_dia: {
+                id: 'clase_dia',
+                name: 'Clase por Día',
+                price: '$50',
+                type: 'daily',
+                defaultDays: '1 día (Visita suelta)',
+                benefits: [
+                    'Calentamiento grupal',
+                    'Rutina general del día'
+                ]
+            },
+            clase_personalizada: {
+                id: 'clase_personalizada',
+                name: 'Clase Personalizada',
+                price: '$70',
+                type: 'daily',
+                defaultDays: '1 día (Sesión personalizada)',
+                benefits: [
+                    'Calentamiento grupal',
+                    'Seguimiento y corrección detallada de técnica'
+                ]
+            },
+            clase_avanzada: {
+                id: 'clase_avanzada',
+                name: 'Clase Personalizada Avanzada',
+                price: '$100',
+                type: 'daily',
+                defaultDays: '1 día (Sesión de Skill)',
+                benefits: [
+                    'Clase específica enfocada en una habilidad (skill) en particular'
+                ]
+            }
+        };
+
+        /**
+         * CLASIFICACIONES EXACTAS DE EVALUACIÓN DE CALISTENIA PURA
+         */
+        const EVAL_CATEGORIES = {
+            tiron: {
+                id: 'tiron',
+                label: '1. Tirón (Pull)',
+                icon: 'fa-arrow-up',
+                exercises: [
+                    { id: 'pull_scapular', name: 'Retracciones escapulares', unit: 'reps' },
+                    { id: 'pull_strict', name: 'Dominadas pull up', unit: 'reps' },
+                    { id: 'pull_australian', name: 'Australian pull up', unit: 'reps' },
+                    { id: 'pull_chinup', name: 'Chin up', unit: 'reps' },
+                    { id: 'pull_muscleup', name: 'Muscle up', unit: 'reps' },
+                    { id: 'pull_front_lever', name: 'Front lever', unit: 'sec' },
+                    { id: 'pull_tuck_front', name: 'Tuck front lever', unit: 'sec' },
+                    { id: 'pull_aereos', name: 'Aéreos', unit: 'reps' },
+                    { id: 'pull_oap', name: 'One arm pull up', unit: 'reps' }
+                ]
+            },
+            empuje: {
+                id: 'empuje',
+                label: '2. Empuje (Push)',
+                icon: 'fa-hand-fist',
+                exercises: [
+                    { id: 'push_scapular', name: 'Protracciones escapulares', unit: 'reps' },
+                    { id: 'push_regular', name: 'Lagartijas push up', unit: 'reps' },
+                    { id: 'push_inclined', name: 'Lagartijas inclinadas', unit: 'reps' },
+                    { id: 'push_dips', name: 'Fondos en paralela', unit: 'reps' },
+                    { id: 'push_bench_dips', name: 'Fondos en banco', unit: 'reps' },
+                    { id: 'push_hs_pike', name: 'Handstand pike', unit: 'sec' },
+                    { id: 'push_hs_assisted', name: 'Handstand asistido', unit: 'sec' },
+                    { id: 'push_pike', name: 'Pike push up', unit: 'reps' },
+                    { id: 'push_hspu', name: 'Handstand push up', unit: 'reps' },
+                    { id: 'push_bardip', name: 'Bar dip', unit: 'reps' }
+                ]
+            },
+            pierna: {
+                id: 'pierna',
+                label: '3. Pierna',
+                icon: 'fa-person-running',
+                exercises: [
+                    { id: 'leg_squat', name: 'Sentadilla libre', unit: 'reps' },
+                    { id: 'leg_assisted_pistol', name: 'Pistol squat asistida', unit: 'reps' },
+                    { id: 'leg_explosive_lunges', name: 'Desplantes explosivos', unit: 'reps' },
+                    { id: 'leg_explosive_squat', name: 'Sentadilla explosiva', unit: 'reps' }
+                ]
+            },
+            core: {
+                id: 'core',
+                label: '4. Core',
+                icon: 'fa-shield-halved',
+                exercises: [
+                    { id: 'core_lsit_hang', name: 'L-sit colgado', unit: 'sec' },
+                    { id: 'core_lsit_parallel', name: 'L-sit en paralelas', unit: 'sec' },
+                    { id: 'core_knee_raises', name: 'Elevaciones de rodilla (Leg raises)', unit: 'reps' },
+                    { id: 'core_toes_to_bar', name: 'Toes to bar', unit: 'reps' },
+                    { id: 'core_plank', name: 'Plancha', unit: 'sec' },
+                    { id: 'core_hold', name: 'Hold', unit: 'sec' }
+                ]
+            },
+            cardio: {
+                id: 'cardio',
+                label: '5. Cardio',
+                icon: 'fa-heart-pulse',
+                exercises: [
+                    { id: 'cardio_burpee', name: 'Burpee', unit: 'reps' },
+                    { id: 'cardio_burpee_plank', name: 'Burpee con plancha', unit: 'reps' },
+                    { id: 'cardio_box_jump', name: 'Box jump', unit: 'reps' },
+                    { id: 'cardio_burpee_marinero', name: 'Burpee marinero', unit: 'reps' }
+                ]
+            }
+        };
+
+        // Estado en Memoria de Alumnos
+        let students = [];
+        let currentActiveEvalTab = 'tiron';
+        let pendingDeleteId = null;
+        let pendingRenewId = null;
+        let bannerDismissed = false;
+        let initialNoticeShown = false;
+
+        /**
+         * Formatea fecha a YYYY-MM-DD
+         */
+        function formatDateISO(dateInput) {
+            const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+            if (Number.isNaN(d.getTime())) {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            }
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        /**
+         * Calcula la fecha de vencimiento (+1 mes o mismo día si es clase por día)
+         */
+        function calculateEndDate(startDateStr, planType = 'monthly') {
+            if (!startDateStr) return '';
+            const parts = startDateStr.split('-').map(Number);
+            if (parts.length !== 3) return startDateStr;
+            const [year, month, day] = parts;
+            if (planType === 'daily') {
+                return formatDateISO(new Date(year, month - 1, day));
+            }
+            const targetMonthIndex = month;
+            const daysInTargetMonth = new Date(year, targetMonthIndex + 1, 0).getDate();
+            const clampedDay = Math.min(day, daysInTargetMonth);
+            return formatDateISO(new Date(year, targetMonthIndex, clampedDay));
+        }
+
+        /**
+         * Construye las pestañas y campos de evaluación por categoría
+         */
+        function buildEvaluationFormHTML() {
+            const container = document.getElementById('eval-categories-container');
+            if (!container) return;
+
+            const categories = Object.values(EVAL_CATEGORIES);
+
+            const tabsHTML = `
+                <div class="flex flex-wrap gap-2 border-b border-bandido-border pb-3 mb-5">
+                    ${categories.map((cat, index) => {
+                        const isActive = cat.id === currentActiveEvalTab || (!currentActiveEvalTab && index === 0);
+                        return `
+                            <button type="button"
+                                    id="eval-tab-${cat.id}"
+                                    onclick="switchEvalTab('${cat.id}')"
+                                    class="px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-2 ${
+                                        isActive
+                                            ? 'bg-bandido-orange text-black shadow-lg shadow-orange-500/20'
+                                            : 'bg-bandido-dark text-zinc-400 hover:text-white border border-bandido-border'
+                                    }">
+                                <i class="fa-solid ${cat.icon}"></i>
+                                <span>${cat.label}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            const panelsHTML = categories.map((cat, index) => {
+                const isActive = cat.id === currentActiveEvalTab || (!currentActiveEvalTab && index === 0);
+                return `
+                    <div id="eval-panel-${cat.id}" class="${isActive ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        ${cat.exercises.map(ex => {
+                            const unitLabel = ex.unit === 'sec' ? 'Segundos (seg)' : 'Repeticiones (reps)';
+                            const placeholderText = ex.unit === 'sec' ? 'Ej. 15 seg' : 'Ej. 10 reps';
+                            return `
+                                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border hover:border-bandido-orange/50 transition flex flex-col justify-between gap-2">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p class="text-sm font-semibold text-white leading-snug">${escapeHTML(ex.name)}</p>
+                                            <p class="text-[11px] text-zinc-400 mt-0.5">${unitLabel}</p>
+                                        </div>
+                                        <span class="prev-metric-badge hidden text-[10px] font-bold px-2 py-0.5 rounded-md bg-zinc-800 text-bandido-orange border border-bandido-orange/30 whitespace-nowrap"
+                                              data-prev-for="${ex.id}"></span>
+                                    </div>
+                                    <input type="number"
+                                           step="any"
+                                           min="0"
+                                           data-metric-id="${ex.id}"
+                                           placeholder="${placeholderText}"
+                                           class="metric-input w-full px-3 py-2 rounded-lg bg-bandido-card border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange transition" />
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = tabsHTML + panelsHTML;
+        }
+
+        function switchEvalTab(catId) {
+            currentActiveEvalTab = catId;
+            Object.keys(EVAL_CATEGORIES).forEach(key => {
+                const tab = document.getElementById(`eval-tab-${key}`);
+                const panel = document.getElementById(`eval-panel-${key}`);
+                const isSelected = key === catId;
+
+                if (tab) {
+                    tab.className = `px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-2 ${
+                        isSelected
+                            ? 'bg-bandido-orange text-black shadow-lg shadow-orange-500/20'
+                            : 'bg-bandido-dark text-zinc-400 hover:text-white border border-bandido-border'
+                    }`;
+                }
+                if (panel) {
+                    if (isSelected) {
+                        panel.classList.remove('hidden');
+                        panel.classList.add('grid');
+                    } else {
+                        panel.classList.add('hidden');
+                        panel.classList.remove('grid');
+                    }
+                }
+            });
+        }
+
+        /**
+         * Inicialización de la aplicación y almacenamiento persistente
+         */
+        window.onload = async function() {
+            buildEvaluationFormHTML();
+            await initPersistentStorage();
+        };
+
+        async function initPersistentStorage() {
+            const syncDot = document.getElementById('sync-dot');
+            const syncText = document.getElementById('sync-text');
+
+            if (hasCloudConfig) {
+                try {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                        currentUser = cred.user;
+                    } else {
+                        const cred = await signInAnonymously(auth);
+                        currentUser = cred.user;
+                    }
+
+                    if (!currentUser) return;
+
+                    syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                    syncText.textContent = 'Guardado activo';
+
+                    const studentsCol = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                    onSnapshot(studentsCol, async (snapshot) => {
+                        if (snapshot.empty && students.length === 0) {
+                            await seedInitialDemoData();
+                            return;
+                        }
+                        students = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        students.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        renderTable();
+                        if (!initialNoticeShown) {
+                            initialNoticeShown = true;
+                            triggerInitialExpirationNotice();
+                        }
+                    }, (error) => {
+                        console.error('Error sincronizando alumnos:', error);
+                        initIndexedDBStorage();
+                    });
+                    return;
+                } catch (err) {
+                    console.warn('Usando almacenamiento persistente local IndexedDB:', err);
+                }
+            }
+
+            await initIndexedDBStorage();
+        }
+
+        function initIndexedDBStorage() {
+            return new Promise((resolve) => {
+                useIndexedDBFallback = true;
+                const syncDot = document.getElementById('sync-dot');
+                const syncText = document.getElementById('sync-text');
+
+                const request = indexedDB.open('BandidosSurDB', 1);
+                request.onupgradeneeded = (event) => {
+                    const idb = event.target.result;
+                    if (!idb.objectStoreNames.contains('students')) {
+                        idb.createObjectStore('students', { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = async (event) => {
+                    idbInstance = event.target.result;
+                    syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                    syncText.textContent = 'Guardado activo';
+
+                    const loaded = await loadAllFromIDB();
+                    if (loaded.length === 0) {
+                        await seedInitialDemoData();
+                    } else {
+                        students = loaded.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        renderTable();
+                        if (!initialNoticeShown) {
+                            initialNoticeShown = true;
+                            triggerInitialExpirationNotice();
+                        }
+                    }
+                    resolve();
+                };
+                request.onerror = () => {
+                    syncDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+                    syncText.textContent = 'Sin almacenamiento';
+                    resolve();
+                };
+            });
+        }
+
+        function loadAllFromIDB() {
+            return new Promise((resolve) => {
+                if (!idbInstance) return resolve([]);
+                const tx = idbInstance.transaction('students', 'readonly');
+                const store = tx.objectStore('students');
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        async function persistStudentRecord(studentObj) {
+            if (db && currentUser && !useIndexedDBFallback) {
+                const ref = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentObj.id);
+                await setDoc(ref, studentObj);
+            } else if (idbInstance) {
+                return new Promise((resolve) => {
+                    const tx = idbInstance.transaction('students', 'readwrite');
+                    tx.objectStore('students').put(studentObj);
+                    tx.oncomplete = () => {
+                        loadAllFromIDB().then(list => {
+                            students = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                            renderTable();
+                            resolve();
+                        });
+                    };
+                });
+            }
+        }
+
+        async function removeStudentRecord(studentId) {
+            if (db && currentUser && !useIndexedDBFallback) {
+                const ref = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+                await deleteDoc(ref);
+            } else if (idbInstance) {
+                return new Promise((resolve) => {
+                    const tx = idbInstance.transaction('students', 'readwrite');
+                    tx.objectStore('students').delete(studentId);
+                    tx.oncomplete = () => {
+                        loadAllFromIDB().then(list => {
+                            students = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                            renderTable();
+                            resolve();
+                        });
+                    };
+                });
+            }
+        }
+
+        async function seedInitialDemoData() {
+            const today = new Date();
+
+            const payDate1 = new Date(today);
+            payDate1.setDate(today.getDate() - 10);
+            const payStr1 = formatDateISO(payDate1);
+
+            const payDate2 = new Date(today);
+            payDate2.setMonth(today.getMonth() - 1);
+            payDate2.setDate(today.getDate() + 3);
+            const payStr2 = formatDateISO(payDate2);
+
+            const payDate3 = new Date(today);
+            payDate3.setMonth(today.getMonth() - 1);
+            payDate3.setDate(today.getDate() - 2);
+            const payStr3 = formatDateISO(payDate3);
+
+            const demoStudents = [
+                {
+                    id: 'st-101',
+                    createdAt: Date.now() - 3000,
+                    name: 'Diego Ramírez',
+                    phone: '55 4821 9034',
+                    level: 'Intermedio',
+                    days: '5 días (Lunes a Viernes)',
+                    planId: 'personalizado',
+                    fee: 'Plan Personalizado — $600',
+                    payDate: payStr1,
+                    endDate: calculateEndDate(payStr1, 'monthly'),
+                    evaluations: [
+                        {
+                            id: 'ev-1',
+                            monthLabel: 'Mes 1 - Diagnóstico Inicial',
+                            date: formatDateISO(new Date(today.getFullYear(), today.getMonth() - 1, 15)),
+                            weight: '74.0',
+                            notes: 'Buena base en empuje, trabajar retracción escapular y L-sit en paralelas.',
+                            metrics: {
+                                pull_scapular: '15',
+                                pull_australian: '18',
+                                pull_strict: '8',
+                                push_regular: '25',
+                                push_dips: '12',
+                                leg_squat: '35',
+                                core_knee_raises: '15',
+                                core_plank: '65',
+                                core_lsit_parallel: '10',
+                                cardio_burpee: '16'
+                            }
+                        },
+                        {
+                            id: 'ev-2',
+                            monthLabel: 'Mes 2 - Progresión Fuerza',
+                            date: payStr1,
+                            weight: '73.2',
+                            notes: 'Subió 4 dominadas limpias y desbloqueó Tuck Front Lever por 8 segundos.',
+                            metrics: {
+                                pull_scapular: '20',
+                                pull_australian: '24',
+                                pull_strict: '12',
+                                pull_tuck_front: '8',
+                                push_regular: '32',
+                                push_dips: '18',
+                                push_pike: '10',
+                                leg_squat: '45',
+                                leg_assisted_pistol: '6',
+                                core_toes_to_bar: '10',
+                                core_plank: '90',
+                                core_lsit_parallel: '18',
+                                cardio_burpee: '21'
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'st-102',
+                    createdAt: Date.now() - 2000,
+                    name: 'Valeria Soto',
+                    phone: '55 8392 1102',
+                    level: 'Básico',
+                    days: '5 días (Lunes a Viernes)',
+                    planId: 'general_lv',
+                    fee: 'Plan General (Lun a Vie) — $450',
+                    payDate: payStr2,
+                    endDate: calculateEndDate(payStr2, 'monthly'),
+                    evaluations: [
+                        {
+                            id: 'ev-3',
+                            monthLabel: 'Mes 1 - Fundamentos',
+                            date: payStr2,
+                            weight: '58.5',
+                            notes: 'Excelente control postural en plancha y australian pull up.',
+                            metrics: {
+                                pull_scapular: '12',
+                                pull_australian: '14',
+                                push_inclined: '18',
+                                push_regular: '12',
+                                leg_squat: '30',
+                                core_plank: '60',
+                                core_hold: '35',
+                                cardio_burpee: '12'
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'st-103',
+                    createdAt: Date.now() - 1000,
+                    name: 'Marco Antonio Cruz',
+                    phone: '55 2910 4481',
+                    level: 'Avanzado',
+                    days: '6 días (Lunes a Sábado)',
+                    planId: 'avanzado',
+                    fee: 'Plan Avanzado (Skills & Lastre) — $750',
+                    payDate: payStr3,
+                    endDate: calculateEndDate(payStr3, 'monthly'),
+                    evaluations: []
+                }
+            ];
+
+            for (const st of demoStudents) {
+                await persistStudentRecord(st);
+            }
+        }
+
+        async function saveStudent(e) {
+            e.preventDefault();
+            const id = document.getElementById('student-id').value;
+            const name = document.getElementById('student-name').value.trim();
+            const phone = document.getElementById('student-phone').value.trim();
+            const level = document.getElementById('student-level').value;
+            const days = document.getElementById('student-days').value.trim();
+            const planId = document.getElementById('student-plan-select').value;
+            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
+            const fee = `${plan.name} — ${plan.price}`;
+            const payDate = document.getElementById('student-pay-date').value;
+            const endDate = calculateEndDate(payDate, plan.type);
+
+            if (id) {
+                const existing = students.find(s => s.id === id);
+                if (existing) {
+                    const updated = { ...existing, name, phone, level, days, planId, fee, payDate, endDate };
+                    await persistStudentRecord(updated);
+                    showToast(`Datos de ${name} guardados permanentemente`, 'success');
+                }
+            } else {
+                const newStudent = {
+                    id: 'st-' + Date.now(),
+                    createdAt: Date.now(),
+                    name,
+                    phone,
+                    level,
+                    days,
+                    planId,
+                    fee,
+                    payDate,
+                    endDate,
+                    evaluations: []
+                };
+                await persistStudentRecord(newStudent);
+                showToast(`${name} agregado y guardado en Bandidos Sur`, 'success');
+            }
+
+            bannerDismissed = false;
+            closeStudentModal();
+        }
+
+        async function confirmRenewal() {
+            if (!pendingRenewId) return;
+            const st = students.find(s => s.id === pendingRenewId);
+            const newPayDate = document.getElementById('renew-date-input').value;
+            if (st && newPayDate) {
+                const plan = st.planId ? GYM_PLANS[st.planId] : null;
+                const planType = plan ? plan.type : 'monthly';
+                const updated = {
+                    ...st,
+                    payDate: newPayDate,
+                    endDate: calculateEndDate(newPayDate, planType)
+                };
+                await persistStudentRecord(updated);
+                showToast(`Pago de ${st.name} renovado hasta ${formatDateHuman(updated.endDate)}`, 'success');
+            }
+            closeRenewModal();
+        }
+
+        async function confirmDeleteStudent() {
+            if (!pendingDeleteId) return;
+            const st = students.find(s => s.id === pendingDeleteId);
+            await removeStudentRecord(pendingDeleteId);
+            showToast(`Alumno ${st ? st.name : ''} eliminado`, 'info');
+            closeDeleteModal();
+        }
+
+        async function saveEvaluation(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('eval-student-id').value;
+            const selectedEvalId = document.getElementById('eval-history-select').value;
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+
+            const monthLabel = document.getElementById('eval-month-label').value.trim();
+            const date = document.getElementById('eval-date').value;
+            const weight = document.getElementById('eval-weight').value.trim();
+            const notes = document.getElementById('eval-notes').value.trim();
+
+            const metrics = {};
+            document.querySelectorAll('.metric-input').forEach(inp => {
+                const val = inp.value.trim();
+                if (val !== '') {
+                    metrics[inp.dataset.metricId] = val;
+                }
+            });
+
+            const updatedEvaluations = st.evaluations ? [...st.evaluations] : [];
+
+            if (selectedEvalId === 'new') {
+                updatedEvaluations.push({
+                    id: 'ev-' + Date.now(),
+                    monthLabel,
+                    date,
+                    weight,
+                    notes,
+                    metrics
+                });
+                showToast(`Evaluación "${monthLabel}" guardada para ${st.name}`, 'success');
+            } else {
+                const idx = updatedEvaluations.findIndex(ev => ev.id === selectedEvalId);
+                if (idx !== -1) {
+                    updatedEvaluations[idx] = {
+                        ...updatedEvaluations[idx],
+                        monthLabel,
+                        date,
+                        weight,
+                        notes,
+                        metrics
+                    };
+                    showToast(`Evaluación "${monthLabel}" actualizada`, 'success');
+                }
+            }
+
+            await persistStudentRecord({ ...st, evaluations: updatedEvaluations });
+            closeEvalModal();
+        }
+
+        /**
+         * Calcula el estado de la mensualidad según la fecha de vencimiento
+         */
+        function getMembershipStatus(endDateStr) {
+            if (!endDateStr) {
+                return { status: 'expired', label: 'Sin fecha', daysLeft: -999, badgeClass: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const parts = endDateStr.split('-').map(Number);
+            const end = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+            end.setHours(0, 0, 0, 0);
+
+            const diffMs = end.getTime() - today.getTime();
+            const daysLeft = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+            if (daysLeft < 0) {
+                return {
+                    status: 'expired',
+                    label: `Vencida hace ${Math.abs(daysLeft)} ${Math.abs(daysLeft) === 1 ? 'día' : 'días'}`,
+                    daysLeft,
+                    badgeClass: 'bg-rose-500/15 text-rose-400 border-rose-500/40'
+                };
+            }
+            if (daysLeft <= 3) {
+                const text = daysLeft === 0 ? 'Vence hoy' : `Vence en ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'}`;
+                return {
+                    status: 'expiring',
+                    label: text,
+                    daysLeft,
+                    badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/50 animate-pulse'
+                };
+            }
+            return {
+                status: 'active',
+                label: `Activa (${daysLeft} días restantes)`,
+                daysLeft,
+                badgeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+            };
+        }
+
+        function formatDateHuman(dateStr) {
+            if (!dateStr) return '—';
+            const parts = dateStr.split('-').map(Number);
+            if (parts.length !== 3) return dateStr;
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function updateDashboardStatsAndAlerts() {
+            const totalEl = document.getElementById('stat-total');
+            const activeEl = document.getElementById('stat-active');
+            const expiringEl = document.getElementById('stat-expiring');
+            const expiredEl = document.getElementById('stat-expired');
+
+            let activeCount = 0;
+            let expiringCount = 0;
+            let expiredCount = 0;
+
+            students.forEach(st => {
+                const info = getMembershipStatus(st.endDate);
+                if (info.status === 'active') activeCount++;
+                else if (info.status === 'expiring') expiringCount++;
+                else expiredCount++;
+            });
+
+            if (totalEl) totalEl.textContent = students.length;
+            if (activeEl) activeEl.textContent = activeCount;
+            if (expiringEl) expiringEl.textContent = expiringCount;
+            if (expiredEl) expiredEl.textContent = expiredCount;
+
+            // Campana de notificaciones (alerta cuando faltan <= 3 días o ya venció)
+            const badgeEl = document.getElementById('notif-badge');
+            const listEl = document.getElementById('notif-list');
+            const summaryEl = document.getElementById('notif-summary');
+
+            const alertItems = students
+                .map(st => ({ student: st, info: getMembershipStatus(st.endDate) }))
+                .filter(item => item.info.daysLeft <= 3)
+                .sort((a, b) => a.info.daysLeft - b.info.daysLeft);
+
+            if (badgeEl) {
+                if (alertItems.length > 0) {
+                    badgeEl.textContent = alertItems.length;
+                    badgeEl.classList.remove('hidden');
+                } else {
+                    badgeEl.classList.add('hidden');
+                }
+            }
+
+            if (summaryEl) {
+                summaryEl.textContent = alertItems.length === 0
+                    ? 'Todo al día'
+                    : `${alertItems.length} ${alertItems.length === 1 ? 'aviso' : 'avisos'} (≤ 3 días)`;
+            }
+
+            if (listEl) {
+                if (alertItems.length === 0) {
+                    listEl.innerHTML = `<p class="text-xs text-zinc-400 text-center py-6">No hay mensualidades próximas a vencer en los próximos 3 días.</p>`;
+                } else {
+                    listEl.innerHTML = alertItems.map(({ student, info }) => {
+                        const cleanPhone = (student.phone || '').replace(/\D/g, '');
+                        const waMsg = encodeURIComponent(`Hola ${student.name}, te saludamos de Bandidos Sur. Te recordamos que tu mensualidad (${student.fee}) vence el ${formatDateHuman(student.endDate)} (${info.label.toLowerCase()}).`);
+                        const waLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${waMsg}` : '';
+                        return `
+                            <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border flex flex-col gap-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <p class="text-sm font-bold text-white">${escapeHTML(student.name)}</p>
+                                        <p class="text-[11px] text-zinc-400">${escapeHTML(student.fee || '')} · Corte: ${formatDateHuman(student.endDate)}</p>
+                                    </div>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${info.badgeClass}">${info.label}</span>
+                                </div>
+                                <div class="flex items-center justify-end gap-2 pt-1">
+                                    ${waLink ? `
+                                        <a href="${waLink}" target="_blank" rel="noopener noreferrer"
+                                           class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold transition">
+                                            <i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp
+                                        </a>
+                                    ` : ''}
+                                    <button onclick="openRenewModal('${student.id}'); toggleNotificationsPanel(false);"
+                                            class="px-2.5 py-1 rounded-lg bg-bandido-orange hover:bg-bandido-orange-hover text-black text-[11px] font-bold transition cursor-pointer">
+                                        Renovar
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Banner automático de aviso (<= 3 días)
+            const bannerEl = document.getElementById('expiration-alert-banner');
+            const bannerTextEl = document.getElementById('alert-banner-text');
+            const soon3Days = students
+                .map(st => ({ student: st, info: getMembershipStatus(st.endDate) }))
+                .filter(item => item.info.daysLeft >= 0 && item.info.daysLeft <= 3);
+
+            if (bannerEl && bannerTextEl) {
+                if (soon3Days.length > 0 && !bannerDismissed) {
+                    const names = soon3Days.map(x => `${x.student.name} (${x.info.label.toLowerCase()})`).join(', ');
+                    bannerTextEl.textContent = `Alerta de corte (≤ 3 días): ${names}`;
+                    bannerEl.classList.remove('hidden');
+                } else {
+                    bannerEl.classList.add('hidden');
+                }
+            }
+        }
+
+        function triggerInitialExpirationNotice() {
+            const soon3Days = students
+                .map(st => ({ student: st, info: getMembershipStatus(st.endDate) }))
+                .filter(item => item.info.daysLeft >= 0 && item.info.daysLeft <= 3);
+
+            if (soon3Days.length > 0) {
+                showToast(`Tienes ${soon3Days.length} ${soon3Days.length === 1 ? 'alumno' : 'alumnos'} a 3 días o menos de vencer su mensualidad`, 'warning');
+            }
+        }
+
+        function toggleNotificationsPanel(forceState) {
+            const panel = document.getElementById('notifications-panel');
+            if (!panel) return;
+            const shouldOpen = typeof forceState === 'boolean' ? forceState : panel.classList.contains('hidden');
+            if (shouldOpen) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        function filterExpiringSoon() {
+            const filterEl = document.getElementById('filter-status');
+            if (filterEl) filterEl.value = 'expiring';
+            renderTable();
+            toggleNotificationsPanel(false);
+        }
+
+        function dismissAlertBanner() {
+            bannerDismissed = true;
+            const bannerEl = document.getElementById('expiration-alert-banner');
+            if (bannerEl) bannerEl.classList.add('hidden');
+        }
+
+        function renderTable() {
+            updateDashboardStatsAndAlerts();
+
+            const tbody = document.getElementById('students-table-body');
+            const emptyState = document.getElementById('empty-state');
+            if (!tbody) return;
+
+            const searchQuery = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+            const statusFilter = document.getElementById('filter-status')?.value || 'all';
+
+            const filtered = students.filter(st => {
+                const matchesSearch = !searchQuery ||
+                    (st.name || '').toLowerCase().includes(searchQuery) ||
+                    (st.fee || '').toLowerCase().includes(searchQuery) ||
+                    (st.days || '').toLowerCase().includes(searchQuery) ||
+                    (st.phone || '').toLowerCase().includes(searchQuery);
+
+                const statusInfo = getMembershipStatus(st.endDate);
+                const matchesStatus = statusFilter === 'all' || statusInfo.status === statusFilter;
+
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+
+            tbody.innerHTML = filtered.map(st => {
+                const statusInfo = getMembershipStatus(st.endDate);
+                const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
+                const lastEval = evalCount > 0 ? st.evaluations[evalCount - 1] : null;
+
+                return `
+                    <tr class="hover:bg-zinc-900/70 transition group">
+                        <td class="px-5 py-4 align-top">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-bandido-dark border border-bandido-border flex items-center justify-center font-display font-bold text-bandido-orange text-sm shrink-0">
+                                    ${escapeHTML((st.name || 'A').charAt(0).toUpperCase())}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-white text-sm">${escapeHTML(st.name)}</p>
+                                    <div class="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-zinc-400">
+                                        <span><i class="fa-solid fa-signal text-[10px] text-bandido-orange mr-1"></i>${escapeHTML(st.level || 'Básico')}</span>
+                                        ${st.phone ? `<span>· <i class="fa-brands fa-whatsapp text-emerald-400 mr-0.5"></i>${escapeHTML(st.phone)}</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4 align-top">
+                            <p class="text-sm font-semibold text-white">${escapeHTML(st.fee || 'Plan General — $450')}</p>
+                            <p class="text-xs text-zinc-400 mt-1">
+                                <i class="fa-solid fa-calendar-check text-bandido-orange mr-1"></i>
+                                Días: <span class="text-zinc-200 font-medium">${escapeHTML(st.days || 'No especificado')}</span>
+                            </p>
+                        </td>
+                        <td class="px-5 py-4 align-top">
+                            <p class="text-xs text-zinc-400">Pago: <span class="text-zinc-200 font-medium">${formatDateHuman(st.payDate)}</span></p>
+                            <p class="text-xs text-zinc-400 mt-1">Vence: <span class="text-white font-bold">${formatDateHuman(st.endDate)}</span></p>
+                        </td>
+                        <td class="px-5 py-4 align-top">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${statusInfo.badgeClass}">
+                                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                ${statusInfo.label}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 align-top">
+                            <button onclick="openEvalModal('${st.id}')"
+                                    class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-orange/40 hover:border-bandido-orange text-xs font-bold text-white transition cursor-pointer flex items-center gap-2">
+                                <i class="fa-solid fa-dumbbell text-bandido-orange"></i>
+                                <span>Evaluación (${evalCount})</span>
+                            </button>
+                            ${lastEval ? `<p class="text-[11px] text-zinc-400 mt-1.5 truncate max-w-[180px]" title="${escapeHTML(lastEval.monthLabel)}">Última: ${escapeHTML(lastEval.monthLabel)}</p>` : `<p class="text-[11px] text-zinc-500 mt-1.5">Sin evaluaciones aún</p>`}
+                        </td>
+                        <td class="px-5 py-4 align-top text-right">
+                            <div class="inline-flex items-center justify-end gap-1.5">
+                                <button onclick="openRenewModal('${st.id}')"
+                                        title="Renovar mensualidad"
+                                        class="px-2.5 py-2 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/30 text-xs font-bold transition cursor-pointer">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                                <button onclick="openStudentModal('${st.id}')"
+                                        title="Editar alumno"
+                                        class="p-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-white text-xs transition cursor-pointer">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="openDeleteModal('${st.id}')"
+                                        title="Eliminar alumno"
+                                        class="p-2 rounded-xl bg-bandido-dark hover:bg-rose-500/20 border border-bandido-border hover:border-rose-500/40 text-zinc-400 hover:text-rose-400 text-xs transition cursor-pointer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openStudentModal(studentId = null) {
+            const modal = document.getElementById('student-modal');
+            const titleEl = document.getElementById('student-modal-title');
+            const form = document.getElementById('student-form');
+            if (!modal || !form) return;
+
+            form.reset();
+            document.getElementById('student-id').value = '';
+
+            if (studentId) {
+                const st = students.find(s => s.id === studentId);
+                if (!st) return;
+                titleEl.textContent = 'Editar Alumno';
+                document.getElementById('student-id').value = st.id;
+                document.getElementById('student-name').value = st.name || '';
+                document.getElementById('student-phone').value = st.phone || '';
+                document.getElementById('student-level').value = st.level || 'Básico';
+                document.getElementById('student-plan-select').value = st.planId || 'general_lv';
+                document.getElementById('student-days').value = st.days || '';
+                document.getElementById('student-pay-date').value = st.payDate || formatDateISO(new Date());
+                renderPlanDescription(st.planId || 'general_lv');
+            } else {
+                titleEl.textContent = 'Nuevo Alumno — Bandidos Sur';
+                const todayISO = formatDateISO(new Date());
+                document.getElementById('student-pay-date').value = todayISO;
+                document.getElementById('student-plan-select').value = 'general_lv';
+                handlePlanChange(true);
+            }
+
+            updateCalculatedEndDate();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStudentModal() {
+            const modal = document.getElementById('student-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handlePlanChange(autoFillDays = false) {
+            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
+            renderPlanDescription(planId);
+            const daysInput = document.getElementById('student-days');
+            if (daysInput && (autoFillDays || !daysInput.value.trim())) {
+                const plan = GYM_PLANS[planId];
+                if (plan && plan.defaultDays) {
+                    daysInput.value = plan.defaultDays;
+                }
+            }
+            updateCalculatedEndDate();
+        }
+
+        function renderPlanDescription(planId) {
+            const box = document.getElementById('plan-details-box');
+            if (!box) return;
+            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
+            box.innerHTML = `
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-xs font-bold text-bandido-orange uppercase tracking-wider">${escapeHTML(plan.name)}</span>
+                    <span class="text-sm font-display font-bold text-white">${escapeHTML(plan.price)}</span>
+                </div>
+                <ul class="space-y-1 text-xs text-zinc-300 list-disc list-inside">
+                    ${plan.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        function updateCalculatedEndDate() {
+            const planId = document.getElementById('student-plan-select')?.value || 'general_lv';
+            const payDate = document.getElementById('student-pay-date')?.value;
+            const previewEl = document.getElementById('calculated-end-date');
+            const plan = GYM_PLANS[planId] || GYM_PLANS['general_lv'];
+            const endDate = calculateEndDate(payDate, plan.type);
+            if (previewEl) {
+                previewEl.textContent = endDate ? formatDateHuman(endDate) : '—';
+            }
+        }
+
+        function openRenewModal(studentId) {
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+            pendingRenewId = studentId;
+            document.getElementById('renew-student-name').textContent = st.name;
+            document.getElementById('renew-student-plan').textContent = st.fee || '';
+            document.getElementById('renew-date-input').value = formatDateISO(new Date());
+            updateRenewPreview();
+
+            const modal = document.getElementById('renew-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function updateRenewPreview() {
+            if (!pendingRenewId) return;
+            const st = students.find(s => s.id === pendingRenewId);
+            const newPayDate = document.getElementById('renew-date-input')?.value;
+            const plan = st && st.planId ? GYM_PLANS[st.planId] : null;
+            const endDate = calculateEndDate(newPayDate, plan ? plan.type : 'monthly');
+            const el = document.getElementById('renew-new-end-date');
+            if (el) el.textContent = endDate ? formatDateHuman(endDate) : '—';
+        }
+
+        function closeRenewModal() {
+            pendingRenewId = null;
+            const modal = document.getElementById('renew-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openDeleteModal(studentId) {
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+            pendingDeleteId = studentId;
+            document.getElementById('delete-student-name').textContent = st.name;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openEvalModal(studentId) {
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+
+            document.getElementById('eval-student-id').value = st.id;
+            document.getElementById('eval-student-title').textContent = `Evaluación Física — ${st.name}`;
+            document.getElementById('eval-student-subtitle').textContent = `${st.fee || ''} · Nivel: ${st.level || 'Básico'}`;
+
+            const historySelect = document.getElementById('eval-history-select');
+            const evals = Array.isArray(st.evaluations) ? st.evaluations : [];
+
+            let optionsHTML = `<option value="new">+ Nueva Evaluación Mensual</option>`;
+            evals.forEach(ev => {
+                optionsHTML += `<option value="${ev.id}">${escapeHTML(ev.monthLabel)} (${formatDateHuman(ev.date)})</option>`;
+            });
+            historySelect.innerHTML = optionsHTML;
+
+            if (evals.length > 0) {
+                historySelect.value = evals[evals.length - 1].id;
+            } else {
+                historySelect.value = 'new';
+            }
+
+            loadSelectedEvaluation();
+
+            const modal = document.getElementById('eval-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function loadSelectedEvaluation() {
+            const studentId = document.getElementById('eval-student-id').value;
+            const selectedId = document.getElementById('eval-history-select').value;
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+
+            const evals = Array.isArray(st.evaluations) ? st.evaluations : [];
+            let currentEv = null;
+            let previousEv = null;
+
+            if (selectedId === 'new') {
+                previousEv = evals.length > 0 ? evals[evals.length - 1] : null;
+                document.getElementById('eval-month-label').value = `Mes ${evals.length + 1} - Evaluación`;
+                document.getElementById('eval-date').value = formatDateISO(new Date());
+                document.getElementById('eval-weight').value = previousEv && previousEv.weight ? previousEv.weight : '';
+                document.getElementById('eval-notes').value = '';
+            } else {
+                const idx = evals.findIndex(e => e.id === selectedId);
+                if (idx !== -1) {
+                    currentEv = evals[idx];
+                    previousEv = idx > 0 ? evals[idx - 1] : null;
+                }
+                document.getElementById('eval-month-label').value = currentEv ? currentEv.monthLabel : '';
+                document.getElementById('eval-date').value = currentEv ? currentEv.date : formatDateISO(new Date());
+                document.getElementById('eval-weight').value = currentEv ? (currentEv.weight || '') : '';
+                document.getElementById('eval-notes').value = currentEv ? (currentEv.notes || '') : '';
+            }
+
+            const prevMetrics = previousEv && previousEv.metrics ? previousEv.metrics : {};
+            const currMetrics = currentEv && currentEv.metrics ? currentEv.metrics : {};
+
+            document.querySelectorAll('.metric-input').forEach(inp => {
+                const metricId = inp.dataset.metricId;
+                inp.value = currMetrics[metricId] !== undefined ? currMetrics[metricId] : '';
+            });
+
+            document.querySelectorAll('.prev-metric-badge').forEach(badge => {
+                const metricId = badge.dataset.prevFor;
+                if (prevMetrics[metricId] !== undefined && prevMetrics[metricId] !== '') {
+                    badge.textContent = `Ant: ${prevMetrics[metricId]}`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.textContent = '';
+                    badge.classList.add('hidden');
+                }
+            });
+        }
+
+        function closeEvalModal() {
+            const modal = document.getElementById('eval-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function exportBackupJSON() {
+            const dataStr = JSON.stringify(students, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `respaldo-bandidos-sur-${formatDateISO(new Date())}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Respaldo descargado correctamente', 'success');
+        }
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message, type = 'info') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0';
+                document.body.appendChild(container);
+            }
+
+            const styles = {
+                success: { border: 'border-emerald-500/40', iconBg: 'bg-emerald-500/20 text-emerald-400', icon: 'fa-circle-check' },
+                warning: { border: 'border-amber-500/50', iconBg: 'bg-amber-500/20 text-amber-300', icon: 'fa-bell' },
+                error: { border: 'border-rose-500/40', iconBg: 'bg-rose-500/20 text-rose-400', icon: 'fa-circle-exclamation' },
+                info: { border: 'border-bandido-orange/40', iconBg: 'bg-bandido-orange/20 text-bandido-orange', icon: 'fa-circle-info' }
+            };
+
+            const cfg = styles[type] || styles.info;
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-3 p-3.5 rounded-2xl bg-bandido-card/95 backdrop-blur-md border ${cfg.border} shadow-2xl text-white text-xs font-medium transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-xl ${cfg.iconBg} flex items-center justify-center shrink-0">
+                    <i class="fa-solid ${cfg.icon}"></i>
+                </div>
+                <p class="flex-1 leading-snug">${escapeHTML(message)}</p>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4200);
+        }
+
+        // Exponer funciones al ámbito global
+        window.toggleNotificationsPanel = toggleNotificationsPanel;
+        window.filterExpiringSoon = filterExpiringSoon;
+        window.dismissAlertBanner = dismissAlertBanner;
+        window.renderTable = renderTable;
+        window.openStudentModal = openStudentModal;
+        window.closeStudentModal = closeStudentModal;
+        window.handlePlanChange = handlePlanChange;
+        window.updateCalculatedEndDate = updateCalculatedEndDate;
+        window.saveStudent = saveStudent;
+        window.openRenewModal = openRenewModal;
+        window.updateRenewPreview = updateRenewPreview;
+        window.closeRenewModal = closeRenewModal;
+        window.confirmRenewal = confirmRenewal;
+        window.openDeleteModal = openDeleteModal;
+        window.closeDeleteModal = closeDeleteModal;
+        window.confirmDeleteStudent = confirmDeleteStudent;
+        window.switchEvalTab = switchEvalTab;
+        window.openEvalModal = openEvalModal;
+        window.loadSelectedEvaluation = loadSelectedEvaluation;
+        window.saveEvaluation = saveEvaluation;
+        window.closeEvalModal = closeEvalModal;
+        window.exportBackupJSON = exportBackupJSON;
+    </script>
+</body>
+</html>
