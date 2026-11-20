@@ -141,11 +141,11 @@
                 <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                     <!-- Botón Sincronización entre Equipos -->
                     <button onclick="openCloudSyncModal()"
-                            title="Pasar o sincronizar alumnos entre celular y computadora"
+                            title="Conexión compartida entre entrenadores"
                             class="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-[11px] text-zinc-300 transition cursor-pointer">
-                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span id="sync-text" class="hidden sm:inline">Sincronizar</span>
-                        <i class="fa-solid fa-arrows-rotate text-bandido-orange sm:hidden"></i>
+                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span id="sync-text" class="hidden sm:inline">Modo Local</span>
+                        <i class="fa-solid fa-cloud text-bandido-orange sm:hidden"></i>
                     </button>
 
                     <!-- Respaldo JSON -->
@@ -333,14 +333,14 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 0: SINCRONIZAR CELULAR Y COMPUTADORA (100% COMPATIBLE)          -->
+    <!-- MODAL 0: CONEXIÓN NUBE COMPARTIDA ENTRE ENTRENADORES (SUPABASE)       -->
     <!-- ===================================================================== -->
     <div id="cloud-sync-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
         <div class="w-full max-w-md rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden">
             <div class="px-5 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between">
                 <h3 class="font-display text-base font-bold uppercase tracking-wide text-white flex items-center gap-2">
-                    <i class="fa-solid fa-arrows-rotate text-bandido-orange"></i>
-                    <span>Sincronizar Celular y PC</span>
+                    <i class="fa-solid fa-cloud text-bandido-orange"></i>
+                    <span>Base Compartida (Entrenadores)</span>
                 </h3>
                 <button onclick="closeCloudSyncModal()" class="text-zinc-400 hover:text-white cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
@@ -348,35 +348,51 @@
             </div>
 
             <div class="p-5 space-y-4">
-                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-orange/40 space-y-2.5">
-                    <p class="text-xs font-bold text-white flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-bandido-orange"></i>
-                        <span>Transferencia Instantánea (Sin fallos de red)</span>
+                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-orange/40 space-y-2 text-xs text-zinc-300">
+                    <p class="font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-users-gear text-bandido-orange"></i>
+                        <span>¿Cómo funciona para ti y el otro coach?</span>
                     </p>
-                    <p class="text-[11px] text-zinc-300 leading-relaxed">
-                        Genera un enlace con todos tus alumnos guardados, mándatelo por WhatsApp a ti mismo y ábrelo en tu computadora para pasar todos tus datos al instante.
+                    <p class="text-[11px] leading-relaxed text-zinc-400">
+                        Crea un proyecto gratis en <strong class="text-white">supabase.com</strong>, crea la tabla <code class="text-bandido-orange">bandidos_students</code> (con columnas <code class="text-zinc-200">id text primary key</code> y <code class="text-zinc-200">payload jsonb</code>) y pega abajo tu <strong class="text-white">Project URL</strong> y <strong class="text-white">Anon Key</strong>. Así ambos verán los cambios al refrescar.
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                        <button type="button" onclick="copyMagicTransferLink()"
-                                class="py-2.5 px-3 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-link"></i>
-                            <span>Copiar Enlace</span>
-                        </button>
-                        <button type="button" onclick="sendMagicTransferWhatsApp()"
-                                class="py-2.5 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <i class="fa-brands fa-whatsapp"></i>
-                            <span>Mandar a mi Whats</span>
-                        </button>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Supabase Project URL</label>
+                        <input type="url"
+                               id="sb-url-input"
+                               placeholder="https://tuproyecto.supabase.co"
+                               class="w-full px-3 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Supabase Anon Public Key</label>
+                        <input type="text"
+                               id="sb-key-input"
+                               placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                               class="w-full px-3 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
                     </div>
                 </div>
 
-                <div class="pt-2 border-t border-bandido-border flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <button type="button" onclick="exportBackupJSON()"
-                            class="px-3.5 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
-                        <i class="fa-solid fa-download text-bandido-orange mr-1.5"></i>Descargar Archivo
+                <div class="flex items-center justify-end gap-2 pt-1">
+                    <button type="button" onclick="disconnectSupabaseCloud()"
+                            class="px-3 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-bold text-zinc-400 hover:text-rose-400 cursor-pointer">
+                        Desconectar
                     </button>
-                    <label class="px-3.5 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
-                        <i class="fa-solid fa-file-import text-bandido-orange mr-1.5"></i>Cargar Archivo
+                    <button type="button" onclick="connectSupabaseCloud()"
+                            class="px-4 py-2 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase cursor-pointer">
+                        Guardar y Sincronizar
+                    </button>
+                </div>
+
+                <div class="pt-3 border-t border-bandido-border flex items-center justify-between gap-2 text-xs">
+                    <button type="button" onclick="exportBackupJSON()"
+                            class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
+                        <i class="fa-solid fa-download text-bandido-orange mr-1.5"></i>Respaldo JSON
+                    </button>
+                    <label class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
+                        <i class="fa-solid fa-file-import text-bandido-orange mr-1.5"></i>Importar JSON
                         <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
                     </label>
                 </div>
@@ -747,8 +763,14 @@
         let useIndexedDBFallback = false;
         let idbInstance = null;
 
+        // Credenciales fijas opcionales de Supabase (puedes pegarlas aquí mismo para que cargue directo en todos los celulares)
+        const HARDCODED_SUPABASE_URL = 'https://uqlfxqbmncovqajcpyfu.supabase.co';
+        const HARDCODED_SUPABASE_ANON_KEY = 'sb_publishable_C-dsY-mhR3my1FDHsebyug_e7Ht8nXK';
+        let activeSbUrl = HARDCODED_SUPABASE_URL;
+        let activeSbKey = HARDCODED_SUPABASE_ANON_KEY;
+
         /**
-         * CATÁLOGO OFICIAL DE PLANES Y CLASES - BANDIDOS SUR
+         * CATÁLOGO OFICIAL DE PLANES Y CLASES DE BANDIDOS SUR
          */
         const GYM_PLANS = {
             general_lv: {
@@ -1162,24 +1184,24 @@
                 };
                 request.onsuccess = async (event) => {
                     idbInstance = event.target.result;
-                    syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                    syncText.textContent = 'Sincronizar';
 
-                    // Revisar si viene un enlace de transferencia directa (#sync=...)
-                    if (window.location.hash && window.location.hash.includes('sync=')) {
-                        const hashClean = window.location.hash.replace(/^#/, '');
-                        const syncPayload = new URLSearchParams(hashClean).get('sync');
-                        const importedList = syncPayload ? decodeBase64URL(syncPayload) : null;
-                        if (Array.isArray(importedList) && importedList.length > 0) {
-                            students = importedList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                            await replaceAllInIDB(students);
-                            history.replaceState(null, '', window.location.pathname);
-                            renderTable();
-                            showToast(`¡${students.length} alumnos sincronizados correctamente en este equipo!`, 'success');
+                    // Cargar credenciales de Supabase guardadas en IndexedDB si existen
+                    const savedCreds = await loadCloudCredsFromIDB();
+                    if (!activeSbUrl && savedCreds?.url && savedCreds?.key) {
+                        activeSbUrl = savedCreds.url;
+                        activeSbKey = savedCreds.key;
+                    }
+
+                    if (activeSbUrl && activeSbKey) {
+                        const ok = await syncFromSupabase(true);
+                        if (ok) {
                             resolve();
                             return;
                         }
                     }
+
+                    syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+                    syncText.textContent = 'Conectar Nube';
 
                     const loaded = await loadAllFromIDB();
                     if (loaded.length === 0) {
@@ -1202,13 +1224,116 @@
             });
         }
 
+        function loadCloudCredsFromIDB() {
+            return new Promise((resolve) => {
+                if (!idbInstance) return resolve(null);
+                const tx = idbInstance.transaction('students', 'readonly');
+                const req = tx.objectStore('students').get('__cloud_config__');
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        function saveCloudCredsToIDB(url, key) {
+            return new Promise((resolve) => {
+                if (!idbInstance) return resolve();
+                const tx = idbInstance.transaction('students', 'readwrite');
+                tx.objectStore('students').put({ id: '__cloud_config__', url, key });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => resolve();
+            });
+        }
+
+        async function syncFromSupabase(pushLocalIfEmpty = false) {
+            if (!activeSbUrl || !activeSbKey) return false;
+            const syncDot = document.getElementById('sync-dot');
+            const syncText = document.getElementById('sync-text');
+            const cleanUrl = activeSbUrl.replace(/\/+$/, '');
+
+            try {
+                const headers = { 'apikey': activeSbKey };
+                if (activeSbKey.startsWith('eyJ')) {
+                    headers['Authorization'] = `Bearer ${activeSbKey}`;
+                }
+                const res = await fetch(`${cleanUrl}/rest/v1/bandidos_students?select=id,payload`, {
+                    headers
+                });
+                if (!res.ok) throw new Error('Error Supabase HTTP ' + res.status);
+                const rows = await res.json();
+
+                if (rows.length === 0 && pushLocalIfEmpty) {
+                    const localList = (await loadAllFromIDB()).filter(x => x.id !== '__cloud_config__');
+                    if (localList.length > 0) {
+                        for (const st of localList) {
+                            await upsertSupabaseStudent(st);
+                        }
+                        students = localList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    } else {
+                        await seedInitialDemoData();
+                    }
+                } else {
+                    students = rows.map(r => r.payload).filter(Boolean).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    await replaceAllInIDB(students);
+                }
+
+                if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                if (syncText) syncText.textContent = 'Nube Compartida';
+                renderTable();
+                if (!initialNoticeShown) {
+                    initialNoticeShown = true;
+                    triggerInitialExpirationNotice();
+                }
+                return true;
+            } catch (err) {
+                console.error(err);
+                if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+                if (syncText) syncText.textContent = 'Error Nube';
+                return false;
+            }
+        }
+
+        async function upsertSupabaseStudent(studentObj) {
+            if (!activeSbUrl || !activeSbKey) return;
+            const cleanUrl = activeSbUrl.replace(/\/+$/, '');
+            const headers = {
+                'apikey': activeSbKey,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates'
+            };
+            if (activeSbKey.startsWith('eyJ')) {
+                headers['Authorization'] = `Bearer ${activeSbKey}`;
+            }
+            await fetch(`${cleanUrl}/rest/v1/bandidos_students`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ id: studentObj.id, payload: studentObj })
+            });
+        }
+
+        async function deleteSupabaseStudent(studentId) {
+            if (!activeSbUrl || !activeSbKey) return;
+            const cleanUrl = activeSbUrl.replace(/\/+$/, '');
+            const headers = { 'apikey': activeSbKey };
+            if (activeSbKey.startsWith('eyJ')) {
+                headers['Authorization'] = `Bearer ${activeSbKey}`;
+            }
+            await fetch(`${cleanUrl}/rest/v1/bandidos_students?id=eq.${encodeURIComponent(studentId)}`, {
+                method: 'DELETE',
+                headers
+            });
+        }
+
         async function replaceAllInIDB(list) {
             if (!idbInstance) return;
+            const creds = await loadCloudCredsFromIDB();
             return new Promise((resolve) => {
                 const tx = idbInstance.transaction('students', 'readwrite');
                 const store = tx.objectStore('students');
                 store.clear();
-                list.forEach(item => store.put(item));
+                if (creds) store.put(creds);
+                list.forEach(item => {
+                    if (item.id !== '__cloud_config__') store.put(item);
+                });
                 tx.oncomplete = () => resolve();
                 tx.onerror = () => resolve();
             });
@@ -1216,6 +1341,10 @@
 
         function openCloudSyncModal() {
             const modal = document.getElementById('cloud-sync-modal');
+            const urlInp = document.getElementById('sb-url-input');
+            const keyInp = document.getElementById('sb-key-input');
+            if (urlInp) urlInp.value = activeSbUrl || '';
+            if (keyInp) keyInp.value = activeSbKey || '';
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -1230,27 +1359,35 @@
             }
         }
 
-        function buildMagicTransferURL() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const encoded = encodeBase64URL(students);
-            return `${baseUrl}#sync=${encoded}`;
+        async function connectSupabaseCloud() {
+            const url = document.getElementById('sb-url-input')?.value.trim();
+            const key = document.getElementById('sb-key-input')?.value.trim();
+            if (!url || !key) {
+                showToast('Pega la URL y la Anon Key de Supabase', 'warning');
+                return;
+            }
+            activeSbUrl = url;
+            activeSbKey = key;
+            await saveCloudCredsToIDB(url, key);
+            const ok = await syncFromSupabase(true);
+            if (ok) {
+                closeCloudSyncModal();
+                showToast('¡Nube compartida conectada! Ya pueden ver los mismos alumnos al refrescar', 'success');
+            } else {
+                showToast('No se pudo conectar. Verifica que la tabla bandidos_students exista y tenga acceso público (RLS desactivado)', 'error');
+            }
         }
 
-        function copyMagicTransferLink() {
-            const url = buildMagicTransferURL();
-            const temp = document.createElement('textarea');
-            temp.value = url;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-            showToast('Enlace de sincronización copiado. Ábrelo en tu otro equipo', 'success');
-        }
-
-        function sendMagicTransferWhatsApp() {
-            const url = buildMagicTransferURL();
-            const msg = encodeURIComponent(`*Sincronizar alumnos Bandidos Sur*\n${url}`);
-            window.open(`https://wa.me/?text=${msg}`, '_blank', 'noopener,noreferrer');
+        async function disconnectSupabaseCloud() {
+            activeSbUrl = '';
+            activeSbKey = '';
+            await saveCloudCredsToIDB('', '');
+            const syncDot = document.getElementById('sync-dot');
+            const syncText = document.getElementById('sync-text');
+            if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+            if (syncText) syncText.textContent = 'Conectar Nube';
+            closeCloudSyncModal();
+            showToast('Nube desconectada (modo local)', 'info');
         }
 
         function loadAllFromIDB() {
@@ -1259,7 +1396,7 @@
                 const tx = idbInstance.transaction('students', 'readonly');
                 const store = tx.objectStore('students');
                 const req = store.getAll();
-                req.onsuccess = () => resolve(req.result || []);
+                req.onsuccess = () => resolve((req.result || []).filter(x => x.id !== '__cloud_config__'));
                 req.onerror = () => resolve([]);
             });
         }
@@ -1269,6 +1406,9 @@
                 const ref = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentObj.id);
                 await setDoc(ref, studentObj);
             } else if (idbInstance) {
+                if (activeSbUrl && activeSbKey) {
+                    await upsertSupabaseStudent(studentObj);
+                }
                 return new Promise((resolve) => {
                     const tx = idbInstance.transaction('students', 'readwrite');
                     tx.objectStore('students').put(studentObj);
@@ -1287,6 +1427,9 @@
                 const ref = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
                 await deleteDoc(ref);
             } else if (idbInstance) {
+                if (activeSbUrl && activeSbKey) {
+                    await deleteSupabaseStudent(studentId);
+                }
                 return new Promise((resolve) => {
                     const tx = idbInstance.transaction('students', 'readwrite');
                     tx.objectStore('students').delete(studentId);
@@ -2697,8 +2840,8 @@
         window.importBackupJSON = importBackupJSON;
         window.openCloudSyncModal = openCloudSyncModal;
         window.closeCloudSyncModal = closeCloudSyncModal;
-        window.copyMagicTransferLink = copyMagicTransferLink;
-        window.sendMagicTransferWhatsApp = sendMagicTransferWhatsApp;
+        window.connectSupabaseCloud = connectSupabaseCloud;
+        window.disconnectSupabaseCloud = disconnectSupabaseCloud;
     </script>
 </body>
 </html>
