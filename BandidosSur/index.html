@@ -158,6 +158,14 @@
                         <span class="hidden sm:inline">Planes y Precios</span>
                     </button>
 
+                    <!-- Botón Control de Ingresos / Contabilidad -->
+                    <button onclick="openFinanceModal()"
+                            title="Ver reporte de ingresos mensuales y semanales"
+                            class="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-emerald-500/35 text-xs font-bold text-emerald-300 hover:bg-emerald-500/10 transition cursor-pointer">
+                        <i class="fa-solid fa-sack-dollar text-emerald-400"></i>
+                        <span class="hidden sm:inline">Ingresos</span>
+                    </button>
+
                     <!-- Campana de Notificaciones (<= 3 días) -->
                     <div class="relative">
                         <button id="notif-bell-btn"
@@ -933,6 +941,148 @@
         </div>
     </div>
 
+    <!-- ===================================================================== -->
+    <!-- MODAL 8: CONTROL DE INGRESOS Y CONTABILIDAD (SEMANAL Y MENSUAL)       -->
+    <!-- ===================================================================== -->
+    <div id="finance-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+        <div class="w-full max-w-4xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+            <div class="px-5 sm:px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-4 shrink-0">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider">
+                            Finanzas Bandidos Sur
+                        </span>
+                        <h3 class="font-display text-lg sm:text-xl font-bold uppercase text-white">
+                            Control de Ingresos y Pagos
+                        </h3>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-0.5">Filtra tus ganancias por mes y semana, o registra pagos extra (visitas y clases sueltas).</p>
+                </div>
+                <button onclick="closeFinanceModal()" class="p-2 rounded-xl bg-bandido-card hover:bg-zinc-800 text-zinc-400 hover:text-white transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
+                <!-- Filtros de Mes y Semana -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-bandido-orange mb-1">1. Seleccionar Mes</label>
+                        <input type="month"
+                               id="finance-month-filter"
+                               onchange="renderFinanceDashboard()"
+                               class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs font-bold text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-bandido-orange mb-1">2. Filtrar por Semana</label>
+                        <select id="finance-week-filter"
+                                onchange="renderFinanceDashboard()"
+                                class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs font-bold text-white focus:outline-none focus:border-bandido-orange cursor-pointer">
+                            <option value="all">Todo el Mes Completo</option>
+                            <option value="1">Semana 1 (Días 1 al 7)</option>
+                            <option value="2">Semana 2 (Días 8 al 14)</option>
+                            <option value="3">Semana 3 (Días 15 al 21)</option>
+                            <option value="4">Semana 4 (Días 22 al 31)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" onclick="toggleQuickIncomeForm()"
+                                class="w-full py-2 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-extrabold uppercase text-emerald-300 transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Registrar Pago / Visita</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulario Rápido de Ingreso Manual (Visitas / Clases sueltas / Extras) -->
+                <form id="quick-income-form" onsubmit="saveManualIncome(event)" class="hidden p-4 rounded-2xl bg-bandido-dark border border-emerald-500/40 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
+                            + Registrar Ingreso Manual (Visita, Clase por Día o Extra)
+                        </h4>
+                        <button type="button" onclick="toggleQuickIncomeForm(false)" class="text-xs text-zinc-400 hover:text-white cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Concepto / Nombre *</label>
+                            <input type="text"
+                                   id="manual-income-concept"
+                                   required
+                                   placeholder="Ej. Clase por Día — Juan Pérez"
+                                   class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-emerald-400" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Monto (MXN) *</label>
+                            <input type="number"
+                                   id="manual-income-amount"
+                                   required
+                                   min="1"
+                                   step="1"
+                                   placeholder="Ej. 50"
+                                   class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-emerald-400" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Fecha *</label>
+                            <input type="date"
+                                   id="manual-income-date"
+                                   required
+                                   class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-emerald-400" />
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-extrabold uppercase tracking-wider transition cursor-pointer">
+                            Guardar Ingreso
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tarjetas de Resumen Financiero -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-bandido-dark border border-emerald-500/40">
+                        <p id="finance-period-label" class="text-[11px] font-bold uppercase tracking-wider text-emerald-300">Total del Periodo</p>
+                        <p id="finance-total-amount" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">$0 MXN</p>
+                        <p id="finance-total-count" class="text-[11px] text-zinc-400 mt-0.5">0 movimientos</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Mensualidades / Planes</p>
+                        <p id="finance-plans-amount" class="font-display text-2xl font-bold text-bandido-orange mt-1">$0 MXN</p>
+                        <p id="finance-plans-count" class="text-[11px] text-zinc-400 mt-0.5">0 pagos de alumnos</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Visitas / Clases Sueltas</p>
+                        <p id="finance-extras-amount" class="font-display text-2xl font-bold text-sky-400 mt-1">$0 MXN</p>
+                        <p id="finance-extras-count" class="text-[11px] text-zinc-400 mt-0.5">0 registros adicionales</p>
+                    </div>
+                </div>
+
+                <!-- Desglose Visual por Semana del Mes -->
+                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-2.5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Resumen por Semana del Mes Seleccionado</h4>
+                    <div id="finance-weekly-breakdown" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+                </div>
+
+                <!-- Listado Detallado de Pagos -->
+                <div class="space-y-2.5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Desglose de Movimientos</h4>
+                    <div id="finance-transactions-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <div class="px-5 sm:px-6 py-3.5 bg-bandido-dark border-t border-bandido-border flex items-center justify-between shrink-0">
+                <span class="text-[11px] text-zinc-400">Calculado automáticamente con los pagos y renovaciones registrados.</span>
+                <button type="button" onclick="closeFinanceModal()"
+                        class="px-4 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold uppercase text-zinc-200 cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST DE NOTIFICACIÓN RÁPIDA -->
     <div id="toast-notification"
          class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden items-center gap-2.5 px-4 py-3 rounded-xl bg-zinc-900 border border-bandido-orange/60 text-xs font-semibold text-white shadow-2xl">
@@ -953,6 +1103,8 @@
         const LOCAL_STORAGE_KEY = 'bandidos_sur_students_v3';
         const PLANS_STORAGE_KEY = 'bandidos_sur_plans_v1';
         const PLANS_CLOUD_RECORD_ID = '__bandidos_plans_config__';
+        const FINANCE_STORAGE_KEY = 'bandidos_sur_finance_v1';
+        const FINANCE_CLOUD_RECORD_ID = '__bandidos_finance_ledger__';
         const ROUTINE_CLIPBOARD_KEY = 'bandidos_sur_routine_clipboard';
 
         // Catálogo base oficial de planes de Bandidos Sur (con soporte para videos VIP en planes personalizados/superiores)
@@ -1082,6 +1234,7 @@
         ];
 
         let students = [];
+        let financeLedger = [];
         let activeRenewStudentId = null;
         let activeDeleteStudentId = null;
         let currentRoutineDraft = { goal: '', notes: '', blocks: [] };
@@ -1368,6 +1521,54 @@
             } catch (e) {
                 console.warn('Error leyendo planes locales:', e);
             }
+            try {
+                const rawFin = localStorage.getItem(FINANCE_STORAGE_KEY);
+                if (rawFin) {
+                    const parsedFin = JSON.parse(rawFin);
+                    if (Array.isArray(parsedFin)) financeLedger = parsedFin;
+                }
+            } catch (e) {
+                console.warn('Error leyendo finanzas locales:', e);
+            }
+        }
+
+        async function saveFinanceLedgerToCloud() {
+            localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify(financeLedger));
+            const cfg = getSupabaseConfig();
+            if (!cfg.enabled) return;
+
+            try {
+                await fetch(`${cfg.url}/rest/v1/bandidos_students`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': cfg.key,
+                        'Authorization': `Bearer ${cfg.key}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        id: FINANCE_CLOUD_RECORD_ID,
+                        payload: { _isFinanceLedger: true, entries: financeLedger }
+                    })
+                });
+            } catch (err) {
+                console.warn('Error guardando finanzas en Supabase:', err);
+            }
+        }
+
+        async function recordPaymentEntry({ studentId = null, studentName, planName, amount, date, type = 'plan' }) {
+            if (!date || Number(amount) <= 0) return;
+            const entry = {
+                id: 'pay_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+                studentId,
+                studentName: (studentName || 'Cliente').trim(),
+                planName: (planName || 'Pago').trim(),
+                amount: Number(amount),
+                date,
+                type
+            };
+            financeLedger.unshift(entry);
+            await saveFinanceLedgerToCloud();
         }
 
         async function saveGymPlansToCloud() {
@@ -1429,7 +1630,18 @@
                                 localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(GYM_PLANS));
                             }
 
-                            const studentRows = rows.filter(r => r.id !== PLANS_CLOUD_RECORD_ID && !r.payload?._isPlansConfig);
+                            const financeRow = rows.find(r => r.id === FINANCE_CLOUD_RECORD_ID || r.payload?._isFinanceLedger);
+                            if (financeRow && Array.isArray(financeRow.payload?.entries)) {
+                                financeLedger = financeRow.payload.entries;
+                                localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify(financeLedger));
+                            }
+
+                            const studentRows = rows.filter(r =>
+                                r.id !== PLANS_CLOUD_RECORD_ID &&
+                                !r.payload?._isPlansConfig &&
+                                r.id !== FINANCE_CLOUD_RECORD_ID &&
+                                !r.payload?._isFinanceLedger
+                            );
                             if (studentRows.length > 0) {
                                 students = studentRows
                                     .filter(r => r && r.payload && typeof r.payload === 'object')
@@ -2240,6 +2452,15 @@
                     routineHistory: []
                 };
                 students.unshift(targetStudent);
+                const planObj = GYM_PLANS[planKey] || { name: 'Mensualidad', price: 0 };
+                await recordPaymentEntry({
+                    studentId: targetStudent.id,
+                    studentName: name,
+                    planName: planObj.name,
+                    amount: planObj.price,
+                    date: payDate,
+                    type: 'plan'
+                });
             }
 
             if (targetStudent) {
@@ -2288,12 +2509,20 @@
             if (!activeRenewStudentId) return;
             const st = students.find(s => s.id === activeRenewStudentId);
             if (!st) return;
-            const plan = GYM_PLANS[st.planKey] || { daysDuration: 30 };
+            const plan = GYM_PLANS[st.planKey] || { name: 'Mensualidad', price: 0, daysDuration: 30 };
             const newPay = document.getElementById('renew-date-input').value || getTodayStr();
             st.payDate = newPay;
             st.endDate = addDaysToDateStr(newPay, plan.daysDuration);
             st.routinePaused = false;
             await upsertSupabaseStudent(st);
+            await recordPaymentEntry({
+                studentId: st.id,
+                studentName: st.name,
+                planName: `Renovación · ${plan.name}`,
+                amount: plan.price,
+                date: newPay,
+                type: 'plan'
+            });
             closeRenewModal();
             renderAll();
             showToast(`Mensualidad de ${st.name} renovada y acceso activado.`);
@@ -2356,6 +2585,223 @@
             closeDeleteModal();
             renderAll();
             showToast('Alumno eliminado.');
+        }
+
+        // =================================================================
+        // MODAL 8: CONTROL DE INGRESOS Y CONTABILIDAD (SEMANAL Y MENSUAL)
+        // =================================================================
+        function openFinanceModal() {
+            const today = getTodayStr();
+            const monthInput = document.getElementById('finance-month-filter');
+            if (!monthInput.value) {
+                monthInput.value = today.slice(0, 7);
+            }
+            document.getElementById('finance-week-filter').value = 'all';
+            toggleQuickIncomeForm(false);
+            renderFinanceDashboard();
+
+            const modal = document.getElementById('finance-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFinanceModal() {
+            const modal = document.getElementById('finance-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleQuickIncomeForm(forceState) {
+            const form = document.getElementById('quick-income-form');
+            const show = typeof forceState === 'boolean' ? forceState : form.classList.contains('hidden');
+            if (show) {
+                form.reset();
+                document.getElementById('manual-income-date').value = getTodayStr();
+                form.classList.remove('hidden');
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
+        async function saveManualIncome(event) {
+            event.preventDefault();
+            const concept = document.getElementById('manual-income-concept').value.trim();
+            const amount = Number(document.getElementById('manual-income-amount').value || 0);
+            const date = document.getElementById('manual-income-date').value;
+            if (!concept || amount <= 0 || !date) return;
+
+            await recordPaymentEntry({
+                studentId: null,
+                studentName: concept,
+                planName: 'Ingreso Directo / Clase Suelta',
+                amount,
+                date,
+                type: 'extra'
+            });
+
+            document.getElementById('finance-month-filter').value = date.slice(0, 7);
+            toggleQuickIncomeForm(false);
+            renderFinanceDashboard();
+            showToast(`Ingreso de $${amount} MXN registrado.`);
+        }
+
+        async function deleteFinanceEntry(entryId) {
+            financeLedger = financeLedger.filter(e => e.id !== entryId);
+            await saveFinanceLedgerToCloud();
+            renderFinanceDashboard();
+            showToast('Movimiento eliminado del historial.');
+        }
+
+        function getWeekOfMonthFromDate(dateStr) {
+            if (!dateStr || dateStr.length < 10) return 1;
+            const day = Number(dateStr.slice(8, 10));
+            if (day <= 7) return 1;
+            if (day <= 14) return 2;
+            if (day <= 21) return 3;
+            return 4;
+        }
+
+        function getCombinedMonthlyTransactions(selectedMonth) {
+            // 1. Movimientos guardados explícitamente en el libro de finanzas
+            const explicitEntries = financeLedger.filter(e => (e.date || '').startsWith(selectedMonth));
+
+            // 2. Respaldo inteligente: si un alumno tiene fecha de pago en ese mes pero aún no estaba en el libro
+            const fallbackEntries = [];
+            students.forEach(st => {
+                if (!st || !(st.payDate || '').startsWith(selectedMonth)) return;
+                const alreadyRecorded = explicitEntries.some(
+                    e => e.studentId === st.id && e.date === st.payDate
+                );
+                if (!alreadyRecorded) {
+                    const plan = GYM_PLANS[st.planKey] || { name: 'Mensualidad', price: 0 };
+                    fallbackEntries.push({
+                        id: `auto_${st.id}_${st.payDate}`,
+                        studentId: st.id,
+                        studentName: st.name || 'Atleta',
+                        planName: plan.name,
+                        amount: Number(plan.price || 0),
+                        date: st.payDate,
+                        type: 'plan',
+                        isAutoSynced: true
+                    });
+                }
+            });
+
+            return [...explicitEntries, ...fallbackEntries].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        }
+
+        function renderFinanceDashboard() {
+            const selectedMonth = document.getElementById('finance-month-filter').value || getTodayStr().slice(0, 7);
+            const selectedWeek = document.getElementById('finance-week-filter').value || 'all';
+
+            const allMonthEntries = getCombinedMonthlyTransactions(selectedMonth);
+
+            // Cálculo semanal del mes completo (para las 4 tarjetas de semana)
+            const weekTotals = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            const weekCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            allMonthEntries.forEach(item => {
+                const w = getWeekOfMonthFromDate(item.date);
+                weekTotals[w] += Number(item.amount || 0);
+                weekCounts[w] += 1;
+            });
+
+            const weeklyEl = document.getElementById('finance-weekly-breakdown');
+            const weekLabels = {
+                1: 'Semana 1 (1-7)',
+                2: 'Semana 2 (8-14)',
+                3: 'Semana 3 (15-21)',
+                4: 'Semana 4 (22-31)'
+            };
+            weeklyEl.innerHTML = [1, 2, 3, 4].map(w => {
+                const isSelected = String(selectedWeek) === String(w);
+                return `
+                    <button type="button"
+                            onclick="document.getElementById('finance-week-filter').value='${isSelected ? 'all' : w}'; renderFinanceDashboard();"
+                            class="p-3 rounded-xl border text-left transition cursor-pointer ${isSelected ? 'bg-bandido-orange/15 border-bandido-orange' : 'bg-bandido-card border-bandido-border hover:border-zinc-600'}">
+                        <p class="text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-bandido-orange' : 'text-zinc-400'}">${weekLabels[w]}</p>
+                        <p class="font-display text-lg font-bold text-white mt-0.5">$${weekTotals[w].toLocaleString('es-MX')}</p>
+                        <p class="text-[10px] text-zinc-400">${weekCounts[w]} pago(s)</p>
+                    </button>
+                `;
+            }).join('');
+
+            // Filtrado final según semana seleccionada
+            const visibleEntries = selectedWeek === 'all'
+                ? allMonthEntries
+                : allMonthEntries.filter(item => String(getWeekOfMonthFromDate(item.date)) === String(selectedWeek));
+
+            let totalAmount = 0;
+            let plansAmount = 0;
+            let plansCount = 0;
+            let extrasAmount = 0;
+            let extrasCount = 0;
+
+            visibleEntries.forEach(item => {
+                const amt = Number(item.amount || 0);
+                totalAmount += amt;
+                if (item.type === 'extra') {
+                    extrasAmount += amt;
+                    extrasCount++;
+                } else {
+                    plansAmount += amt;
+                    plansCount++;
+                }
+            });
+
+            const [yr, mo] = selectedMonth.split('-').map(Number);
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const monthTitle = (yr && mo) ? `${monthNames[mo - 1]} ${yr}` : selectedMonth;
+
+            document.getElementById('finance-period-label').textContent = selectedWeek === 'all'
+                ? `Total ${monthTitle}`
+                : `${weekLabels[Number(selectedWeek)]} · ${monthTitle}`;
+            document.getElementById('finance-total-amount').textContent = `$${totalAmount.toLocaleString('es-MX')} MXN`;
+            document.getElementById('finance-total-count').textContent = `${visibleEntries.length} movimiento(s) registrado(s)`;
+
+            document.getElementById('finance-plans-amount').textContent = `$${plansAmount.toLocaleString('es-MX')} MXN`;
+            document.getElementById('finance-plans-count').textContent = `${plansCount} mensualidad(es) / plan(es)`;
+
+            document.getElementById('finance-extras-amount').textContent = `$${extrasAmount.toLocaleString('es-MX')} MXN`;
+            document.getElementById('finance-extras-count').textContent = `${extrasCount} visita(s) / clase(s) suelta(s)`;
+
+            const listEl = document.getElementById('finance-transactions-list');
+            if (visibleEntries.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-6 rounded-2xl bg-bandido-dark border border-bandido-border text-center text-xs text-zinc-400">
+                        No hay ingresos registrados en este periodo.
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = visibleEntries.map(item => `
+                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl ${item.type === 'extra' ? 'bg-sky-500/15 text-sky-400' : 'bg-emerald-500/15 text-emerald-400'} flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${item.type === 'extra' ? 'fa-ticket' : 'fa-user-check'} text-xs"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.studentName)}</p>
+                            <p class="text-[11px] text-zinc-400 truncate">
+                                ${escapeHtml(item.planName)} · <span class="text-zinc-300">${formatDisplayDate(item.date)}</span>
+                                <span class="ml-1.5 px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 text-[10px]">Sem ${getWeekOfMonthFromDate(item.date)}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold">
+                            +$${Number(item.amount || 0).toLocaleString('es-MX')}
+                        </span>
+                        ${!item.isAutoSynced ? `
+                            <button type="button" onclick="deleteFinanceEntry('${item.id}')"
+                                    title="Eliminar movimiento"
+                                    class="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // =================================================================
@@ -2458,54 +2904,49 @@
         }
 
         // =================================================================
-        // CREADOR DE RUTINAS POR BLOQUES + VIDEOS DEMOSTRATIVOS POR DÍA
+        // CREADOR DE RUTINAS POR BLOQUES + VIDEOS DEMOSTRATIVOS VIP
         // =================================================================
+        let activeRoutineAllowsVideos = false;
+
         function openRoutineModal(studentId) {
             const st = students.find(s => s.id === studentId);
             if (!st) return;
 
-            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
-            const hasVideoBenefit = planSupportsVideos(st.planKey);
+            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General', price: 0 };
+            activeRoutineAllowsVideos = planSupportsVideos(st.planKey);
 
             document.getElementById('routine-student-id').value = st.id;
             document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
             document.getElementById('routine-student-subtitle').textContent = `${plan.name} · ${st.trainingDays || 'Entrenamiento'} · Nivel ${st.level || 'Básico'}`;
 
-            // Banner informativo sobre el acceso a videos del alumno
             const tierBanner = document.getElementById('routine-plan-tier-banner');
-            if (hasVideoBenefit) {
-                tierBanner.className = 'p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+            if (activeRoutineAllowsVideos) {
+                tierBanner.className = 'p-3.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 flex items-center justify-between gap-3';
                 tierBanner.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0">
+                    <div class="flex items-center gap-2.5 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-video"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-extrabold uppercase tracking-wider text-purple-300">
-                                Plus de Video Activo (${escapeHtml(plan.name)})
-                            </p>
-                            <p class="text-[11px] text-zinc-300 mt-0.5">
-                                Puedes pegar un enlace de video (YouTube, Shorts, Google Drive, Vimeo o MP4) en cada día/bloque y el alumno lo verá directo en su rutina.
-                            </p>
+                            <p class="font-bold text-purple-200">Plan con Plus de Videos Demostrativos Activo</p>
+                            <p class="text-[11px] text-zinc-300">Puedes pegar un enlace (YouTube, Drive, MP4) o subir un video directo desde tu celular en cada día.</p>
                         </div>
                     </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 text-[10px] font-extrabold uppercase shrink-0">VIP Video</span>
                 `;
             } else {
-                tierBanner.className = 'p-3.5 rounded-2xl bg-bandido-dark border border-bandido-border flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+                tierBanner.className = 'p-3.5 rounded-2xl border border-bandido-border bg-bandido-dark flex items-center justify-between gap-3';
                 tierBanner.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-zinc-800 text-zinc-400 flex items-center justify-center shrink-0">
+                    <div class="flex items-center gap-2.5 text-xs">
+                        <div class="w-8 h-8 rounded-xl bg-zinc-800 text-bandido-orange flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-list-check"></i>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-zinc-200">
-                                Modo Rutina Escrita (${escapeHtml(plan.name)})
-                            </p>
-                            <p class="text-[11px] text-zinc-400 mt-0.5">
-                                Este alumno tiene Plan General, por lo que solo visualizará los ejercicios escritos. Cambia su plan a Personalizado o superior para habilitar videos.
-                            </p>
+                            <p class="font-bold text-white">Plan Estándar (Solo Rutina Escrita)</p>
+                            <p class="text-[11px] text-zinc-400">Este alumno solo visualizará sus bloques y ejercicios escritos. Cambia a Plan Personalizado o superior para activar videos.</p>
                         </div>
                     </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-400 text-[10px] font-bold uppercase shrink-0">Solo Texto</span>
                 `;
             }
 
@@ -2551,106 +2992,130 @@
             const textInputs = document.querySelectorAll('[data-block-text]');
 
             currentRoutineDraft.blocks = Array.from(titleInputs).map((inp, idx) => {
-                const existingVideo = currentRoutineDraft.blocks[idx]?.videoUrl || '';
-                const videoInputEl = document.querySelector(`[data-block-video="${idx}"]`);
+                const existingVid = currentRoutineDraft.blocks[idx]?.videoUrl || '';
+                const vidInp = document.querySelector(`[data-block-video="${idx}"]`);
                 return {
                     title: inp.value,
-                    videoUrl: videoInputEl ? videoInputEl.value : existingVideo,
+                    videoUrl: vidInp ? vidInp.value : existingVid,
                     text: textInputs[idx]?.value || ''
                 };
             });
         }
 
         function renderRoutineBlocksEditor() {
-            const stId = document.getElementById('routine-student-id').value;
-            const st = students.find(s => s.id === stId);
-            const hasVideoBenefit = st ? planSupportsVideos(st.planKey) : false;
-
             const container = document.getElementById('routine-blocks-container');
-            container.innerHTML = currentRoutineDraft.blocks.map((block, idx) => {
-                const videoPreview = (hasVideoBenefit && block.videoUrl && block.videoUrl.trim())
-                    ? parseVideoEmbedInfo(block.videoUrl.trim())
-                    : null;
-
-                return `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-2 flex-1">
-                                <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold uppercase shrink-0">
-                                    Bloque ${idx + 1}
-                                </span>
-                                <input type="text"
-                                       data-block-title="${idx}"
-                                       value="${escapeHtml(block.title)}"
-                                       placeholder="Ej. Día ${idx + 1} — Tirón (Pull)"
-                                       class="w-full px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
-                            </div>
-                            ${currentRoutineDraft.blocks.length > 1 ? `
-                                <button type="button" onclick="removeRoutineBlock(${idx})"
-                                        title="Eliminar bloque"
-                                        class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
-                                    <i class="fa-solid fa-trash-can text-xs"></i>
-                                </button>
-                            ` : ''}
+            container.innerHTML = currentRoutineDraft.blocks.map((block, idx) => `
+                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold uppercase shrink-0">
+                                Bloque ${idx + 1}
+                            </span>
+                            <input type="text"
+                                   data-block-title="${idx}"
+                                   value="${escapeHtml(block.title)}"
+                                   placeholder="Ej. Día ${idx + 1} — Tirón (Pull)"
+                                   class="w-full px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
                         </div>
+                        ${currentRoutineDraft.blocks.length > 1 ? `
+                            <button type="button" onclick="removeRoutineBlock(${idx})"
+                                    title="Eliminar bloque"
+                                    class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        ` : ''}
+                    </div>
 
-                        ${hasVideoBenefit ? `
-                            <div class="p-3 rounded-xl bg-bandido-card border border-purple-500/35 space-y-2">
-                                <div class="flex items-center justify-between gap-2">
-                                    <label class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-video"></i>
-                                        <span>Video Demostrativo del Día (Opcional)</span>
+                    ${activeRoutineAllowsVideos ? `
+                        <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/35 space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <label class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-video"></i>
+                                    <span>Video Demostrativo del Día (Plus VIP)</span>
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <label class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold cursor-pointer flex items-center gap-1.5 transition shadow">
+                                        <i class="fa-solid fa-mobile-screen-button"></i>
+                                        <span>Subir desde Celular / Archivos</span>
+                                        <input type="file" accept="video/*" onchange="handleMobileVideoUpload(event, ${idx})" class="hidden" />
                                     </label>
-                                    ${videoPreview ? `
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                            <i class="fa-solid fa-check mr-1"></i>${escapeHtml(videoPreview.provider)} detectado
-                                        </span>
+                                    ${block.videoUrl ? `
+                                        <a href="${escapeHtml(block.videoUrl)}" target="_blank" rel="noopener noreferrer"
+                                           class="px-2 py-1 rounded-lg bg-bandido-card border border-purple-500/40 text-[10px] font-bold text-purple-200 hover:text-white">
+                                            Probar <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
+                                        </a>
                                     ` : ''}
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="url"
-                                           data-block-video="${idx}"
-                                           value="${escapeHtml(block.videoUrl || '')}"
-                                           oninput="updateBlockVideoStatus(${idx}, this.value)"
-                                           placeholder="Pega enlace de YouTube, Shorts, Google Drive, Vimeo o MP4..."
-                                           class="w-full px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
-                                    <a id="video-test-link-${idx}"
-                                       href="${escapeHtml(block.videoUrl || '#')}"
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                       title="Probar video en nueva pestaña"
-                                       class="${block.videoUrl && block.videoUrl.trim() ? 'flex' : 'hidden'} px-3 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-200 text-xs font-bold items-center gap-1 shrink-0">
-                                        <i class="fa-solid fa-play text-[10px]"></i>
-                                        <span>Probar</span>
-                                    </a>
-                                </div>
                             </div>
-                        ` : ''}
+                            <input type="url"
+                                   data-block-video="${idx}"
+                                   value="${escapeHtml(block.videoUrl || '')}"
+                                   placeholder="Pega enlace de YouTube, Shorts, Google Drive, MP4 o súbelo desde tu celular..."
+                                   class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
+                            <p id="upload-status-${idx}" class="hidden text-[11px] font-semibold text-purple-300"></p>
+                        </div>
+                    ` : ''}
 
-                        <textarea data-block-text="${idx}"
-                                  rows="6"
-                                  placeholder="Escribe los circuitos seguidos, por ejemplo:&#10;Pull up - 12 reps&#10;Push up - 10 reps&#10;4 series&#10;&#10;Fondos - 20 reps&#10;Muscle up - 10 reps&#10;3 series"
-                                  class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
-                    </div>
-                `;
-            }).join('');
+                    <textarea data-block-text="${idx}"
+                              rows="6"
+                              placeholder="Escribe los circuitos seguidos, por ejemplo:&#10;Pull up - 12 reps&#10;Push up - 10 reps&#10;4 series&#10;&#10;Fondos - 20 reps&#10;Muscle up - 10 reps&#10;3 series"
+                              class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
+                </div>
+            `).join('');
         }
 
-        function updateBlockVideoStatus(idx, urlValue) {
-            if (currentRoutineDraft.blocks[idx]) {
-                currentRoutineDraft.blocks[idx].videoUrl = urlValue;
+        async function handleMobileVideoUpload(event, blockIndex) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const cfg = getSupabaseConfig();
+            if (!cfg.enabled) {
+                showToast('Configura primero la nube compartida para subir videos.', true);
+                return;
             }
-            const testBtn = document.getElementById(`video-test-link-${idx}`);
-            if (testBtn) {
-                const clean = (urlValue || '').trim();
-                if (clean) {
-                    testBtn.href = clean;
-                    testBtn.classList.remove('hidden');
-                    testBtn.classList.add('flex');
-                } else {
-                    testBtn.classList.add('hidden');
-                    testBtn.classList.remove('flex');
+
+            const statusEl = document.getElementById(`upload-status-${blockIndex}`);
+            if (statusEl) {
+                statusEl.classList.remove('hidden');
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Subiendo video (${(file.size / (1024 * 1024)).toFixed(1)} MB) a la nube de Bandidos Sur...`;
+            }
+
+            try {
+                const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const stId = document.getElementById('routine-student-id').value || 'atleta';
+                const fileName = `${stId}_${Date.now()}.${ext || 'mp4'}`;
+                const bucketName = 'rutinas-videos';
+                const uploadUrl = `${cfg.url}/storage/v1/object/${bucketName}/${encodeURIComponent(fileName)}`;
+
+                const res = await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': cfg.key,
+                        'Authorization': `Bearer ${cfg.key}`,
+                        'Content-Type': file.type || 'video/mp4',
+                        'x-upsert': 'true'
+                    },
+                    body: file
+                });
+
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(errText || `Error HTTP ${res.status}`);
                 }
+
+                const publicUrl = `${cfg.url}/storage/v1/object/public/${bucketName}/${encodeURIComponent(fileName)}`;
+                syncDraftFromInputs();
+                if (currentRoutineDraft.blocks[blockIndex]) {
+                    currentRoutineDraft.blocks[blockIndex].videoUrl = publicUrl;
+                }
+                renderRoutineBlocksEditor();
+                showToast('¡Video subido desde tu celular y listo para el alumno!');
+            } catch (err) {
+                console.error('Error subiendo video:', err);
+                if (statusEl) {
+                    statusEl.innerHTML = `<span class="text-rose-400"><i class="fa-solid fa-circle-exclamation mr-1"></i>No se pudo subir. Verifica que exista el bucket público "rutinas-videos" en Supabase Storage.</span>`;
+                }
+                showToast('Error al subir el video. Revisa el bucket "rutinas-videos" en Supabase.', true);
             }
         }
 
@@ -2689,7 +3154,11 @@
                     goal: copied.goal || '',
                     notes: copied.notes || '',
                     blocks: Array.isArray(copied.blocks)
-                        ? copied.blocks.map(b => ({ title: b.title || '', videoUrl: b.videoUrl || '', text: b.text || '' }))
+                        ? copied.blocks.map(b => ({
+                            title: b.title || '',
+                            videoUrl: b.videoUrl || '',
+                            text: b.text || ''
+                        }))
                         : []
                 };
                 document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
@@ -2806,7 +3275,7 @@
                         <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/80 space-y-1.5">
                             <div class="flex items-center justify-between gap-2">
                                 <p class="text-xs font-bold text-bandido-orange">${escapeHtml(b.title || 'Bloque')}</p>
-                                ${b.videoUrl ? `<span class="text-[10px] font-bold text-purple-300"><i class="fa-solid fa-video mr-1"></i>Con video adjunto</span>` : ''}
+                                ${b.videoUrl ? `<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold"><i class="fa-solid fa-video mr-1"></i>Con Video</span>` : ''}
                             </div>
                             <pre class="text-xs text-zinc-200 whitespace-pre-wrap font-sans leading-relaxed">${escapeHtml(b.text || '')}</pre>
                         </div>
@@ -2902,20 +3371,20 @@
         }
 
         async function buildPrivateRoutineUrl(student) {
-            const hasVideoBenefit = planSupportsVideos(student.planKey);
-            const planName = GYM_PLANS[student.planKey]?.name || '';
+            const allowVideos = planSupportsVideos(student.planKey);
+            const plan = GYM_PLANS[student.planKey] || { name: 'Plan General' };
             const payload = {
                 id: student.id,
                 n: student.name,
                 l: student.level || 'Básico',
-                p: planName,
-                v: hasVideoBenefit ? 1 : 0,
+                p: plan.name,
+                v: allowVideos ? 1 : 0,
                 g: student.routine?.goal || '',
                 o: student.routine?.notes || '',
                 b: (student.routine?.blocks || []).map(blk => ({
                     t: blk.title,
-                    x: blk.text,
-                    u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                    u: allowVideos ? (blk.videoUrl || '') : '',
+                    x: blk.text
                 }))
             };
             const token = await encodeRoutinePayload(payload);
@@ -2926,20 +3395,20 @@
         async function previewStudentRoutine() {
             const st = await saveStudentRoutine(true);
             if (!st) return;
-            const hasVideoBenefit = planSupportsVideos(st.planKey);
-            const planName = GYM_PLANS[st.planKey]?.name || '';
+            const allowVideos = planSupportsVideos(st.planKey);
+            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
             const payload = {
                 id: st.id,
                 n: st.name,
                 l: st.level || 'Básico',
-                p: planName,
-                v: hasVideoBenefit ? 1 : 0,
+                p: plan.name,
+                v: allowVideos ? 1 : 0,
                 g: st.routine?.goal || '',
                 o: st.routine?.notes || '',
                 b: (st.routine?.blocks || []).map(blk => ({
                     t: blk.title,
-                    x: blk.text,
-                    u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                    u: allowVideos ? (blk.videoUrl || '') : '',
+                    x: blk.text
                 }))
             };
             closeRoutineModal();
@@ -3017,16 +3486,16 @@
 
             const container = document.getElementById('athlete-routine-content');
             const blocks = Array.isArray(payload.b) ? payload.b : [];
-            const canSeeVideos = payload.v === 1 || payload.v === true;
+            const canWatchVideos = payload.v === 1 || payload.v === true;
 
             const blocksHtml = blocks.length === 0
                 ? `<div class="p-6 rounded-2xl bg-bandido-card border border-bandido-border text-center text-xs text-zinc-400">Aún no hay bloques cargados en esta rutina.</div>`
                 : blocks.map((blk, bIdx) => {
-                    const circuits = parseBlockCircuits(blk.x || '');
-                    const videoHtml = (canSeeVideos && blk.u && blk.u.trim())
-                        ? renderVideoPlayerHtml(blk.u.trim(), blk.t || `Día ${bIdx + 1}`)
+                    const blockTitle = blk.t || `Día ${bIdx + 1}`;
+                    const videoHtml = (canWatchVideos && blk.u)
+                        ? renderVideoPlayerHtml(blk.u, blockTitle)
                         : '';
-
+                    const circuits = parseBlockCircuits(blk.x || '');
                     const circuitsHtml = circuits.map((c, cIdx) => `
                         <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border/90 space-y-2.5">
                             <div class="flex items-center justify-between gap-2">
@@ -3046,12 +3515,12 @@
 
                     return `
                         <section class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-3.5 shadow-lg">
-                            <div class="flex items-center justify-between gap-2.5 border-b border-bandido-border pb-2.5">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase shrink-0">Bloque ${bIdx + 1}</span>
-                                    <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white truncate">${escapeHtml(blk.t || `Día ${bIdx + 1}`)}</h3>
+                            <div class="flex items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase">Bloque ${bIdx + 1}</span>
+                                    <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(blockTitle)}</h3>
                                 </div>
-                                ${videoHtml ? `<span class="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-extrabold uppercase shrink-0"><i class="fa-solid fa-video mr-1"></i>Video</span>` : ''}
+                                ${canWatchVideos && blk.u ? `<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-extrabold"><i class="fa-solid fa-video mr-1"></i>Video</span>` : ''}
                             </div>
                             ${videoHtml}
                             <div class="space-y-3">
@@ -3064,15 +3533,11 @@
             container.innerHTML = `
                 <div class="p-5 rounded-2xl bg-gradient-to-br from-bandido-card to-bandido-dark border border-bandido-orange/40 space-y-2">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex flex-wrap items-center gap-1.5">
+                        <div class="flex items-center gap-2">
                             <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
                                 Nivel ${escapeHtml(payload.l || 'Básico')}
                             </span>
-                            ${payload.p ? `
-                                <span class="px-2.5 py-0.5 rounded-full ${canSeeVideos ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'bg-zinc-800 text-zinc-300'} text-[10px] font-bold">
-                                    ${canSeeVideos ? '<i class="fa-solid fa-video mr-1"></i>' : ''}${escapeHtml(payload.p)}
-                                </span>
-                            ` : ''}
+                            ${payload.p ? `<span class="px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[10px] font-bold">${escapeHtml(payload.p)}</span>` : ''}
                         </div>
                         <span class="text-[11px] text-zinc-400">Bandidos Sur</span>
                     </div>
@@ -3153,7 +3618,6 @@
             const match = hash.match(/rutina=([^&]+)/);
             if (!match) return false;
             try {
-                loadLocalPlans();
                 const decoded = await decodeRoutinePayload(decodeURIComponent(match[1]));
                 if (decoded && decoded.n) {
                     if (decoded.id) {
@@ -3168,21 +3632,22 @@
                                 renderAthleteBlockedView(liveStudent.name || decoded.n, 'expired');
                                 return true;
                             }
-                            const hasVideoBenefit = planSupportsVideos(liveStudent.planKey);
-                            const planName = GYM_PLANS[liveStudent.planKey]?.name || decoded.p || '';
+                            loadLocalPlans();
+                            const allowVideos = planSupportsVideos(liveStudent.planKey);
+                            const plan = GYM_PLANS[liveStudent.planKey] || { name: decoded.p || '' };
                             const freshPayload = {
                                 id: liveStudent.id,
                                 n: liveStudent.name,
                                 l: liveStudent.level || decoded.l || 'Básico',
-                                p: planName,
-                                v: hasVideoBenefit ? 1 : 0,
+                                p: plan.name,
+                                v: allowVideos ? 1 : 0,
                                 g: liveStudent.routine?.goal ?? decoded.g ?? '',
                                 o: liveStudent.routine?.notes ?? decoded.o ?? '',
                                 b: Array.isArray(liveStudent.routine?.blocks)
                                     ? liveStudent.routine.blocks.map(blk => ({
                                         t: blk.title,
-                                        x: blk.text,
-                                        u: hasVideoBenefit ? (blk.videoUrl || '') : ''
+                                        u: allowVideos ? (blk.videoUrl || '') : '',
+                                        x: blk.text
                                     }))
                                     : (decoded.b || [])
                             };
