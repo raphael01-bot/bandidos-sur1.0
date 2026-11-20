@@ -1911,28 +1911,7 @@
         }
 
         function formatRoutinePlainText(snap) {
-            let text = `*BANDIDOS SUR — CALISTENIA PURA*\n`;
-            text += `Atleta: *${snap.studentName}*\n`;
-            if (snap.goal) text += `Objetivo: ${snap.goal}\n`;
-            text += `\n`;
-
-            snap.days.forEach(day => {
-                text += `*${day.title}*\n`;
-                day.blocks.forEach(block => {
-                    block.items.forEach(item => {
-                        text += `${item.exercise}${item.dose ? ' / ' + item.dose : ''}\n`;
-                    });
-                    text += `*${block.series}*\n\n`;
-                });
-            });
-
-            if (snap.notes) {
-                text += `Notas: ${snap.notes}\n\n`;
-            }
-
-            const link = buildPrivateRoutineURL(snap);
-            text += `Abre tu rutina interactiva privada aquí:\n${link}`;
-            return text;
+            return buildPrivateRoutineURL(snap);
         }
 
         async function sendRoutineWhatsApp() {
@@ -1940,7 +1919,7 @@
             const studentId = document.getElementById('routine-student-id').value;
             const st = students.find(s => s.id === studentId);
             const snap = getCurrentRoutineSnapshot();
-            const message = encodeURIComponent(formatRoutinePlainText(snap));
+            const message = encodeURIComponent(buildPrivateRoutineURL(snap));
             const cleanPhone = st && st.phone ? st.phone.replace(/\D/g, '') : '';
             const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${message}` : `https://wa.me/?text=${message}`;
             window.open(waUrl, '_blank', 'noopener,noreferrer');
