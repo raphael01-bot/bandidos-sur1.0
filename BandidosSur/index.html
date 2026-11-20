@@ -61,318 +61,346 @@
 <body class="bg-bandido-black text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-bandido-orange selection:text-black">
 
     <!-- ===================================================================== -->
-    <!-- BARRA SUPERIOR DE NAVEGACIÓN                                          -->
+    <!-- VISTA PRIVADA DEL ALUMNO (Se activa al abrir enlace ?rutina=...)       -->
     <!-- ===================================================================== -->
-    <header class="sticky top-0 z-40 bg-bandido-black/95 backdrop-blur-md border-b border-bandido-border">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
-            <!-- Identidad del Gimnasio -->
-            <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-                <div class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
-                    <img src="image_2191ee.png"
-                         alt="Logo Bandidos Sur"
-                         class="w-full h-full object-cover"
-                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-                    <!-- Ilustración vectorial fiel del logo original de Bandidos Sur (Oni + Graffiti Naranja) -->
-                    <svg viewBox="0 0 200 200" class="hidden w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <radialGradient id="oniSkin" cx="42%" cy="35%" r="65%">
-                                <stop offset="0%" stop-color="#ffd9e8" />
-                                <stop offset="55%" stop-color="#f59ab9" />
-                                <stop offset="100%" stop-color="#d46b90" />
-                            </radialGradient>
-                            <linearGradient id="graffitiOrange" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ffd000" />
-                                <stop offset="55%" stop-color="#ff8c00" />
-                                <stop offset="100%" stop-color="#e65100" />
-                            </linearGradient>
-                            <linearGradient id="hornGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#fffdf7" />
-                                <stop offset="70%" stop-color="#e8dcc5" />
-                                <stop offset="100%" stop-color="#cbb894" />
-                            </linearGradient>
-                        </defs>
-
-                        <!-- Fondo circular gris metálico -->
-                        <circle cx="100" cy="100" r="100" fill="#b4b6ba" />
-
-                        <!-- Graffiti Naranja Superior Izquierdo ("B") -->
-                        <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
-                            <path d="M 38 14 C 66 6, 94 22, 86 46 C 82 58, 62 62, 54 64 C 74 64, 88 74, 82 90 C 76 105, 45 96, 36 86 L 26 98 L 16 92 L 32 72 C 22 62, 24 38, 38 14 Z" fill="url(#graffitiOrange)" />
-                            <!-- Goteo graffiti izquierdo -->
-                            <path d="M 34 86 L 34 108 C 34 113, 41 113, 41 108 L 41 88 Z" fill="url(#graffitiOrange)" />
-                            <path d="M 52 94 L 52 104 C 52 108, 58 108, 58 104 L 58 95 Z" fill="url(#graffitiOrange)" />
-                            <!-- Hueco interno B -->
-                            <path d="M 48 34 C 60 32, 68 40, 62 48 C 56 54, 44 50, 48 34 Z" fill="#b4b6ba" />
-                        </g>
-
-                        <!-- Graffiti Naranja Inferior Derecho ("S") -->
-                        <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
-                            <path d="M 134 126 C 158 122, 186 130, 188 152 C 190 172, 165 180, 148 184 L 148 196 L 138 196 L 138 164 L 128 164 L 128 192 L 118 192 L 118 148 C 118 134, 124 128, 134 126 Z" fill="url(#graffitiOrange)" />
-                            <!-- Goteo graffiti derecho -->
-                            <path d="M 164 176 L 164 191 C 164 195, 170 195, 170 191 L 170 174 Z" fill="url(#graffitiOrange)" />
-                        </g>
-
-                        <!-- Cabello negro superior de la máscara Oni -->
-                        <path d="M 54 88 C 52 44, 132 36, 146 78 C 150 92, 145 106, 138 112 L 58 104 Z" fill="#18181b" stroke="#09090b" stroke-width="3.5" />
-                        <path d="M 86 48 Q 98 62 110 74" stroke="#3f3f46" stroke-width="3" fill="none" stroke-linecap="round" />
-
-                        <!-- Cuerno Izquierdo -->
-                        <path d="M 66 66 C 58 44, 62 24, 71 14 C 77 28, 82 46, 83 64 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
-                        <path d="M 68 48 Q 74 44 79 47" stroke="#cbb894" stroke-width="2" fill="none" />
-
-                        <!-- Cuerno Derecho -->
-                        <path d="M 132 72 C 146 58, 164 52, 180 54 C 172 72, 160 88, 142 94 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
-                        <path d="M 150 68 Q 156 75 154 83" stroke="#cbb894" stroke-width="2" fill="none" />
-
-                        <!-- Oreja Oni derecha -->
-                        <path d="M 136 102 C 154 96, 164 112, 152 132 C 144 144, 132 144, 126 136 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
-                        <path d="M 140 112 C 148 112, 148 124, 139 128" stroke="#9d4264" stroke-width="2.5" fill="none" stroke-linecap="round" />
-
-                        <!-- Rostro Principal de la Máscara Oni -->
-                        <path d="M 56 86 C 54 66, 76 58, 92 70 C 106 58, 132 66, 136 90 C 140 112, 136 144, 120 164 C 104 182, 74 180, 58 160 C 46 144, 48 112, 56 86 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.5" stroke-linejoin="round" />
-
-                        <!-- Brillos blancos característicos en frente y pómulos -->
-                        <ellipse cx="74" cy="76" rx="8" ry="4" transform="rotate(-18 74 76)" fill="#ffffff" opacity="0.85" />
-                        <ellipse cx="110" cy="78" rx="9" ry="4.5" transform="rotate(15 110 78)" fill="#ffffff" opacity="0.85" />
-                        <ellipse cx="62" cy="116" rx="6" ry="3.5" transform="rotate(-25 62 116)" fill="#ffffff" opacity="0.8" />
-                        <ellipse cx="116" cy="122" rx="7" ry="4" transform="rotate(20 116 122)" fill="#ffffff" opacity="0.8" />
-
-                        <!-- Cejas fruncidas y Ojos blancos intensos -->
-                        <path d="M 56 96 Q 74 106 86 102" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
-                        <path d="M 126 102 Q 108 108 96 103" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
-                        <path d="M 60 100 C 68 106, 78 106, 83 103 C 78 111, 66 111, 60 100 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
-                        <path d="M 122 104 C 114 109, 104 109, 99 105 C 104 113, 116 113, 122 104 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
-
-                        <!-- Nariz Oni -->
-                        <path d="M 82 118 C 86 112, 96 112, 100 120 C 96 125, 86 125, 82 118 Z" fill="#d46b90" stroke="#111111" stroke-width="2.8" />
-
-                        <!-- Boca abierta, dientes y colmillos -->
-                        <path d="M 56 134 C 74 126, 106 128, 122 140 C 118 164, 88 172, 64 158 C 56 152, 54 142, 56 134 Z" fill="#4a1525" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
-                        <!-- Lengua -->
-                        <path d="M 68 152 C 78 144, 96 146, 106 156 C 94 166, 76 164, 68 152 Z" fill="#e11d48" stroke="#111111" stroke-width="2.2" />
-                        <!-- Dientes superiores -->
-                        <path d="M 68 132 L 73 141 L 78 131 L 84 141 L 90 131 L 96 141 L 102 133" fill="#ffffff" stroke="#111111" stroke-width="2.2" stroke-linejoin="round" />
-                        <!-- Colmillos inferiores prominentes -->
-                        <path d="M 58 148 C 46 142, 40 130, 42 120 C 50 126, 58 134, 64 142 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
-                        <path d="M 106 156 C 114 144, 118 132, 116 122 C 108 130, 102 140, 98 150 Z" fill="#d4a017" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
-                        <path d="M 74 164 C 72 154, 74 146, 78 142 C 82 148, 84 156, 82 164 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-1.5 sm:gap-2">
-                        <h1 class="font-display text-lg sm:text-2xl font-bold tracking-wide uppercase text-white truncate">
+    <div id="athlete-routine-view" class="hidden min-h-screen flex-col bg-bandido-black">
+        <header class="sticky top-0 z-40 bg-bandido-black/95 backdrop-blur-md border-b border-bandido-border">
+            <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-bandido-orange bg-[#b4b6ba] shrink-0 flex items-center justify-center">
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="100" fill="#b4b6ba" />
+                            <path d="M 38 14 C 66 6, 94 22, 86 46 C 82 58, 62 62, 54 64 C 74 64, 88 74, 82 90 C 76 105, 45 96, 36 86 L 26 98 L 16 92 L 32 72 C 22 62, 24 38, 38 14 Z" fill="#ff8c00" stroke="#111111" stroke-width="3.2" />
+                            <path d="M 134 126 C 158 122, 186 130, 188 152 C 190 172, 165 180, 148 184 L 148 196 L 138 196 L 138 164 L 128 164 L 128 192 L 118 192 L 118 148 C 118 134, 124 128, 134 126 Z" fill="#ff8c00" stroke="#111111" stroke-width="3.2" />
+                            <path d="M 54 88 C 52 44, 132 36, 146 78 C 150 92, 145 106, 138 112 L 58 104 Z" fill="#18181b" stroke="#09090b" stroke-width="3.5" />
+                            <path d="M 66 66 C 58 44, 62 24, 71 14 C 77 28, 82 46, 83 64 Z" fill="#fffdf7" stroke="#111111" stroke-width="3.2" />
+                            <path d="M 132 72 C 146 58, 164 52, 180 54 C 172 72, 160 88, 142 94 Z" fill="#fffdf7" stroke="#111111" stroke-width="3.2" />
+                            <path d="M 56 86 C 54 66, 76 58, 92 70 C 106 58, 132 66, 136 90 C 140 112, 136 144, 120 164 C 104 182, 74 180, 58 160 C 46 144, 48 112, 56 86 Z" fill="#f59ab9" stroke="#111111" stroke-width="3.5" />
+                            <path d="M 60 100 C 68 106, 78 106, 83 103 C 78 111, 66 111, 60 100 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+                            <path d="M 122 104 C 114 109, 104 109, 99 105 C 104 113, 116 113, 122 104 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+                            <path d="M 56 134 C 74 126, 106 128, 122 140 C 118 164, 88 172, 64 158 C 56 152, 54 142, 56 134 Z" fill="#4a1525" stroke="#111111" stroke-width="3.2" />
+                            <path d="M 58 148 C 46 142, 40 130, 42 120 C 50 126, 58 134, 64 142 Z" fill="#fffdf7" stroke="#111111" stroke-width="2.8" />
+                            <path d="M 106 156 C 114 144, 118 132, 116 122 C 108 130, 102 140, 98 150 Z" fill="#d4a017" stroke="#111111" stroke-width="2.8" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="font-display text-lg font-bold uppercase tracking-wide text-white truncate">
                             BANDIDOS <span class="text-bandido-orange">SUR</span>
                         </h1>
-                        <span class="hidden md:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30">
-                            Calistenia Pura
-                        </span>
+                        <p class="text-[11px] text-zinc-400 truncate">Rutina Personalizada · Calistenia Pura</p>
                     </div>
-                    <p class="text-[11px] sm:text-xs text-zinc-400 truncate">Panel del Entrenador · Alumnos y Progreso</p>
                 </div>
-            </div>
-
-            <!-- Controles Superiores -->
-            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <!-- Indicador de Guardado Persistente -->
-                <div id="sync-status" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-[10px] sm:text-[11px] font-medium text-zinc-400" title="Estado de guardado automático">
-                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
-                    <span id="sync-text" class="hidden xs:inline sm:inline">Guardado</span>
-                </div>
-
-                <!-- Botón Respaldo JSON -->
-                <button onclick="exportBackupJSON()"
-                        class="p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
-                        title="Descargar respaldo de alumnos (.json)">
-                    <i class="fa-solid fa-download text-sm"></i>
+                <button id="exit-preview-btn" onclick="exitAthletePreview()" class="hidden px-3 py-1.5 rounded-xl bg-bandido-orange text-black text-xs font-extrabold uppercase cursor-pointer">
+                    Volver al Panel
                 </button>
+            </div>
+        </header>
 
-                <!-- Campana de Alertas de Vencimiento (<= 3 días) -->
-                <div class="relative">
-                    <button onclick="toggleNotificationsPanel()"
-                            class="relative p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
-                            title="Avisos de vencimiento (≤ 3 días)">
-                        <i class="fa-solid fa-bell text-sm"></i>
-                        <span id="notif-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-bandido-orange text-black text-[11px] font-extrabold flex items-center justify-center shadow-lg">
-                            0
-                        </span>
+        <main id="athlete-routine-content" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 space-y-5">
+            <!-- Contenido de la rutina privada del atleta -->
+        </main>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- PANEL PRINCIPAL DEL ADMINISTRADOR / ENTRENADOR                        -->
+    <!-- ===================================================================== -->
+    <div id="admin-dashboard-wrapper" class="flex-1 flex flex-col">
+
+        <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
+        <header class="sticky top-0 z-40 bg-bandido-black/95 backdrop-blur-md border-b border-bandido-border">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+                <!-- Identidad del Gimnasio -->
+                <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                    <div class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
+                        <!-- Logotipo Original Bandidos Sur -->
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="oniSkin" cx="42%" cy="35%" r="65%">
+                                    <stop offset="0%" stop-color="#ffd9e8" />
+                                    <stop offset="55%" stop-color="#f59ab9" />
+                                    <stop offset="100%" stop-color="#d46b90" />
+                                </radialGradient>
+                                <linearGradient id="graffitiOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffd000" />
+                                    <stop offset="55%" stop-color="#ff8c00" />
+                                    <stop offset="100%" stop-color="#e65100" />
+                                </linearGradient>
+                                <linearGradient id="hornGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#fffdf7" />
+                                    <stop offset="70%" stop-color="#e8dcc5" />
+                                    <stop offset="100%" stop-color="#cbb894" />
+                                </linearGradient>
+                            </defs>
+
+                            <!-- Fondo circular gris metálico -->
+                            <circle cx="100" cy="100" r="100" fill="#b4b6ba" />
+
+                            <!-- Graffiti Naranja Superior Izquierdo ("B") -->
+                            <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+                                <path d="M 38 14 C 66 6, 94 22, 86 46 C 82 58, 62 62, 54 64 C 74 64, 88 74, 82 90 C 76 105, 45 96, 36 86 L 26 98 L 16 92 L 32 72 C 22 62, 24 38, 38 14 Z" fill="url(#graffitiOrange)" />
+                                <path d="M 34 86 L 34 108 C 34 113, 41 113, 41 108 L 41 88 Z" fill="url(#graffitiOrange)" />
+                                <path d="M 52 94 L 52 104 C 52 108, 58 108, 58 104 L 58 95 Z" fill="url(#graffitiOrange)" />
+                                <path d="M 48 34 C 60 32, 68 40, 62 48 C 56 54, 44 50, 48 34 Z" fill="#b4b6ba" />
+                            </g>
+
+                            <!-- Graffiti Naranja Inferior Derecho ("S") -->
+                            <g stroke="#111111" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+                                <path d="M 134 126 C 158 122, 186 130, 188 152 C 190 172, 165 180, 148 184 L 148 196 L 138 196 L 138 164 L 128 164 L 128 192 L 118 192 L 118 148 C 118 134, 124 128, 134 126 Z" fill="url(#graffitiOrange)" />
+                                <path d="M 164 176 L 164 191 C 164 195, 170 195, 170 191 L 170 174 Z" fill="url(#graffitiOrange)" />
+                            </g>
+
+                            <!-- Cabello negro superior -->
+                            <path d="M 54 88 C 52 44, 132 36, 146 78 C 150 92, 145 106, 138 112 L 58 104 Z" fill="#18181b" stroke="#09090b" stroke-width="3.5" />
+                            <path d="M 86 48 Q 98 62 110 74" stroke="#3f3f46" stroke-width="3" fill="none" stroke-linecap="round" />
+
+                            <!-- Cuernos -->
+                            <path d="M 66 66 C 58 44, 62 24, 71 14 C 77 28, 82 46, 83 64 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                            <path d="M 132 72 C 146 58, 164 52, 180 54 C 172 72, 160 88, 142 94 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+
+                            <!-- Oreja Oni -->
+                            <path d="M 136 102 C 154 96, 164 112, 152 132 C 144 144, 132 144, 126 136 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+
+                            <!-- Rostro Oni -->
+                            <path d="M 56 86 C 54 66, 76 58, 92 70 C 106 58, 132 66, 136 90 C 140 112, 136 144, 120 164 C 104 182, 74 180, 58 160 C 46 144, 48 112, 56 86 Z" fill="url(#oniSkin)" stroke="#111111" stroke-width="3.5" stroke-linejoin="round" />
+
+                            <!-- Brillos -->
+                            <ellipse cx="74" cy="76" rx="8" ry="4" transform="rotate(-18 74 76)" fill="#ffffff" opacity="0.85" />
+                            <ellipse cx="110" cy="78" rx="9" ry="4.5" transform="rotate(15 110 78)" fill="#ffffff" opacity="0.85" />
+                            <ellipse cx="62" cy="116" rx="6" ry="3.5" transform="rotate(-25 62 116)" fill="#ffffff" opacity="0.8" />
+                            <ellipse cx="116" cy="122" rx="7" ry="4" transform="rotate(20 116 122)" fill="#ffffff" opacity="0.8" />
+
+                            <!-- Cejas y Ojos -->
+                            <path d="M 56 96 Q 74 106 86 102" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
+                            <path d="M 126 102 Q 108 108 96 103" stroke="#111111" stroke-width="4" fill="none" stroke-linecap="round" />
+                            <path d="M 60 100 C 68 106, 78 106, 83 103 C 78 111, 66 111, 60 100 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+                            <path d="M 122 104 C 114 109, 104 109, 99 105 C 104 113, 116 113, 122 104 Z" fill="#ffffff" stroke="#111111" stroke-width="2.5" />
+
+                            <!-- Nariz -->
+                            <path d="M 82 118 C 86 112, 96 112, 100 120 C 96 125, 86 125, 82 118 Z" fill="#d46b90" stroke="#111111" stroke-width="2.8" />
+
+                            <!-- Boca y Colmillos -->
+                            <path d="M 56 134 C 74 126, 106 128, 122 140 C 118 164, 88 172, 64 158 C 56 152, 54 142, 56 134 Z" fill="#4a1525" stroke="#111111" stroke-width="3.2" stroke-linejoin="round" />
+                            <path d="M 68 152 C 78 144, 96 146, 106 156 C 94 166, 76 164, 68 152 Z" fill="#e11d48" stroke="#111111" stroke-width="2.2" />
+                            <path d="M 68 132 L 73 141 L 78 131 L 84 141 L 90 131 L 96 141 L 102 133" fill="#ffffff" stroke="#111111" stroke-width="2.2" stroke-linejoin="round" />
+                            <path d="M 58 148 C 46 142, 40 130, 42 120 C 50 126, 58 134, 64 142 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
+                            <path d="M 106 156 C 114 144, 118 132, 116 122 C 108 130, 102 140, 98 150 Z" fill="#d4a017" stroke="#111111" stroke-width="2.8" stroke-linejoin="round" />
+                            <path d="M 74 164 C 72 154, 74 146, 78 142 C 82 148, 84 156, 82 164 Z" fill="url(#hornGrad)" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <h1 class="font-display text-lg sm:text-2xl font-bold tracking-wide uppercase text-white truncate">
+                                BANDIDOS <span class="text-bandido-orange">SUR</span>
+                            </h1>
+                            <span class="hidden md:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30">
+                                Calistenia Pura
+                            </span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 truncate">Panel del Entrenador · Alumnos, Evaluaciones y Rutinas</p>
+                    </div>
+                </div>
+
+                <!-- Controles Superiores -->
+                <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <!-- Indicador de Guardado Persistente -->
+                    <div id="sync-status" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-[10px] sm:text-[11px] font-medium text-zinc-400" title="Estado de guardado automático">
+                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                        <span id="sync-text" class="hidden sm:inline">Guardado</span>
+                    </div>
+
+                    <!-- Botón Respaldo JSON -->
+                    <button onclick="exportBackupJSON()"
+                            class="p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
+                            title="Descargar respaldo de alumnos (.json)">
+                        <i class="fa-solid fa-download text-sm"></i>
                     </button>
 
-                    <!-- Desplegable de Notificaciones (Responsivo en móvil y escritorio) -->
-                    <div id="notifications-panel" class="hidden fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-18 sm:top-auto mt-2 sm:mt-2.5 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
-                        <div class="px-4 py-3 border-b border-bandido-border flex items-center justify-between bg-bandido-dark">
-                            <div>
-                                <h3 class="text-xs font-bold uppercase tracking-wider text-white">Alertas de Mensualidad</h3>
-                                <p id="notif-summary" class="text-[11px] text-bandido-orange font-medium mt-0.5">Todo al día</p>
+                    <!-- Campana de Alertas de Vencimiento (<= 3 días) -->
+                    <div class="relative">
+                        <button onclick="toggleNotificationsPanel()"
+                                class="relative p-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer"
+                                title="Avisos de vencimiento (≤ 3 días)">
+                            <i class="fa-solid fa-bell text-sm"></i>
+                            <span id="notif-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-bandido-orange text-black text-[11px] font-extrabold flex items-center justify-center shadow-lg">
+                                0
+                            </span>
+                        </button>
+
+                        <!-- Desplegable de Notificaciones -->
+                        <div id="notifications-panel" class="hidden fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-18 sm:top-auto mt-2 sm:mt-2.5 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-bandido-border flex items-center justify-between bg-bandido-dark">
+                                <div>
+                                    <h3 class="text-xs font-bold uppercase tracking-wider text-white">Alertas de Mensualidad</h3>
+                                    <p id="notif-summary" class="text-[11px] text-bandido-orange font-medium mt-0.5">Todo al día</p>
+                                </div>
+                                <button onclick="filterExpiringSoon()" class="text-[11px] font-semibold text-zinc-400 hover:text-white underline cursor-pointer">
+                                    Ver en lista
+                                </button>
                             </div>
-                            <button onclick="filterExpiringSoon()" class="text-[11px] font-semibold text-zinc-400 hover:text-white underline cursor-pointer">
-                                Ver en lista
-                            </button>
-                        </div>
-                        <div id="notif-list" class="p-3 max-h-80 overflow-y-auto space-y-2.5">
-                            <p class="text-xs text-zinc-400 text-center py-6">Cargando avisos...</p>
+                            <div id="notif-list" class="p-3 max-h-80 overflow-y-auto space-y-2.5">
+                                <p class="text-xs text-zinc-400 text-center py-6">Cargando avisos...</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Botón Instagram Oficial -->
-                <a href="https://www.instagram.com/bandidos.sur?avpt=dXprMWdlbHJjaGxo"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="hidden md:flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-semibold text-zinc-300 hover:text-bandido-orange transition">
-                    <i class="fa-brands fa-instagram text-base text-bandido-orange"></i>
-                    <span>@bandidos.sur</span>
-                </a>
+                    <!-- Botón Instagram Oficial -->
+                    <a href="https://www.instagram.com/bandidos.sur?avpt=dXprMWdlbHJjaGxo"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="hidden md:flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-semibold text-zinc-300 hover:text-bandido-orange transition">
+                        <i class="fa-brands fa-instagram text-base text-bandido-orange"></i>
+                        <span>@bandidos.sur</span>
+                    </a>
 
-                <!-- Botón Nuevo Alumno (Desktop/Tablet) -->
-                <button onclick="openStudentModal()"
-                        class="hidden sm:flex px-4 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-bold text-xs sm:text-sm transition shadow-lg shadow-orange-500/20 items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>Nuevo Alumno</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Botón Flotante Rápido para Celular (Agregar Alumno con un toque) -->
-    <button onclick="openStudentModal()"
-            class="sm:hidden fixed bottom-5 right-5 z-40 px-4 py-3.5 rounded-2xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-extrabold text-sm shadow-2xl shadow-orange-500/35 flex items-center gap-2 active:scale-95 transition cursor-pointer">
-        <i class="fa-solid fa-user-plus text-base"></i>
-        <span>Nuevo Alumno</span>
-    </button>
-
-    <!-- ===================================================================== -->
-    <!-- CONTENIDO PRINCIPAL                                                   -->
-    <!-- ===================================================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 sm:pb-10 space-y-5 sm:space-y-6">
-        <!-- Banner Automático de Aviso (Mensualidades <= 3 días) -->
-        <div id="expiration-alert-banner" class="hidden p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-bell text-lg"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-amber-300">Recordatorio de Cobro Próximo</p>
-                    <p id="alert-banner-text" class="text-sm text-white font-medium mt-0.5"></p>
+                    <!-- Botón Nuevo Alumno (Desktop/Tablet) -->
+                    <button onclick="openStudentModal()"
+                            class="hidden sm:flex px-4 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-bold text-xs sm:text-sm transition shadow-lg shadow-orange-500/20 items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Nuevo Alumno</span>
+                    </button>
                 </div>
             </div>
-            <div class="flex items-center gap-2 self-end sm:self-center">
-                <button onclick="filterExpiringSoon()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold transition cursor-pointer">
-                    Filtrar por vencer
-                </button>
-                <button onclick="dismissAlertBanner()" class="p-1.5 rounded-xl text-zinc-400 hover:text-white transition cursor-pointer" title="Cerrar aviso">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-        </div>
+        </header>
 
-        <!-- Tarjetas de Resumen (KPIs) -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Total Alumnos</span>
-                    <div class="w-9 h-9 rounded-xl bg-bandido-orange/15 text-bandido-orange flex items-center justify-center">
-                        <i class="fa-solid fa-users"></i>
+        <!-- Botón Flotante Rápido para Celular -->
+        <button onclick="openStudentModal()"
+                class="sm:hidden fixed bottom-5 right-5 z-40 px-4 py-3.5 rounded-2xl bg-bandido-orange hover:bg-bandido-orange-hover text-black font-extrabold text-sm shadow-2xl shadow-orange-500/35 flex items-center gap-2 active:scale-95 transition cursor-pointer">
+            <i class="fa-solid fa-user-plus text-base"></i>
+            <span>Nuevo Alumno</span>
+        </button>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 sm:pb-10 space-y-5 sm:space-y-6">
+            <!-- Banner Automático de Aviso (Mensualidades <= 3 días) -->
+            <div id="expiration-alert-banner" class="hidden p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-amber-300">Recordatorio de Cobro Próximo</p>
+                        <p id="alert-banner-text" class="text-sm text-white font-medium mt-0.5"></p>
                     </div>
                 </div>
-                <p id="stat-total" class="font-display text-3xl font-bold text-white mt-2">0</p>
-                <p class="text-xs text-zinc-500 mt-1">Atletas registrados</p>
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                    <button onclick="filterExpiringSoon()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold transition cursor-pointer">
+                        Filtrar por vencer
+                    </button>
+                    <button onclick="dismissAlertBanner()" class="p-1.5 rounded-xl text-zinc-400 hover:text-white transition cursor-pointer" title="Cerrar aviso">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Activos</span>
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
-                        <i class="fa-solid fa-circle-check"></i>
+            <!-- Tarjetas de Resumen (KPIs) -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Total Alumnos</span>
+                        <div class="w-9 h-9 rounded-xl bg-bandido-orange/15 text-bandido-orange flex items-center justify-center">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
                     </div>
+                    <p id="stat-total" class="font-display text-3xl font-bold text-white mt-2">0</p>
+                    <p class="text-xs text-zinc-500 mt-1">Atletas registrados</p>
                 </div>
-                <p id="stat-active" class="font-display text-3xl font-bold text-emerald-400 mt-2">0</p>
-                <p class="text-xs text-zinc-500 mt-1">Mensualidad vigente</p>
-            </div>
 
-            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Por Vencer (≤ 3d)</span>
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
-                        <i class="fa-solid fa-clock"></i>
+                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Activos</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
                     </div>
+                    <p id="stat-active" class="font-display text-3xl font-bold text-emerald-400 mt-2">0</p>
+                    <p class="text-xs text-zinc-500 mt-1">Mensualidad vigente</p>
                 </div>
-                <p id="stat-expiring" class="font-display text-3xl font-bold text-amber-400 mt-2">0</p>
-                <p class="text-xs text-zinc-500 mt-1">Próximos a corte</p>
-            </div>
 
-            <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Vencidos</span>
-                    <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center">
-                        <i class="fa-solid fa-calendar-xmark"></i>
+                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Por Vencer (≤ 3d)</span>
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
                     </div>
+                    <p id="stat-expiring" class="font-display text-3xl font-bold text-amber-400 mt-2">0</p>
+                    <p class="text-xs text-zinc-500 mt-1">Próximos a corte</p>
                 </div>
-                <p id="stat-expired" class="font-display text-3xl font-bold text-rose-400 mt-2">0</p>
-                <p class="text-xs text-zinc-500 mt-1">Requieren renovación</p>
-            </div>
-        </section>
 
-        <!-- Barra de Búsqueda y Filtros -->
-        <section class="p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div class="relative flex-1">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-                <input type="text"
-                       id="search-input"
-                       oninput="renderTable()"
-                       placeholder="Buscar alumno por nombre, plan, días de entrenamiento o teléfono..."
-                       class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange transition" />
-            </div>
-
-            <div class="flex items-center gap-2.5">
-                <select id="filter-status"
-                        onchange="renderTable()"
-                        class="px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
-                    <option value="all">Todos los estados</option>
-                    <option value="active">Activos</option>
-                    <option value="expiring">Por vencer (≤ 3 días)</option>
-                    <option value="expired">Vencidos</option>
-                </select>
-            </div>
-        </section>
-
-        <!-- Tabla Principal de Alumnos (Desktop) + Tarjetas Táctiles (Celular) -->
-        <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
-            <!-- Vista de Tabla para Tablets y Computadoras -->
-            <div class="hidden md:block overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-bandido-dark border-b border-bandido-border text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                            <th class="px-5 py-4">Alumno</th>
-                            <th class="px-5 py-4">Plan & Días de Entreno</th>
-                            <th class="px-5 py-4">Fecha Pago / Vence</th>
-                            <th class="px-5 py-4">Estatus</th>
-                            <th class="px-5 py-4">Progreso Mensual</th>
-                            <th class="px-5 py-4 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="students-table-body" class="divide-y divide-bandido-border text-sm">
-                        <!-- Filas generadas dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Vista de Tarjetas Optimizadas para Celular -->
-            <div id="students-mobile-list" class="md:hidden divide-y divide-bandido-border">
-                <!-- Tarjetas generadas dinámicamente en móvil -->
-            </div>
-
-            <!-- Estado Vacío -->
-            <div id="empty-state" class="hidden py-14 px-4 text-center">
-                <div class="w-14 h-14 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto mb-3">
-                    <i class="fa-solid fa-dumbbell text-2xl"></i>
+                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Vencidos</span>
+                        <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-xmark"></i>
+                        </div>
+                    </div>
+                    <p id="stat-expired" class="font-display text-3xl font-bold text-rose-400 mt-2">0</p>
+                    <p class="text-xs text-zinc-500 mt-1">Requieren renovación</p>
                 </div>
-                <h3 class="text-base font-bold text-white">No se encontraron alumnos</h3>
-                <p class="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
-                    Agrega tu primer atleta con el botón <span class="text-bandido-orange font-semibold">+ Nuevo Alumno</span> o ajusta los filtros de búsqueda.
-                </p>
-            </div>
-        </section>
-    </main>
+            </section>
+
+            <!-- Barra de Búsqueda y Filtros -->
+            <section class="p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+                    <input type="text"
+                           id="search-input"
+                           oninput="renderTable()"
+                           placeholder="Buscar alumno por nombre, plan, días de entrenamiento o teléfono..."
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange transition" />
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <select id="filter-status"
+                            onchange="renderTable()"
+                            class="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
+                        <option value="all">Todos los estados</option>
+                        <option value="active">Activos</option>
+                        <option value="expiring">Por vencer (≤ 3 días)</option>
+                        <option value="expired">Vencidos</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Tabla Principal de Alumnos (Desktop) + Tarjetas Táctiles (Celular) -->
+            <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
+                <!-- Vista de Tabla para Tablets y Computadoras -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-bandido-dark border-b border-bandido-border text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                                <th class="px-5 py-4">Alumno</th>
+                                <th class="px-5 py-4">Plan & Días de Entreno</th>
+                                <th class="px-5 py-4">Fecha Pago / Vence</th>
+                                <th class="px-5 py-4">Estatus</th>
+                                <th class="px-5 py-4">Evaluación & Rutina</th>
+                                <th class="px-5 py-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body" class="divide-y divide-bandido-border text-sm">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Vista de Tarjetas Optimizadas para Celular -->
+                <div id="students-mobile-list" class="md:hidden divide-y divide-bandido-border">
+                    <!-- Tarjetas generadas dinámicamente en móvil -->
+                </div>
+
+                <!-- Estado Vacío -->
+                <div id="empty-state" class="hidden py-14 px-4 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-dumbbell text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">No se encontraron alumnos</h3>
+                    <p class="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
+                        Agrega tu primer atleta con el botón <span class="text-bandido-orange font-semibold">+ Nuevo Alumno</span> o ajusta los filtros de búsqueda.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <!-- ===================================================================== -->
     <!-- MODAL 1: AGREGAR / EDITAR ALUMNO                                      -->
@@ -492,7 +520,6 @@
     <!-- ===================================================================== -->
     <div id="eval-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/85 backdrop-blur-sm p-0 sm:p-5 overflow-y-auto">
         <div class="w-full max-w-5xl rounded-t-3xl sm:rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto max-h-[94vh] flex flex-col">
-            <!-- Header del Modal de Evaluación -->
             <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-3 shrink-0">
                 <div class="min-w-0">
                     <div class="flex items-center gap-2">
@@ -549,10 +576,8 @@
                     </div>
                 </div>
 
-                <!-- Contenedor Dinámico de Categorías (Tirón, Empuje, Pierna, Core, Cardio) -->
-                <div id="eval-categories-container">
-                    <!-- Generado por buildEvaluationFormHTML() -->
-                </div>
+                <!-- Contenedor Dinámico de Categorías -->
+                <div id="eval-categories-container"></div>
 
                 <!-- Notas del Entrenador -->
                 <div>
@@ -563,7 +588,6 @@
                               class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange"></textarea>
                 </div>
 
-                <!-- Botones de Acción -->
                 <div class="pt-3 border-t border-bandido-border flex items-center justify-end gap-3">
                     <button type="button"
                             onclick="closeEvalModal()"
@@ -581,7 +605,100 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 3: RENOVACIÓN RÁPIDA DE MENSUALIDAD                             -->
+    <!-- MODAL 3: CREADOR Y COMPARTIDOR DE RUTINA PRIVADA                      -->
+    <!-- ===================================================================== -->
+    <div id="routine-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/85 backdrop-blur-sm p-0 sm:p-5 overflow-y-auto">
+        <div class="w-full max-w-4xl rounded-t-3xl sm:rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto max-h-[94vh] flex flex-col">
+            <!-- Header -->
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-3 shrink-0">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-bandido-orange shrink-0"></i>
+                        <h2 id="routine-student-title" class="font-display text-base sm:text-xl font-bold uppercase tracking-wide text-white truncate">
+                            Rutina Personalizada
+                        </h2>
+                    </div>
+                    <p id="routine-student-subtitle" class="text-[11px] sm:text-xs text-zinc-400 mt-0.5 truncate"></p>
+                </div>
+                <button onclick="closeRoutineModal()" class="text-zinc-400 hover:text-white p-2.5 rounded-xl bg-bandido-card border border-bandido-border cursor-pointer shrink-0">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Barra de Compartir por Privado con el Alumno -->
+            <div class="px-4 sm:px-6 py-3 bg-bandido-orange/10 border-b border-bandido-orange/30 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                <div class="flex items-center gap-2 text-xs text-bandido-orange font-bold">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Compartir por privado con el alumno:</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="previewStudentRoutine()"
+                            class="px-3 py-1.5 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-white transition cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye text-bandido-orange"></i>
+                        <span>Vista Alumno</span>
+                    </button>
+                    <button type="button" onclick="copyPrivateRoutineLink()"
+                            class="px-3 py-1.5 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Copiar Enlace</span>
+                    </button>
+                    <button type="button" onclick="sendRoutineWhatsApp()"
+                            class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>Enviar WhatsApp</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cuerpo del Editor de Rutina (Formato: Día / Ejercicio / Reps o Seg / Series) -->
+            <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
+                <input type="hidden" id="routine-student-id" />
+
+                <!-- Datalist de ejercicios de calistenia para autocompletado rápido -->
+                <datalist id="calisthenics-exercises-datalist"></datalist>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Objetivo / Mesociclo</label>
+                        <input type="text" id="routine-goal-input" placeholder="Ej. Fuerza Base Tirón & Empuje — Mes 1"
+                               class="w-full px-3.5 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Indicaciones Generales</label>
+                        <input type="text" id="routine-notes-input" placeholder="Ej. Descansar 90 seg entre series, cuidar escápulas"
+                               class="w-full px-3.5 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                </div>
+
+                <!-- Contenedor de Días y Bloques de Series -->
+                <div id="routine-days-container" class="space-y-4">
+                    <!-- Se renderiza dinámicamente -->
+                </div>
+
+                <button type="button" onclick="addRoutineDay()"
+                        class="w-full py-3 rounded-2xl border-2 border-dashed border-bandido-orange/40 hover:border-bandido-orange bg-bandido-dark/50 hover:bg-bandido-dark text-bandido-orange text-xs font-extrabold uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Agregar Día de Entrenamiento</span>
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-4 sm:px-6 py-3.5 bg-bandido-dark border-t border-bandido-border flex items-center justify-end gap-3 shrink-0">
+                <button type="button" onclick="closeRoutineModal()"
+                        class="px-4 py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-300 transition cursor-pointer">
+                    Cerrar
+                </button>
+                <button type="button" onclick="saveStudentRoutine()"
+                        class="px-5 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/20 cursor-pointer flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Guardar Rutina</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: RENOVACIÓN RÁPIDA DE MENSUALIDAD                             -->
     <!-- ===================================================================== -->
     <div id="renew-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="w-full max-w-md rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden">
@@ -625,7 +742,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 4: CONFIRMAR ELIMINACIÓN                                        -->
+    <!-- MODAL 5: CONFIRMAR ELIMINACIÓN                                        -->
     <!-- ===================================================================== -->
     <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="w-full max-w-sm rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl p-6 text-center space-y-4">
@@ -650,7 +767,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- LÓGICA COMPLETA DE BANDIDOS SUR + GUARDADO PERSISTENTE                -->
+    <!-- LÓGICA COMPLETA DE BANDIDOS SUR + GUARDADO PERSISTENTE + RUTINAS      -->
     <!-- ===================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -825,13 +942,14 @@
             }
         };
 
-        // Estado en Memoria de Alumnos
+        // Estado en Memoria
         let students = [];
         let currentActiveEvalTab = 'tiron';
         let pendingDeleteId = null;
         let pendingRenewId = null;
         let bannerDismissed = false;
         let initialNoticeShown = false;
+        let draftRoutine = { goal: '', notes: '', days: [] };
 
         /**
          * Formatea fecha a YYYY-MM-DD
@@ -860,6 +978,19 @@
             const daysInTargetMonth = new Date(year, targetMonthIndex + 1, 0).getDate();
             const clampedDay = Math.min(day, daysInTargetMonth);
             return formatDateISO(new Date(year, targetMonthIndex, clampedDay));
+        }
+
+        /**
+         * Llena el datalist de ejercicios de calistenia para el creador de rutinas
+         */
+        function populateExercisesDatalist() {
+            const datalist = document.getElementById('calisthenics-exercises-datalist');
+            if (!datalist) return;
+            const allNames = [];
+            Object.values(EVAL_CATEGORIES).forEach(cat => {
+                cat.exercises.forEach(ex => allNames.push(ex.name));
+            });
+            datalist.innerHTML = allNames.map(n => `<option value="${escapeHTML(n)}"></option>`).join('');
         }
 
         /**
@@ -952,10 +1083,22 @@
         }
 
         /**
-         * Inicialización de la aplicación y almacenamiento persistente
+         * Inicialización: detecta si el usuario abrió un enlace privado ?rutina=... o el panel de admin
          */
         window.onload = async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedRoutineParam = urlParams.get('rutina');
+
+            if (sharedRoutineParam) {
+                const decoded = decodeRoutinePayload(sharedRoutineParam);
+                if (decoded) {
+                    showAthleteRoutineScreen(decoded, false);
+                    return;
+                }
+            }
+
             buildEvaluationFormHTML();
+            populateExercisesDatalist();
             await initPersistentStorage();
         };
 
@@ -1126,6 +1269,32 @@
                     fee: 'Plan Personalizado — $600',
                     payDate: payStr1,
                     endDate: calculateEndDate(payStr1, 'monthly'),
+                    routine: {
+                        goal: 'Fuerza Escapular y Progresión Front Lever',
+                        notes: 'Descansar 90 seg entre cada serie.',
+                        days: [
+                            {
+                                title: 'Día 1 tirón y empuje',
+                                blocks: [
+                                    {
+                                        series: '4 series',
+                                        items: [
+                                            { exercise: 'Retracciones escapulares', dose: '10 reps' },
+                                            { exercise: 'Protracciones escapulares', dose: '10 reps' },
+                                            { exercise: 'Hold', dose: '20 seg' }
+                                        ]
+                                    },
+                                    {
+                                        series: '4 series',
+                                        items: [
+                                            { exercise: 'Dominadas pull up', dose: '8 reps' },
+                                            { exercise: 'Fondos en paralela', dose: '12 reps' }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     evaluations: [
                         {
                             id: 'ev-1',
@@ -1181,6 +1350,25 @@
                     fee: 'Plan General (Lun a Vie) — $450',
                     payDate: payStr2,
                     endDate: calculateEndDate(payStr2, 'monthly'),
+                    routine: {
+                        goal: 'Acondicionamiento Base Calistenia',
+                        notes: 'Mantener abdomen firme en cada ejercicio.',
+                        days: [
+                            {
+                                title: 'Día 1 tirón y empuje',
+                                blocks: [
+                                    {
+                                        series: '4 series',
+                                        items: [
+                                            { exercise: 'Retracciones escapulares', dose: '10 reps' },
+                                            { exercise: 'Protracciones escapulares', dose: '10 reps' },
+                                            { exercise: 'Hold', dose: '20 seg' }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     evaluations: [
                         {
                             id: 'ev-3',
@@ -1212,6 +1400,7 @@
                     fee: 'Plan Avanzado (Skills & Lastre) — $750',
                     payDate: payStr3,
                     endDate: calculateEndDate(payStr3, 'monthly'),
+                    routine: { goal: '', notes: '', days: [] },
                     evaluations: []
                 }
             ];
@@ -1221,6 +1410,9 @@
             }
         }
 
+        // =====================================================================
+        // GESTIÓN DE ALUMNOS
+        // =====================================================================
         function openStudentModal(studentId = null) {
             const modal = document.getElementById('student-modal');
             const title = document.getElementById('student-modal-title');
@@ -1329,6 +1521,7 @@
                     fee,
                     payDate,
                     endDate,
+                    routine: { goal: '', notes: '', days: [] },
                     evaluations: []
                 };
                 await persistStudentRecord(newStudent);
@@ -1365,6 +1558,425 @@
             closeDeleteModal();
         }
 
+        // =====================================================================
+        // SECCIÓN DE RUTINA PERSONALIZADA Y COMPARTIR POR PRIVADO
+        // =====================================================================
+        function openRoutineModal(studentId) {
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+
+            document.getElementById('routine-student-id').value = st.id;
+            document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
+            document.getElementById('routine-student-subtitle').textContent = `${st.fee || ''} · ${st.days || ''}`;
+
+            const existingRoutine = st.routine && Array.isArray(st.routine.days)
+                ? JSON.parse(JSON.stringify(st.routine))
+                : { goal: '', notes: '', days: [] };
+
+            if (existingRoutine.days.length === 0) {
+                existingRoutine.days.push({
+                    title: 'Día 1 tirón y empuje',
+                    blocks: [
+                        {
+                            series: '4 series',
+                            items: [
+                                { exercise: 'Retracciones escapulares', dose: '10 reps' },
+                                { exercise: 'Protracciones escapulares', dose: '10 reps' },
+                                { exercise: 'Hold', dose: '20 seg' }
+                            ]
+                        }
+                    ]
+                });
+            }
+
+            draftRoutine = existingRoutine;
+            document.getElementById('routine-goal-input').value = draftRoutine.goal || '';
+            document.getElementById('routine-notes-input').value = draftRoutine.notes || '';
+
+            renderRoutineBuilder();
+
+            const modal = document.getElementById('routine-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRoutineModal() {
+            const modal = document.getElementById('routine-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderRoutineBuilder() {
+            const container = document.getElementById('routine-days-container');
+            if (!container) return;
+
+            container.innerHTML = draftRoutine.days.map((day, dayIdx) => `
+                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                    <!-- Encabezado del Día -->
+                    <div class="flex items-center justify-between gap-2 pb-2 border-b border-bandido-border">
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="w-7 h-7 rounded-lg bg-bandido-orange text-black font-display font-bold text-xs flex items-center justify-center shrink-0">
+                                D${dayIdx + 1}
+                            </span>
+                            <input type="text"
+                                   value="${escapeHTML(day.title)}"
+                                   oninput="updateRoutineDayTitle(${dayIdx}, this.value)"
+                                   placeholder="Ej. Día ${dayIdx + 1} tirón y empuje"
+                                   class="w-full px-3 py-1.5 rounded-lg bg-bandido-card border border-bandido-border text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                        <button type="button" onclick="removeRoutineDay(${dayIdx})"
+                                title="Eliminar día"
+                                class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Bloques de Series dentro del Día -->
+                    <div class="space-y-3">
+                        ${day.blocks.map((block, blockIdx) => `
+                            <div class="p-3.5 rounded-xl bg-bandido-card border border-bandido-border/90 space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                                        Bloque ${blockIdx + 1}
+                                    </span>
+                                    ${day.blocks.length > 1 ? `
+                                        <button type="button" onclick="removeRoutineBlock(${dayIdx}, ${blockIdx})"
+                                                class="text-[11px] text-zinc-500 hover:text-rose-400 cursor-pointer">
+                                            Quitar bloque
+                                        </button>
+                                    ` : ''}
+                                </div>
+
+                                <!-- Filas de Ejercicio / Reps o Seg -->
+                                <div class="space-y-2">
+                                    ${block.items.map((item, itemIdx) => `
+                                        <div class="flex items-center gap-2">
+                                            <input type="text"
+                                                   list="calisthenics-exercises-datalist"
+                                                   value="${escapeHTML(item.exercise)}"
+                                                   oninput="updateRoutineItem(${dayIdx}, ${blockIdx}, ${itemIdx}, 'exercise', this.value)"
+                                                   placeholder="Ejercicio (ej. Retracciones escapulares)"
+                                                   class="flex-1 min-w-0 px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                                            <span class="text-bandido-orange font-bold text-sm">/</span>
+                                            <input type="text"
+                                                   value="${escapeHTML(item.dose)}"
+                                                   oninput="updateRoutineItem(${dayIdx}, ${blockIdx}, ${itemIdx}, 'dose', this.value)"
+                                                   placeholder="10 reps / 20 seg"
+                                                   class="w-28 sm:w-36 px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                                            <button type="button" onclick="removeRoutineItem(${dayIdx}, ${blockIdx}, ${itemIdx})"
+                                                    class="p-2 text-zinc-500 hover:text-rose-400 cursor-pointer" title="Quitar ejercicio">
+                                                <i class="fa-solid fa-xmark text-xs"></i>
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <!-- Pie del bloque: Agregar ejercicio + Total de Series (ej. 4 series) -->
+                                <div class="pt-2 border-t border-bandido-border/70 flex flex-wrap items-center justify-between gap-2">
+                                    <button type="button" onclick="addRoutineItem(${dayIdx}, ${blockIdx})"
+                                            class="px-2.5 py-1.5 rounded-lg bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-[11px] font-bold text-zinc-300 hover:text-bandido-orange transition cursor-pointer">
+                                        + Agregar ejercicio
+                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[11px] font-bold uppercase text-bandido-orange">Total:</span>
+                                        <input type="text"
+                                               value="${escapeHTML(block.series)}"
+                                               oninput="updateRoutineBlockSeries(${dayIdx}, ${blockIdx}, this.value)"
+                                               placeholder="4 series"
+                                               class="w-28 px-2.5 py-1.5 rounded-lg bg-bandido-dark border border-bandido-orange/40 text-xs font-extrabold text-bandido-orange text-center focus:outline-none focus:border-bandido-orange" />
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <button type="button" onclick="addRoutineBlock(${dayIdx})"
+                            class="text-xs font-bold text-bandido-orange hover:underline cursor-pointer flex items-center gap-1.5 pt-1">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>+ Agregar otro bloque de series a este día</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addRoutineDay() {
+            const nextNum = draftRoutine.days.length + 1;
+            draftRoutine.days.push({
+                title: `Día ${nextNum}`,
+                blocks: [
+                    {
+                        series: '4 series',
+                        items: [{ exercise: '', dose: '' }]
+                    }
+                ]
+            });
+            renderRoutineBuilder();
+        }
+
+        function removeRoutineDay(dayIdx) {
+            draftRoutine.days.splice(dayIdx, 1);
+            renderRoutineBuilder();
+        }
+
+        function updateRoutineDayTitle(dayIdx, val) {
+            if (draftRoutine.days[dayIdx]) draftRoutine.days[dayIdx].title = val;
+        }
+
+        function addRoutineBlock(dayIdx) {
+            if (!draftRoutine.days[dayIdx]) return;
+            draftRoutine.days[dayIdx].blocks.push({
+                series: '4 series',
+                items: [{ exercise: '', dose: '' }]
+            });
+            renderRoutineBuilder();
+        }
+
+        function removeRoutineBlock(dayIdx, blockIdx) {
+            if (!draftRoutine.days[dayIdx]) return;
+            draftRoutine.days[dayIdx].blocks.splice(blockIdx, 1);
+            renderRoutineBuilder();
+        }
+
+        function updateRoutineBlockSeries(dayIdx, blockIdx, val) {
+            if (draftRoutine.days[dayIdx]?.blocks[blockIdx]) {
+                draftRoutine.days[dayIdx].blocks[blockIdx].series = val;
+            }
+        }
+
+        function addRoutineItem(dayIdx, blockIdx) {
+            if (!draftRoutine.days[dayIdx]?.blocks[blockIdx]) return;
+            draftRoutine.days[dayIdx].blocks[blockIdx].items.push({ exercise: '', dose: '' });
+            renderRoutineBuilder();
+        }
+
+        function removeRoutineItem(dayIdx, blockIdx, itemIdx) {
+            const items = draftRoutine.days[dayIdx]?.blocks[blockIdx]?.items;
+            if (!items) return;
+            if (items.length > 1) {
+                items.splice(itemIdx, 1);
+            } else {
+                items[0] = { exercise: '', dose: '' };
+            }
+            renderRoutineBuilder();
+        }
+
+        function updateRoutineItem(dayIdx, blockIdx, itemIdx, field, val) {
+            if (draftRoutine.days[dayIdx]?.blocks[blockIdx]?.items[itemIdx]) {
+                draftRoutine.days[dayIdx].blocks[blockIdx].items[itemIdx][field] = val;
+            }
+        }
+
+        function getCurrentRoutineSnapshot() {
+            const studentId = document.getElementById('routine-student-id')?.value;
+            const st = students.find(s => s.id === studentId);
+            const goal = document.getElementById('routine-goal-input')?.value.trim() || '';
+            const notes = document.getElementById('routine-notes-input')?.value.trim() || '';
+
+            const cleanDays = draftRoutine.days.map(d => ({
+                title: (d.title || '').trim() || 'Día de Entrenamiento',
+                blocks: d.blocks.map(b => ({
+                    series: (b.series || '').trim() || '4 series',
+                    items: b.items.filter(it => (it.exercise || '').trim() !== '' || (it.dose || '').trim() !== '')
+                })).filter(b => b.items.length > 0)
+            })).filter(d => d.blocks.length > 0);
+
+            return {
+                studentName: st ? st.name : 'Atleta Bandidos Sur',
+                studentLevel: st ? st.level : 'Calistenia',
+                goal,
+                notes,
+                days: cleanDays
+            };
+        }
+
+        async function saveStudentRoutine() {
+            const studentId = document.getElementById('routine-student-id').value;
+            const st = students.find(s => s.id === studentId);
+            if (!st) return;
+
+            const snap = getCurrentRoutineSnapshot();
+            const routineData = {
+                goal: snap.goal,
+                notes: snap.notes,
+                days: snap.days,
+                updatedAt: formatDateISO(new Date())
+            };
+
+            await persistStudentRecord({ ...st, routine: routineData });
+            showToast(`Rutina de ${st.name} guardada correctamente`, 'success');
+        }
+
+        function encodeRoutinePayload(payload) {
+            const jsonStr = JSON.stringify(payload);
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binary = '';
+            bytes.forEach(b => binary += String.fromCharCode(b));
+            return btoa(binary);
+        }
+
+        function decodeRoutinePayload(encodedStr) {
+            try {
+                const binary = atob(encodedStr);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                const jsonStr = new TextDecoder().decode(bytes);
+                return JSON.parse(jsonStr);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function buildPrivateRoutineURL(payload) {
+            const baseUrl = window.location.href.split('?')[0];
+            const encoded = encodeRoutinePayload(payload);
+            return `${baseUrl}?rutina=${encodeURIComponent(encoded)}`;
+        }
+
+        function copyPrivateRoutineLink() {
+            const snap = getCurrentRoutineSnapshot();
+            const shareUrl = buildPrivateRoutineURL(snap);
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast('Enlace privado copiado. Compártelo solo con tu alumno', 'success');
+        }
+
+        function formatRoutinePlainText(snap) {
+            let text = `*BANDIDOS SUR — CALISTENIA PURA*\n`;
+            text += `Atleta: *${snap.studentName}*\n`;
+            if (snap.goal) text += `Objetivo: ${snap.goal}\n`;
+            text += `\n`;
+
+            snap.days.forEach(day => {
+                text += `*${day.title}*\n`;
+                day.blocks.forEach(block => {
+                    block.items.forEach(item => {
+                        text += `${item.exercise}${item.dose ? ' / ' + item.dose : ''}\n`;
+                    });
+                    text += `*${block.series}*\n\n`;
+                });
+            });
+
+            if (snap.notes) {
+                text += `Notas: ${snap.notes}\n\n`;
+            }
+
+            const link = buildPrivateRoutineURL(snap);
+            text += `Ver rutina interactiva privada:\n${link}`;
+            return text;
+        }
+
+        function sendRoutineWhatsApp() {
+            const studentId = document.getElementById('routine-student-id').value;
+            const st = students.find(s => s.id === studentId);
+            const snap = getCurrentRoutineSnapshot();
+            const message = encodeURIComponent(formatRoutinePlainText(snap));
+            const cleanPhone = st && st.phone ? st.phone.replace(/\D/g, '') : '';
+            const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${message}` : `https://wa.me/?text=${message}`;
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function previewStudentRoutine() {
+            const snap = getCurrentRoutineSnapshot();
+            closeRoutineModal();
+            showAthleteRoutineScreen(snap, true);
+        }
+
+        function showAthleteRoutineScreen(routineData, isAdminPreview = false) {
+            const adminWrapper = document.getElementById('admin-dashboard-wrapper');
+            const athleteView = document.getElementById('athlete-routine-view');
+            const exitBtn = document.getElementById('exit-preview-btn');
+            const content = document.getElementById('athlete-routine-content');
+
+            if (adminWrapper) adminWrapper.classList.add('hidden');
+            if (athleteView) {
+                athleteView.classList.remove('hidden');
+                athleteView.classList.add('flex');
+            }
+            if (exitBtn) {
+                if (isAdminPreview) exitBtn.classList.remove('hidden');
+                else exitBtn.classList.add('hidden');
+            }
+
+            if (!content) return;
+
+            const days = Array.isArray(routineData.days) ? routineData.days : [];
+
+            content.innerHTML = `
+                <div class="p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30">
+                            Rutina Privada
+                        </span>
+                        <span class="text-xs text-zinc-400">${escapeHTML(routineData.studentLevel || 'Calistenia')}</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-bold uppercase text-white">${escapeHTML(routineData.studentName || 'Atleta')}</h2>
+                    ${routineData.goal ? `<p class="text-sm text-zinc-300"><strong class="text-bandido-orange">Objetivo:</strong> ${escapeHTML(routineData.goal)}</p>` : ''}
+                    ${routineData.notes ? `<p class="text-xs text-zinc-400 bg-bandido-dark p-3 rounded-xl border border-bandido-border mt-2"><i class="fa-solid fa-circle-info text-bandido-orange mr-1.5"></i>${escapeHTML(routineData.notes)}</p>` : ''}
+                </div>
+
+                ${days.length === 0 ? `
+                    <div class="p-8 rounded-2xl bg-bandido-card border border-bandido-border text-center text-sm text-zinc-400">
+                        Tu entrenador aún está preparando los ejercicios de esta rutina.
+                    </div>
+                ` : days.map((day, dIdx) => `
+                    <div class="p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-4">
+                        <div class="flex items-center gap-2.5 border-b border-bandido-border pb-3">
+                            <span class="w-8 h-8 rounded-xl bg-bandido-orange text-black font-display font-bold text-sm flex items-center justify-center shrink-0">
+                                D${dIdx + 1}
+                            </span>
+                            <h3 class="font-display text-lg font-bold uppercase tracking-wide text-white">${escapeHTML(day.title)}</h3>
+                        </div>
+
+                        <div class="space-y-3">
+                            ${day.blocks.map(block => `
+                                <div class="p-4 rounded-xl bg-bandido-dark border border-bandido-border space-y-2.5">
+                                    <div class="space-y-2">
+                                        ${block.items.map(item => `
+                                            <label class="flex items-center justify-between gap-3 p-2.5 rounded-lg bg-bandido-card/80 border border-bandido-border/60 cursor-pointer hover:border-bandido-orange/40 transition">
+                                                <div class="flex items-center gap-3 min-w-0">
+                                                    <input type="checkbox" class="w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
+                                                    <span class="text-sm font-semibold text-white truncate">${escapeHTML(item.exercise)}</span>
+                                                </div>
+                                                ${item.dose ? `<span class="text-xs font-bold text-bandido-orange whitespace-nowrap">/ ${escapeHTML(item.dose)}</span>` : ''}
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                    <div class="pt-2 border-t border-bandido-border/80 flex items-center justify-between">
+                                        <span class="text-[11px] uppercase tracking-wider text-zinc-500 font-bold">Volumen del bloque</span>
+                                        <span class="px-3 py-1 rounded-lg bg-bandido-orange text-black text-xs font-extrabold uppercase tracking-wide">
+                                            ${escapeHTML(block.series)}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function exitAthletePreview() {
+            const adminWrapper = document.getElementById('admin-dashboard-wrapper');
+            const athleteView = document.getElementById('athlete-routine-view');
+            if (athleteView) {
+                athleteView.classList.add('hidden');
+                athleteView.classList.remove('flex');
+            }
+            if (adminWrapper) adminWrapper.classList.remove('hidden');
+        }
+
+        // =====================================================================
+        // EVALUACIONES MENSUALES
+        // =====================================================================
         async function saveEvaluation(e) {
             e.preventDefault();
             const studentId = document.getElementById('eval-student-id').value;
@@ -1488,7 +2100,6 @@
             if (expiringEl) expiringEl.textContent = expiringCount;
             if (expiredEl) expiredEl.textContent = expiredCount;
 
-            // Campana de notificaciones (alerta cuando faltan <= 3 días o ya venció)
             const badgeEl = document.getElementById('notif-badge');
             const listEl = document.getElementById('notif-list');
             const summaryEl = document.getElementById('notif-summary');
@@ -1548,7 +2159,6 @@
                 }
             }
 
-            // Banner automático de aviso (<= 3 días)
             const bannerEl = document.getElementById('expiration-alert-banner');
             const bannerTextEl = document.getElementById('alert-banner-text');
             const soon3Days = students
@@ -1637,7 +2247,7 @@
             tbody.innerHTML = filtered.map(st => {
                 const statusInfo = getMembershipStatus(st.endDate);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
-                const lastEval = evalCount > 0 ? st.evaluations[evalCount - 1] : null;
+                const routineDaysCount = st.routine && Array.isArray(st.routine.days) ? st.routine.days.length : 0;
 
                 return `
                     <tr class="hover:bg-zinc-900/70 transition group">
@@ -1673,12 +2283,18 @@
                             </span>
                         </td>
                         <td class="px-5 py-4 align-top">
-                            <button onclick="openEvalModal('${st.id}')"
-                                    class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-orange/40 hover:border-bandido-orange text-xs font-bold text-white transition cursor-pointer flex items-center gap-2">
-                                <i class="fa-solid fa-dumbbell text-bandido-orange"></i>
-                                <span>Evaluación (${evalCount})</span>
-                            </button>
-                            ${lastEval ? `<p class="text-[11px] text-zinc-400 mt-1.5 truncate max-w-[180px]" title="${escapeHTML(lastEval.monthLabel)}">Última: ${escapeHTML(lastEval.monthLabel)}</p>` : `<p class="text-[11px] text-zinc-500 mt-1.5">Sin evaluaciones aún</p>`}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="openEvalModal('${st.id}')"
+                                        class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-orange/40 hover:border-bandido-orange text-xs font-bold text-white transition cursor-pointer flex items-center gap-1.5">
+                                    <i class="fa-solid fa-dumbbell text-bandido-orange"></i>
+                                    <span>Eval (${evalCount})</span>
+                                </button>
+                                <button onclick="openRoutineModal('${st.id}')"
+                                        class="px-3 py-2 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/40 text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                    <span>Rutina${routineDaysCount > 0 ? ` (${routineDaysCount}d)` : ''}</span>
+                                </button>
+                            </div>
                         </td>
                         <td class="px-5 py-4 align-top text-right">
                             <div class="inline-flex items-center justify-end gap-1.5">
@@ -1708,7 +2324,7 @@
                 mobileList.innerHTML = filtered.map(st => {
                     const statusInfo = getMembershipStatus(st.endDate);
                     const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
-                    const lastEval = evalCount > 0 ? st.evaluations[evalCount - 1] : null;
+                    const routineDaysCount = st.routine && Array.isArray(st.routine.days) ? st.routine.days.length : 0;
 
                     return `
                         <div class="p-4 space-y-3 bg-bandido-card">
@@ -1741,17 +2357,25 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-2 pt-0.5">
+                            <div class="grid grid-cols-2 gap-2">
                                 <button onclick="openEvalModal('${st.id}')"
-                                        class="flex-1 py-2.5 px-3 rounded-xl bg-bandido-dark active:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-white flex items-center justify-center gap-2 cursor-pointer">
+                                        class="py-2.5 px-3 rounded-xl bg-bandido-dark active:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer">
                                     <i class="fa-solid fa-dumbbell text-bandido-orange"></i>
                                     <span>Evaluación (${evalCount})</span>
                                 </button>
+                                <button onclick="openRoutineModal('${st.id}')"
+                                        class="py-2.5 px-3 rounded-xl bg-bandido-orange/15 active:bg-bandido-orange text-bandido-orange active:text-black border border-bandido-orange/40 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                    <span>Rutina${routineDaysCount > 0 ? ` (${routineDaysCount}d)` : ''}</span>
+                                </button>
+                            </div>
 
+                            <div class="flex items-center justify-end gap-2 pt-0.5">
                                 <button onclick="openRenewModal('${st.id}')"
                                         title="Renovar pago"
-                                        class="p-2.5 rounded-xl bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30 text-xs font-bold cursor-pointer">
+                                        class="px-3 py-2 rounded-xl bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30 text-xs font-bold cursor-pointer flex items-center gap-1.5">
                                     <i class="fa-solid fa-rotate"></i>
+                                    <span>Renovar</span>
                                 </button>
                                 <button onclick="openStudentModal('${st.id}')"
                                         title="Editar alumno"
@@ -1764,7 +2388,6 @@
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
-                            ${lastEval ? `<p class="text-[11px] text-zinc-400 truncate">Última evaluación: ${escapeHTML(lastEval.monthLabel)}</p>` : ''}
                         </div>
                     `;
                 }).join('');
@@ -1985,6 +2608,22 @@
         window.loadSelectedEvaluation = loadSelectedEvaluation;
         window.saveEvaluation = saveEvaluation;
         window.closeEvalModal = closeEvalModal;
+        window.openRoutineModal = openRoutineModal;
+        window.closeRoutineModal = closeRoutineModal;
+        window.addRoutineDay = addRoutineDay;
+        window.removeRoutineDay = removeRoutineDay;
+        window.updateRoutineDayTitle = updateRoutineDayTitle;
+        window.addRoutineBlock = addRoutineBlock;
+        window.removeRoutineBlock = removeRoutineBlock;
+        window.updateRoutineBlockSeries = updateRoutineBlockSeries;
+        window.addRoutineItem = addRoutineItem;
+        window.removeRoutineItem = removeRoutineItem;
+        window.updateRoutineItem = updateRoutineItem;
+        window.saveStudentRoutine = saveStudentRoutine;
+        window.copyPrivateRoutineLink = copyPrivateRoutineLink;
+        window.sendRoutineWhatsApp = sendRoutineWhatsApp;
+        window.previewStudentRoutine = previewStudentRoutine;
+        window.exitAthletePreview = exitAthletePreview;
         window.exportBackupJSON = exportBackupJSON;
     </script>
 </body>
