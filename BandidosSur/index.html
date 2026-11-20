@@ -1083,18 +1083,41 @@
         }
 
         /**
-         * Inicialización: detecta si el usuario abrió un enlace privado ?rutina=... o el panel de admin
+         * Inicialización: detecta si el usuario abrió un enlace privado (#rutina=... o ?rutina=...) o el panel de admin
          */
-        window.onload = async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sharedRoutineParam = urlParams.get('rutina');
+        function checkAndRenderSharedRoutine() {
+            let sharedRoutineParam = null;
+
+            // 1. Revisar hash (#rutina=...) — inmune a recortes de parámetros en WhatsApp y servidores estáticos
+            if (window.location.hash && window.location.hash.includes('rutina=')) {
+                const hashClean = window.location.hash.replace(/^#/, '');
+                const hashParams = new URLSearchParams(hashClean);
+                sharedRoutineParam = hashParams.get('rutina');
+            }
+
+            // 2. Respaldo por query string (?rutina=...)
+            if (!sharedRoutineParam && window.location.search) {
+                const urlParams = new URLSearchParams(window.location.search);
+                sharedRoutineParam = urlParams.get('rutina');
+            }
 
             if (sharedRoutineParam) {
                 const decoded = decodeRoutinePayload(sharedRoutineParam);
                 if (decoded) {
                     showAthleteRoutineScreen(decoded, false);
-                    return;
+                    return true;
                 }
+            }
+            return false;
+        }
+
+        window.addEventListener('hashchange', () => {
+            checkAndRenderSharedRoutine();
+        });
+
+        window.onload = async function() {
+            if (checkAndRenderSharedRoutine()) {
+                return;
             }
 
             buildEvaluationFormHTML();
@@ -1808,31 +1831,69 @@
         }
 
         function encodeRoutinePayload(payload) {
-            const jsonStr = JSON.stringify(payload);
+            // Formato compacto para evitar que WhatsApp corte enlaces largos
+            const compact = {
+                n: payload.studentName || 'Atleta',
+                l: payload.studentLevel || 'Calistenia',
+                g: payload.goal || '',
+                t: payload.notes || '',
+                d: (payload.days || []).map(day => ({
+                    t: day.title || 'Día',
+                    b: (day.blocks || []).map(blk => ({
+                        s: blk.series || '4 series',
+                        i: (blk.items || []).map(it => [it.exercise || '', it.dose || ''])
+                    }))
+                }))
+            };
+            const jsonStr = JSON.stringify(compact);
             const bytes = new TextEncoder().encode(jsonStr);
             let binary = '';
             bytes.forEach(b => binary += String.fromCharCode(b));
-            return btoa(binary);
+            // Base64URL seguro para enlaces en WhatsApp
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         }
 
         function decodeRoutinePayload(encodedStr) {
             try {
-                const binary = atob(encodedStr);
+                let b64 = decodeURIComponent(encodedStr).replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                const binary = atob(b64);
                 const bytes = new Uint8Array(binary.length);
                 for (let i = 0; i < binary.length; i++) {
                     bytes[i] = binary.charCodeAt(i);
                 }
                 const jsonStr = new TextDecoder().decode(bytes);
-                return JSON.parse(jsonStr);
+                const parsed = JSON.parse(jsonStr);
+
+                // Soporta tanto el formato compacto nuevo como el anterior
+                if (parsed && Array.isArray(parsed.d)) {
+                    return {
+                        studentName: parsed.n || 'Atleta Bandidos Sur',
+                        studentLevel: parsed.l || 'Calistenia',
+                        goal: parsed.g || '',
+                        notes: parsed.t || '',
+                        days: parsed.d.map(day => ({
+                            title: day.t || 'Día de Entrenamiento',
+                            blocks: (day.b || []).map(blk => ({
+                                series: blk.s || '4 series',
+                                items: (blk.i || []).map(pair => ({
+                                    exercise: pair[0] || '',
+                                    dose: pair[1] || ''
+                                }))
+                            }))
+                        }))
+                    };
+                }
+                return parsed;
             } catch (e) {
                 return null;
             }
         }
 
         function buildPrivateRoutineURL(payload) {
-            const baseUrl = window.location.href.split('?')[0];
+            const baseUrl = window.location.origin + window.location.pathname;
             const encoded = encodeRoutinePayload(payload);
-            return `${baseUrl}?rutina=${encodeURIComponent(encoded)}`;
+            return `${baseUrl}#rutina=${encoded}`;
         }
 
         function copyPrivateRoutineLink() {
@@ -1870,11 +1931,12 @@
             }
 
             const link = buildPrivateRoutineURL(snap);
-            text += `Ver rutina interactiva privada:\n${link}`;
+            text += `Abre tu rutina interactiva privada aquí:\n${link}`;
             return text;
         }
 
-        function sendRoutineWhatsApp() {
+        async function sendRoutineWhatsApp() {
+            await saveStudentRoutine();
             const studentId = document.getElementById('routine-student-id').value;
             const st = students.find(s => s.id === studentId);
             const snap = getCurrentRoutineSnapshot();
