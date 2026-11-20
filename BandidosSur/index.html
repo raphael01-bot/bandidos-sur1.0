@@ -1919,7 +1919,8 @@
             const studentId = document.getElementById('routine-student-id').value;
             const st = students.find(s => s.id === studentId);
             const snap = getCurrentRoutineSnapshot();
-            const message = encodeURIComponent(buildPrivateRoutineURL(snap));
+            const link = buildPrivateRoutineURL(snap);
+            const message = encodeURIComponent(`*consulta tu rutina en el siguiente sitio*\n${link}`);
             const cleanPhone = st && st.phone ? st.phone.replace(/\D/g, '') : '';
             const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${message}` : `https://wa.me/?text=${message}`;
             window.open(waUrl, '_blank', 'noopener,noreferrer');
