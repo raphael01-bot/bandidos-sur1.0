@@ -41,7 +41,6 @@
     </script>
 
     <style>
-        /* Scrollbar personalizado estilo oscuro/naranja */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -61,7 +60,7 @@
 <body class="bg-bandido-black text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-bandido-orange selection:text-black">
 
     <!-- ===================================================================== -->
-    <!-- VISTA PRIVADA DEL ALUMNO (Se activa al abrir enlace ?rutina=...)       -->
+    <!-- VISTA PRIVADA DEL ALUMNO (Se activa al abrir enlace #rutina=...)       -->
     <!-- ===================================================================== -->
     <div id="athlete-routine-view" class="hidden min-h-screen flex-col bg-bandido-black">
         <header class="sticky top-0 z-40 bg-bandido-black/95 backdrop-blur-md border-b border-bandido-border">
@@ -96,9 +95,7 @@
             </div>
         </header>
 
-        <main id="athlete-routine-content" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 space-y-5">
-            <!-- Contenido de la rutina privada del atleta -->
-        </main>
+        <main id="athlete-routine-content" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 space-y-5"></main>
     </div>
 
     <!-- ===================================================================== -->
@@ -112,7 +109,6 @@
                 <!-- Identidad del Gimnasio -->
                 <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                     <div class="relative w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-bandido-orange shadow-lg shadow-orange-500/25 bg-[#b4b6ba] shrink-0 flex items-center justify-center">
-                        <!-- Logotipo Original Bandidos Sur -->
                         <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="100" cy="100" r="100" fill="#b4b6ba" />
                             <path d="M 38 14 C 66 6, 94 22, 86 46 C 82 58, 62 62, 54 64 C 74 64, 88 74, 82 90 C 76 105, 45 96, 36 86 L 26 98 L 16 92 L 32 72 C 22 62, 24 38, 38 14 Z" fill="#ff8c00" stroke="#111111" stroke-width="3.2" />
@@ -143,13 +139,13 @@
 
                 <!-- Acciones Rápidas y Campana de Notificaciones -->
                 <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                    <!-- Botón Sincronización Nube -->
+                    <!-- Botón Sincronización entre Equipos -->
                     <button onclick="openCloudSyncModal()"
-                            title="Sincronizar datos entre celular y computadora"
+                            title="Pasar o sincronizar alumnos entre celular y computadora"
                             class="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-[11px] text-zinc-300 transition cursor-pointer">
-                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span id="sync-text" class="hidden sm:inline">Sincronizar</span>
-                        <i class="fa-solid fa-cloud text-bandido-orange sm:hidden"></i>
+                        <i class="fa-solid fa-arrows-rotate text-bandido-orange sm:hidden"></i>
                     </button>
 
                     <!-- Respaldo JSON -->
@@ -301,7 +297,6 @@
 
             <!-- LISTADO DE ALUMNOS (TABLA EN ESCRITORIO / TARJETAS EN MÓVIL) -->
             <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
-                <!-- Vista Escritorio -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -318,10 +313,8 @@
                     </table>
                 </div>
 
-                <!-- Vista Celular -->
                 <div id="students-mobile-list" class="md:hidden divide-y divide-bandido-border"></div>
 
-                <!-- Estado Vacío -->
                 <div id="empty-state" class="hidden p-10 text-center space-y-3">
                     <div class="w-14 h-14 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
                         <i class="fa-solid fa-dumbbell text-xl"></i>
@@ -340,13 +333,13 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 0: SINCRONIZACIÓN ENTRE DISPOSITIVOS Y RESPALDO                 -->
+    <!-- MODAL 0: SINCRONIZAR CELULAR Y COMPUTADORA (100% COMPATIBLE)          -->
     <!-- ===================================================================== -->
     <div id="cloud-sync-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
         <div class="w-full max-w-md rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden">
             <div class="px-5 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between">
                 <h3 class="font-display text-base font-bold uppercase tracking-wide text-white flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-bandido-orange"></i>
+                    <i class="fa-solid fa-arrows-rotate text-bandido-orange"></i>
                     <span>Sincronizar Celular y PC</span>
                 </h3>
                 <button onclick="closeCloudSyncModal()" class="text-zinc-400 hover:text-white cursor-pointer">
@@ -355,42 +348,37 @@
             </div>
 
             <div class="p-5 space-y-4">
-                <p id="cloud-sync-status-detail" class="text-xs text-zinc-300 bg-bandido-dark p-3 rounded-xl border border-bandido-border leading-relaxed"></p>
-
-                <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1.5">ID de Nube Compartido</label>
-                    <div class="flex items-center gap-2">
-                        <input type="text"
-                               id="cloud-bin-id-input"
-                               placeholder="Pega aquí el ID de nube..."
-                               class="flex-1 px-3 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
-                        <button type="button" onclick="copyCloudBinId()"
-                                title="Copiar ID"
-                                class="px-3 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-xs text-bandido-orange font-bold cursor-pointer">
-                            <i class="fa-solid fa-copy"></i>
+                <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-orange/40 space-y-2.5">
+                    <p class="text-xs font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-bandido-orange"></i>
+                        <span>Transferencia Instantánea (Sin fallos de red)</span>
+                    </p>
+                    <p class="text-[11px] text-zinc-300 leading-relaxed">
+                        Genera un enlace con todos tus alumnos guardados, mándatelo por WhatsApp a ti mismo y ábrelo en tu computadora para pasar todos tus datos al instante.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        <button type="button" onclick="copyMagicTransferLink()"
+                                class="py-2.5 px-3 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Copiar Enlace</span>
+                        </button>
+                        <button type="button" onclick="sendMagicTransferWhatsApp()"
+                                class="py-2.5 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>Mandar a mi Whats</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <button type="button" onclick="createNewCloudRoom()"
-                            class="py-2.5 px-3 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer">
-                        1. Crear Nube Nueva
+                <div class="pt-2 border-t border-bandido-border flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <button type="button" onclick="exportBackupJSON()"
+                            class="px-3.5 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
+                        <i class="fa-solid fa-download text-bandido-orange mr-1.5"></i>Descargar Archivo
                     </button>
-                    <button type="button" onclick="connectExistingCloudRoom()"
-                            class="py-2.5 px-3 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase transition cursor-pointer">
-                        2. Conectar y Sincronizar
-                    </button>
-                </div>
-
-                <div class="pt-3 border-t border-bandido-border flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                    <label class="px-3 py-1.5 rounded-lg bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-300 font-semibold cursor-pointer">
-                        <i class="fa-solid fa-file-import text-bandido-orange mr-1"></i>Importar JSON
+                    <label class="px-3.5 py-2 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-zinc-200 font-semibold cursor-pointer">
+                        <i class="fa-solid fa-file-import text-bandido-orange mr-1.5"></i>Cargar Archivo
                         <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
                     </label>
-                    <button type="button" onclick="forcePushToCloud()" class="text-bandido-orange font-bold hover:underline cursor-pointer">
-                        Subir mis datos actuales a la nube
-                    </button>
                 </div>
             </div>
         </div>
@@ -758,8 +746,6 @@
         let currentUser = null;
         let useIndexedDBFallback = false;
         let idbInstance = null;
-        let sharedCloudBinId = '';
-        let cloudPollTimer = null;
 
         /**
          * CATÁLOGO OFICIAL DE PLANES Y CLASES - BANDIDOS SUR
@@ -930,9 +916,6 @@
         let initialNoticeShown = false;
         let draftRoutine = { goal: '', notes: '', days: [] };
 
-        /**
-         * Formatea fecha a YYYY-MM-DD
-         */
         function formatDateISO(dateInput) {
             const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
             if (Number.isNaN(d.getTime())) {
@@ -942,9 +925,6 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
-        /**
-         * Calcula la fecha de vencimiento (+1 mes o mismo día si es clase por día)
-         */
         function calculateEndDate(startDateStr, planType = 'monthly') {
             if (!startDateStr) return '';
             const parts = startDateStr.split('-').map(Number);
@@ -959,9 +939,6 @@
             return formatDateISO(new Date(year, targetMonthIndex, clampedDay));
         }
 
-        /**
-         * Llena el datalist de ejercicios de calistenia para el creador de rutinas
-         */
         function populateExercisesDatalist() {
             const datalist = document.getElementById('calisthenics-exercises-datalist');
             if (!datalist) return;
@@ -972,9 +949,6 @@
             datalist.innerHTML = allNames.map(n => `<option value="${escapeHTML(n)}"></option>`).join('');
         }
 
-        /**
-         * Construye las pestañas y campos de evaluación por categoría
-         */
         function buildEvaluationFormHTML() {
             const container = document.getElementById('eval-categories-container');
             if (!container) return;
@@ -1061,27 +1035,47 @@
             });
         }
 
-        /**
-         * Inicialización: detecta si el usuario abrió un enlace privado (#rutina=... o ?rutina=...) o el panel de admin
-         */
-        async function checkAndRenderSharedRoutine() {
+        // Codificación Base64URL segura para enlaces
+        function encodeBase64URL(obj) {
+            const jsonStr = JSON.stringify(obj);
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binary = '';
+            bytes.forEach(b => binary += String.fromCharCode(b));
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function decodeBase64URL(encodedStr) {
+            try {
+                let b64 = decodeURIComponent(encodedStr).replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                const binary = atob(b64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                const jsonStr = new TextDecoder().decode(bytes);
+                return JSON.parse(jsonStr);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function checkAndRenderSharedRoutine() {
             let sharedRoutineParam = null;
 
-            // 1. Revisar hash (#rutina=...) — inmune a recortes de parámetros en WhatsApp y servidores estáticos
             if (window.location.hash && window.location.hash.includes('rutina=')) {
                 const hashClean = window.location.hash.replace(/^#/, '');
                 const hashParams = new URLSearchParams(hashClean);
                 sharedRoutineParam = hashParams.get('rutina');
             }
 
-            // 2. Respaldo por query string (?rutina=...)
             if (!sharedRoutineParam && window.location.search) {
                 const urlParams = new URLSearchParams(window.location.search);
                 sharedRoutineParam = urlParams.get('rutina');
             }
 
             if (sharedRoutineParam) {
-                const decoded = await decodeRoutinePayload(sharedRoutineParam);
+                const decoded = decodeRoutinePayload(sharedRoutineParam);
                 if (decoded) {
                     showAthleteRoutineScreen(decoded, false);
                     return true;
@@ -1095,7 +1089,7 @@
         });
 
         window.onload = async function() {
-            if (await checkAndRenderSharedRoutine()) {
+            if (checkAndRenderSharedRoutine()) {
                 return;
             }
 
@@ -1141,8 +1135,7 @@
                             initialNoticeShown = true;
                             triggerInitialExpirationNotice();
                         }
-                    }, (error) => {
-                        console.error('Error sincronizando alumnos:', error);
+                    }, () => {
                         initIndexedDBStorage();
                     });
                     return;
@@ -1166,37 +1159,26 @@
                     if (!idb.objectStoreNames.contains('students')) {
                         idb.createObjectStore('students', { keyPath: 'id' });
                     }
-                    if (!idb.objectStoreNames.contains('settings')) {
-                        idb.createObjectStore('settings', { keyPath: 'key' });
-                    }
                 };
                 request.onsuccess = async (event) => {
                     idbInstance = event.target.result;
+                    syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                    syncText.textContent = 'Sincronizar';
 
-                    // Revisar si viene un ?nube=ID en el enlace o guardado en settings
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const urlCloudId = urlParams.get('nube');
-                    const savedCloudId = await getSettingFromIDB('cloudBinId');
-
-                    if (urlCloudId) {
-                        sharedCloudBinId = urlCloudId.trim();
-                        await saveSettingToIDB('cloudBinId', sharedCloudBinId);
-                    } else if (savedCloudId) {
-                        sharedCloudBinId = savedCloudId;
-                    }
-
-                    if (sharedCloudBinId) {
-                        syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                        syncText.textContent = 'Nube activa';
-                        const synced = await pullFromSharedCloud(true);
-                        startCloudPolling();
-                        if (synced) {
+                    // Revisar si viene un enlace de transferencia directa (#sync=...)
+                    if (window.location.hash && window.location.hash.includes('sync=')) {
+                        const hashClean = window.location.hash.replace(/^#/, '');
+                        const syncPayload = new URLSearchParams(hashClean).get('sync');
+                        const importedList = syncPayload ? decodeBase64URL(syncPayload) : null;
+                        if (Array.isArray(importedList) && importedList.length > 0) {
+                            students = importedList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                            await replaceAllInIDB(students);
+                            history.replaceState(null, '', window.location.pathname);
+                            renderTable();
+                            showToast(`¡${students.length} alumnos sincronizados correctamente en este equipo!`, 'success');
                             resolve();
                             return;
                         }
-                    } else {
-                        syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-                        syncText.textContent = 'Solo este equipo';
                     }
 
                     const loaded = await loadAllFromIDB();
@@ -1220,26 +1202,6 @@
             });
         }
 
-        function getSettingFromIDB(key) {
-            return new Promise((resolve) => {
-                if (!idbInstance || !idbInstance.objectStoreNames.contains('settings')) return resolve(null);
-                const tx = idbInstance.transaction('settings', 'readonly');
-                const req = tx.objectStore('settings').get(key);
-                req.onsuccess = () => resolve(req.result ? req.result.value : null);
-                req.onerror = () => resolve(null);
-            });
-        }
-
-        function saveSettingToIDB(key, value) {
-            return new Promise((resolve) => {
-                if (!idbInstance || !idbInstance.objectStoreNames.contains('settings')) return resolve();
-                const tx = idbInstance.transaction('settings', 'readwrite');
-                tx.objectStore('settings').put({ key, value });
-                tx.oncomplete = () => resolve();
-                tx.onerror = () => resolve();
-            });
-        }
-
         async function replaceAllInIDB(list) {
             if (!idbInstance) return;
             return new Promise((resolve) => {
@@ -1252,76 +1214,8 @@
             });
         }
 
-        async function pushToSharedCloud() {
-            if (!sharedCloudBinId) return;
-            try {
-                await fetch(`https://jsonblob.com/api/jsonBlob/${encodeURIComponent(sharedCloudBinId)}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        gym: 'Bandidos Sur',
-                        updatedAt: Date.now(),
-                        students
-                    })
-                });
-            } catch (err) {
-                console.warn('No se pudo subir actualización a la nube compartida:', err);
-            }
-        }
-
-        async function pullFromSharedCloud(isInitial = false) {
-            if (!sharedCloudBinId) return false;
-            try {
-                const res = await fetch(`https://jsonblob.com/api/jsonBlob/${encodeURIComponent(sharedCloudBinId)}`, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (!res.ok) return false;
-                const data = await res.json();
-                if (data && Array.isArray(data.students)) {
-                    students = data.students.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                    await replaceAllInIDB(students);
-                    renderTable();
-                    if (isInitial && !initialNoticeShown) {
-                        initialNoticeShown = true;
-                        triggerInitialExpirationNotice();
-                    }
-                    return true;
-                }
-            } catch (err) {
-                console.warn('Error leyendo nube compartida:', err);
-            }
-            return false;
-        }
-
-        function startCloudPolling() {
-            if (cloudPollTimer) clearInterval(cloudPollTimer);
-            if (!sharedCloudBinId) return;
-            cloudPollTimer = setInterval(() => {
-                // Evita sobreescribir si hay un modal de edición abierto
-                const anyModalOpen = ['student-modal', 'eval-modal', 'routine-modal', 'renew-modal'].some(id => {
-                    const el = document.getElementById(id);
-                    return el && !el.classList.contains('hidden');
-                });
-                if (!anyModalOpen) {
-                    pullFromSharedCloud(false);
-                }
-            }, 15000);
-        }
-
         function openCloudSyncModal() {
             const modal = document.getElementById('cloud-sync-modal');
-            const input = document.getElementById('cloud-bin-id-input');
-            const detail = document.getElementById('cloud-sync-status-detail');
-            if (input) input.value = sharedCloudBinId || '';
-            if (detail) {
-                detail.textContent = sharedCloudBinId
-                    ? `Conectado a la nube compartida (${sharedCloudBinId}). Todo cambio se sincroniza entre dispositivos.`
-                    : 'Aún no conectado a la nube compartida. Crea una nube en este equipo y pega el ID en tu otro dispositivo.';
-            }
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -1336,89 +1230,27 @@
             }
         }
 
-        async function createNewCloudRoom() {
-            try {
-                showToast('Creando nube compartida para Bandidos Sur...', 'info');
-                const res = await fetch('https://jsonblob.com/api/jsonBlob', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        gym: 'Bandidos Sur',
-                        updatedAt: Date.now(),
-                        students
-                    })
-                });
-                const locationHeader = res.headers.get('Location') || res.headers.get('x-jsonblob');
-                let newId = '';
-                if (locationHeader) {
-                    newId = locationHeader.split('/').pop().trim();
-                }
-                if (!newId) {
-                    showToast('No se pudo obtener el ID de nube. Revisa tu conexión.', 'error');
-                    return;
-                }
-                sharedCloudBinId = newId;
-                await saveSettingToIDB('cloudBinId', sharedCloudBinId);
-                document.getElementById('cloud-bin-id-input').value = sharedCloudBinId;
-                document.getElementById('cloud-sync-status-detail').textContent = `Nube creada (${sharedCloudBinId}). Copia este ID y pégalo en tu computadora.`;
-                document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-emerald-400';
-                document.getElementById('sync-text').textContent = 'Nube activa';
-                startCloudPolling();
-                showToast('¡Nube creada! Copia el ID y pégalo en tu otro dispositivo', 'success');
-            } catch (err) {
-                showToast('Error al conectar con el servicio de nube', 'error');
-            }
+        function buildMagicTransferURL() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const encoded = encodeBase64URL(students);
+            return `${baseUrl}#sync=${encoded}`;
         }
 
-        async function connectExistingCloudRoom() {
-            const inputVal = (document.getElementById('cloud-bin-id-input')?.value || '').trim();
-            if (!inputVal) {
-                showToast('Pega primero el ID de Nube compartido', 'warning');
-                return;
-            }
-            // Permite pegar tanto el ID puro como la URL completa
-            const cleanId = inputVal.includes('/') ? inputVal.split('/').pop().trim() : inputVal;
-            sharedCloudBinId = cleanId;
-            await saveSettingToIDB('cloudBinId', sharedCloudBinId);
-
-            const ok = await pullFromSharedCloud(false);
-            if (ok) {
-                document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-emerald-400';
-                document.getElementById('sync-text').textContent = 'Nube activa';
-                document.getElementById('cloud-sync-status-detail').textContent = `Sincronizado correctamente con (${sharedCloudBinId}).`;
-                startCloudPolling();
-                showToast('¡Dispositivos sincronizados! Ya ves los mismos alumnos', 'success');
-                closeCloudSyncModal();
-            } else {
-                showToast('No se encontró ese ID de Nube. Verifica que esté bien copiado', 'error');
-            }
-        }
-
-        async function forcePushToCloud() {
-            if (!sharedCloudBinId) {
-                await createNewCloudRoom();
-                return;
-            }
-            await pushToSharedCloud();
-            showToast('Datos actuales subidos a la nube compartida', 'success');
-        }
-
-        function copyCloudBinId() {
-            const val = document.getElementById('cloud-bin-id-input')?.value.trim();
-            if (!val) {
-                showToast('Primero crea o ingresa un ID de Nube', 'warning');
-                return;
-            }
+        function copyMagicTransferLink() {
+            const url = buildMagicTransferURL();
             const temp = document.createElement('textarea');
-            temp.value = val;
+            temp.value = url;
             document.body.appendChild(temp);
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
-            showToast('ID de Nube copiado. Pégalo en tu otro dispositivo', 'success');
+            showToast('Enlace de sincronización copiado. Ábrelo en tu otro equipo', 'success');
+        }
+
+        function sendMagicTransferWhatsApp() {
+            const url = buildMagicTransferURL();
+            const msg = encodeURIComponent(`*Sincronizar alumnos Bandidos Sur*\n${url}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank', 'noopener,noreferrer');
         }
 
         function loadAllFromIDB() {
@@ -1444,7 +1276,6 @@
                         const list = await loadAllFromIDB();
                         students = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                         renderTable();
-                        await pushToSharedCloud();
                         resolve();
                     };
                 });
@@ -1463,7 +1294,6 @@
                         const list = await loadAllFromIDB();
                         students = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                         renderTable();
-                        await pushToSharedCloud();
                         resolve();
                     };
                 });
@@ -1843,7 +1673,6 @@
 
             container.innerHTML = draftRoutine.days.map((day, dayIdx) => `
                 <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                    <!-- Encabezado del Día -->
                     <div class="flex items-center justify-between gap-2 pb-2 border-b border-bandido-border">
                         <div class="flex items-center gap-2 flex-1">
                             <span class="w-7 h-7 rounded-lg bg-bandido-orange text-black font-display font-bold text-xs flex items-center justify-center shrink-0">
@@ -1862,7 +1691,6 @@
                         </button>
                     </div>
 
-                    <!-- Bloques de Series dentro del Día -->
                     <div class="space-y-3">
                         ${day.blocks.map((block, blockIdx) => `
                             <div class="p-3.5 rounded-xl bg-bandido-card border border-bandido-border/90 space-y-2.5">
@@ -1878,7 +1706,6 @@
                                     ` : ''}
                                 </div>
 
-                                <!-- Filas de Ejercicio / Reps o Seg -->
                                 <div class="space-y-2">
                                     ${block.items.map((item, itemIdx) => `
                                         <div class="flex items-center gap-2">
@@ -1902,7 +1729,6 @@
                                     `).join('')}
                                 </div>
 
-                                <!-- Pie del bloque: Agregar ejercicio + Total de Series (ej. 4 series) -->
                                 <div class="pt-2 border-t border-bandido-border/70 flex flex-wrap items-center justify-between gap-2">
                                     <button type="button" onclick="addRoutineItem(${dayIdx}, ${blockIdx})"
                                             class="px-2.5 py-1.5 rounded-lg bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-[11px] font-bold text-zinc-300 hover:text-bandido-orange transition cursor-pointer">
@@ -2038,7 +1864,6 @@
         }
 
         function encodeRoutinePayload(payload) {
-            // Formato compacto para evitar que WhatsApp corte enlaces largos
             const compact = {
                 n: payload.studentName || 'Atleta',
                 l: payload.studentLevel || 'Calistenia',
@@ -2052,49 +1877,31 @@
                     }))
                 }))
             };
-            const jsonStr = JSON.stringify(compact);
-            const bytes = new TextEncoder().encode(jsonStr);
-            let binary = '';
-            bytes.forEach(b => binary += String.fromCharCode(b));
-            // Base64URL seguro para enlaces en WhatsApp
-            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            return encodeBase64URL(compact);
         }
 
         function decodeRoutinePayload(encodedStr) {
-            try {
-                let b64 = decodeURIComponent(encodedStr).replace(/-/g, '+').replace(/_/g, '/');
-                while (b64.length % 4) b64 += '=';
-                const binary = atob(b64);
-                const bytes = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                    bytes[i] = binary.charCodeAt(i);
-                }
-                const jsonStr = new TextDecoder().decode(bytes);
-                const parsed = JSON.parse(jsonStr);
-
-                // Soporta tanto el formato compacto nuevo como el anterior
-                if (parsed && Array.isArray(parsed.d)) {
-                    return {
-                        studentName: parsed.n || 'Atleta Bandidos Sur',
-                        studentLevel: parsed.l || 'Calistenia',
-                        goal: parsed.g || '',
-                        notes: parsed.t || '',
-                        days: parsed.d.map(day => ({
-                            title: day.t || 'Día de Entrenamiento',
-                            blocks: (day.b || []).map(blk => ({
-                                series: blk.s || '4 series',
-                                items: (blk.i || []).map(pair => ({
-                                    exercise: pair[0] || '',
-                                    dose: pair[1] || ''
-                                }))
+            const parsed = decodeBase64URL(encodedStr);
+            if (!parsed) return null;
+            if (Array.isArray(parsed.d)) {
+                return {
+                    studentName: parsed.n || 'Atleta Bandidos Sur',
+                    studentLevel: parsed.l || 'Calistenia',
+                    goal: parsed.g || '',
+                    notes: parsed.t || '',
+                    days: parsed.d.map(day => ({
+                        title: day.t || 'Día de Entrenamiento',
+                        blocks: (day.b || []).map(blk => ({
+                            series: blk.s || '4 series',
+                            items: (blk.i || []).map(pair => ({
+                                exercise: pair[0] || '',
+                                dose: pair[1] || ''
                             }))
                         }))
-                    };
-                }
-                return parsed;
-            } catch (e) {
-                return null;
+                    }))
+                };
             }
+            return parsed;
         }
 
         function buildPrivateRoutineURL(payload) {
@@ -2115,10 +1922,6 @@
             document.body.removeChild(tempInput);
 
             showToast('Enlace privado copiado. Compártelo solo con tu alumno', 'success');
-        }
-
-        function formatRoutinePlainText(snap) {
-            return buildPrivateRoutineURL(snap);
         }
 
         async function sendRoutineWhatsApp() {
@@ -2277,9 +2080,6 @@
             closeEvalModal();
         }
 
-        /**
-         * Calcula el estado de la mensualidad según la fecha de vencimiento
-         */
         function getMembershipStatus(endDateStr) {
             if (!endDateStr) {
                 return { status: 'expired', label: 'Sin fecha', daysLeft: -999, badgeClass: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
@@ -2492,7 +2292,6 @@
 
             if (emptyState) emptyState.classList.add('hidden');
 
-            // 1. Renderizado en Tabla (Tablet / Escritorio)
             tbody.innerHTML = filtered.map(st => {
                 const statusInfo = getMembershipStatus(st.endDate);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
@@ -2568,7 +2367,6 @@
                 `;
             }).join('');
 
-            // 2. Renderizado en Tarjetas Táctiles (Celulares)
             if (mobileList) {
                 mobileList.innerHTML = filtered.map(st => {
                     const statusInfo = getMembershipStatus(st.endDate);
@@ -2800,9 +2598,9 @@
                 }
                 students = parsed.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 await replaceAllInIDB(students);
-                await pushToSharedCloud();
                 renderTable();
-                showToast(`Se importaron ${students.length} alumnos correctamente`, 'success');
+                closeCloudSyncModal();
+                showToast(`Se cargaron ${students.length} alumnos correctamente`, 'success');
             } catch (err) {
                 showToast('Error al leer el archivo de respaldo', 'error');
             } finally {
@@ -2899,10 +2697,8 @@
         window.importBackupJSON = importBackupJSON;
         window.openCloudSyncModal = openCloudSyncModal;
         window.closeCloudSyncModal = closeCloudSyncModal;
-        window.createNewCloudRoom = createNewCloudRoom;
-        window.connectExistingCloudRoom = connectExistingCloudRoom;
-        window.forcePushToCloud = forcePushToCloud;
-        window.copyCloudBinId = copyCloudBinId;
+        window.copyMagicTransferLink = copyMagicTransferLink;
+        window.sendMagicTransferWhatsApp = sendMagicTransferWhatsApp;
     </script>
 </body>
 </html>
