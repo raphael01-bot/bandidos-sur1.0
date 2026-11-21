@@ -55,6 +55,21 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #f97316;
         }
+
+        /* Estilos para el contenedor vertical tipo Reel (9:16) */
+        .reel-frame {
+            aspect-ratio: 9 / 16;
+            max-width: 340px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (min-width: 640px) {
+            .reel-frame {
+                max-width: 360px;
+            }
+        }
     </style>
 </head>
 <body class="bg-bandido-black text-zinc-100 font-sans min-h-screen flex flex-col selection:bg-bandido-orange selection:text-black">
@@ -97,7 +112,7 @@
             </div>
         </header>
 
-        <main id="athlete-routine-content" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 space-y-5"></main>
+        <main id="athlete-routine-content" class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 space-y-6 pb-16"></main>
     </div>
 
     <!-- ===================================================================== -->
@@ -141,7 +156,6 @@
 
                 <!-- Acciones Rápidas y Campana de Notificaciones -->
                 <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                    <!-- Botón Sincronización entre Equipos (Oculto visualmente) -->
                     <button onclick="openCloudSyncModal()"
                             title="Conexión compartida entre entrenadores"
                             class="hidden items-center gap-1.5 px-2.5 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-[11px] text-zinc-300 transition cursor-pointer">
@@ -227,7 +241,7 @@
             </div>
 
             <!-- TARJETAS DE RESUMEN -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                 <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border flex items-center justify-between">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">Total Alumnos</p>
@@ -266,6 +280,50 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
                         <i class="fa-solid fa-circle-exclamation text-base sm:text-lg"></i>
                     </div>
+                </div>
+
+                <button type="button"
+                        onclick="openTrainingGroupsModal()"
+                        title="Ver y gestionar grupos de entrenamiento"
+                        class="col-span-2 sm:col-span-1 p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-orange/40 hover:border-bandido-orange flex items-center justify-between text-left transition cursor-pointer group">
+                    <div>
+                        <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-bandido-orange">Grupos Entreno</p>
+                        <p id="stat-groups" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">0</p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-bandido-orange/15 text-bandido-orange group-hover:bg-bandido-orange group-hover:text-black transition flex items-center justify-center">
+                        <i class="fa-solid fa-people-group text-base sm:text-lg"></i>
+                    </div>
+                </button>
+            </section>
+
+            <!-- BUSCADOR, FILTROS Y GRUPOS DE ENTRENAMIENTO -->
+            <section class="p-3.5 sm:p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                    <input type="text"
+                           id="search-input"
+                           oninput="renderTable()"
+                           placeholder="Buscar alumno por nombre, plan, días o teléfono..."
+                           class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                </div>
+
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                    <select id="filter-status"
+                            onchange="renderTable()"
+                            class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
+                        <option value="all">Todos los estatus</option>
+                        <option value="active">Activos</option>
+                        <option value="expiring">Por vencer (≤ 3 días)</option>
+                        <option value="expired">Vencidos</option>
+                    </select>
+
+                    <button type="button"
+                            onclick="openTrainingGroupsModal()"
+                            class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/50 text-xs sm:text-sm font-extrabold uppercase tracking-wide transition cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-md shadow-orange-500/10">
+                        <i class="fa-solid fa-people-group"></i>
+                        <span>Grupos de Entrenamiento</span>
+                        <span id="groups-btn-count" class="px-1.5 py-0.2 rounded-md bg-bandido-orange text-black text-[10px] font-black">0</span>
+                    </button>
                 </div>
             </section>
 
@@ -769,7 +827,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- MODAL 6: HISTORIAL DE RUTINAS DEL ALUMNO                              -->
+    <!-- MODAL 6: HISTORIAL DE RUTINAS Y BITÁCORA DIARIA DEL ALUMNO            -->
     <!-- ===================================================================== -->
     <div id="routine-history-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
         <div class="w-full max-w-3xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh]">
@@ -777,10 +835,10 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
-                            Archivo Mensual
+                            Historial & Bitácora
                         </span>
                         <h3 id="history-student-title" class="font-display text-lg sm:text-xl font-bold uppercase text-white">
-                            Historial de Rutinas
+                            Historial del Alumno
                         </h3>
                     </div>
                     <p id="history-student-subtitle" class="text-xs text-zinc-400 mt-0.5"></p>
@@ -790,10 +848,34 @@
                 </button>
             </div>
 
-            <div id="routine-history-list" class="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1"></div>
+            <!-- Pestañas dentro del Modal Historial: Progreso Diario del Alumno vs Rutinas Asignadas -->
+            <div class="px-5 sm:px-6 pt-3 bg-bandido-dark border-b border-bandido-border flex items-center gap-2 shrink-0">
+                <button type="button"
+                        id="tab-btn-daily-progress"
+                        onclick="switchHistoryTab('progress')"
+                        class="px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>Bitácora Diaria del Alumno</span>
+                    <span id="tab-badge-progress" class="px-1.5 py-0.2 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px]">0</span>
+                </button>
+                <button type="button"
+                        id="tab-btn-assigned-routines"
+                        onclick="switchHistoryTab('routines')"
+                        class="px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Rutinas Asignadas</span>
+                    <span id="tab-badge-routines" class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-zinc-300 text-[10px]">0</span>
+                </button>
+            </div>
+
+            <!-- Contenido Pestaña 1: Reportes diarios enviados por el alumno -->
+            <div id="daily-progress-history-list" class="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1"></div>
+
+            <!-- Contenido Pestaña 2: Archivo mensual de rutinas creadas por el coach -->
+            <div id="routine-history-list" class="hidden p-5 sm:p-6 overflow-y-auto space-y-4 flex-1"></div>
 
             <div class="px-5 sm:px-6 py-3.5 bg-bandido-dark border-t border-bandido-border flex items-center justify-between shrink-0">
-                <span class="text-[11px] text-zinc-400">Cada vez que guardas una rutina se archiva aquí por mes.</span>
+                <span class="text-[11px] text-zinc-400">Sincronizado en tiempo real con los reportes enviados desde la vista del alumno.</span>
                 <button type="button" onclick="closeRoutineHistoryModal()"
                         class="px-4 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold uppercase text-zinc-200 cursor-pointer">
                     Cerrar
@@ -825,7 +907,6 @@
             </div>
 
             <div class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
-                <!-- Formulario para Crear o Editar un Plan -->
                 <form id="plan-editor-form" onsubmit="savePlanForm(event)" class="p-4 rounded-2xl bg-bandido-dark border border-bandido-orange/40 space-y-3.5">
                     <div class="flex items-center justify-between">
                         <h4 id="plan-form-heading" class="text-xs font-extrabold uppercase tracking-wider text-bandido-orange">
@@ -895,7 +976,6 @@
                                class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
                     </div>
 
-                    <!-- Checkbox de Beneficio Plus: Videos Demostrativos de Rutina -->
                     <label class="flex items-center gap-2.5 p-3 rounded-xl bg-bandido-card border border-bandido-orange/30 cursor-pointer select-none">
                         <input type="checkbox"
                                id="plan-videos-input"
@@ -921,7 +1001,6 @@
                     </div>
                 </form>
 
-                <!-- Lista de Planes Actuales -->
                 <div class="space-y-2.5">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Catálogo Activo de Planes</h4>
                     <div id="plans-catalog-list" class="space-y-2.5"></div>
@@ -964,7 +1043,6 @@
             </div>
 
             <div class="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1">
-                <!-- Filtros de Mes y Semana -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-bandido-orange mb-1">1. Seleccionar Mes</label>
@@ -994,7 +1072,6 @@
                     </div>
                 </div>
 
-                <!-- Formulario Rápido de Ingreso Manual (Visitas / Clases sueltas / Extras) -->
                 <form id="quick-income-form" onsubmit="saveManualIncome(event)" class="hidden p-4 rounded-2xl bg-bandido-dark border border-emerald-500/40 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
@@ -1039,7 +1116,6 @@
                     </div>
                 </form>
 
-                <!-- Tarjetas de Resumen Financiero -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-bandido-dark border border-emerald-500/40">
                         <p id="finance-period-label" class="text-[11px] font-bold uppercase tracking-wider text-emerald-300">Total del Periodo</p>
@@ -1060,13 +1136,11 @@
                     </div>
                 </div>
 
-                <!-- Desglose Visual por Semana del Mes -->
                 <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-2.5">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Resumen por Semana del Mes Seleccionado</h4>
                     <div id="finance-weekly-breakdown" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
                 </div>
 
-                <!-- Listado Detallado de Pagos -->
                 <div class="space-y-2.5">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Desglose de Movimientos</h4>
                     <div id="finance-transactions-list" class="space-y-2"></div>
@@ -1076,6 +1150,153 @@
             <div class="px-5 sm:px-6 py-3.5 bg-bandido-dark border-t border-bandido-border flex items-center justify-between shrink-0">
                 <span class="text-[11px] text-zinc-400">Calculado automáticamente con los pagos y renovaciones registrados.</span>
                 <button type="button" onclick="closeFinanceModal()"
+                        class="px-4 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold uppercase text-zinc-200 cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 9: GRUPOS DE ENTRENAMIENTO (LUGAR, FECHA, HORA, ALUMNOS)        -->
+    <!-- ===================================================================== -->
+    <div id="training-groups-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+        <div class="w-full max-w-4xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+            <div class="px-5 sm:px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-4 shrink-0">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
+                            Organización Grupal
+                        </span>
+                        <h3 class="font-display text-lg sm:text-xl font-bold uppercase text-white">
+                            Grupos de Entrenamiento — Bandidos Sur
+                        </h3>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-0.5">Crea sesiones grupales con lugar, fecha, hora, indicaciones y asigna a tus alumnos registrados.</p>
+                </div>
+                <button onclick="closeTrainingGroupsModal()" class="p-2 rounded-xl bg-bandido-card hover:bg-zinc-800 text-zinc-400 hover:text-white transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1">
+                <!-- Formulario para Crear o Editar Grupo -->
+                <form id="training-group-form" onsubmit="saveTrainingGroup(event)" class="p-4 sm:p-5 rounded-2xl bg-bandido-dark border border-bandido-orange/40 space-y-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <h4 id="group-form-heading" class="text-xs font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span>Crear Nuevo Grupo de Entrenamiento</span>
+                        </h4>
+                        <button type="button" id="cancel-edit-group-btn" onclick="resetTrainingGroupForm()"
+                                class="hidden text-[11px] font-bold text-zinc-400 hover:text-white cursor-pointer">
+                            Cancelar edición
+                        </button>
+                    </div>
+
+                    <input type="hidden" id="edit-group-id" />
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Nombre del Grupo / Sesión *</label>
+                            <input type="text"
+                                   id="group-name-input"
+                                   required
+                                   placeholder="Ej. Grupo Intermedios — Pull & Front Lever"
+                                   class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Lugar de Entrenamiento *</label>
+                            <input type="text"
+                                   id="group-location-input"
+                                   required
+                                   placeholder="Ej. Parque Sur Barras / Sede Bandidos"
+                                   class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Fecha del Entrenamiento *</label>
+                            <input type="date"
+                                   id="group-date-input"
+                                   required
+                                   class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Hora de Inicio *</label>
+                            <input type="time"
+                                   id="group-time-input"
+                                   required
+                                   class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Indicaciones para Realizar el Entrenamiento *</label>
+                        <textarea id="group-instructions-input"
+                                  rows="3"
+                                  required
+                                  placeholder="Ej. Llegar 10 min antes para movilidad articular. Traer magnesio y bandas de resistencia. Circuito de 4 rondas..."
+                                  class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange"></textarea>
+                    </div>
+
+                    <!-- Selector de Alumnos Registrados -->
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                                Seleccionar Alumnos Registrados (<span id="group-selected-students-count" class="text-bandido-orange font-extrabold">0</span> seleccionados)
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="text"
+                                       id="group-student-filter"
+                                       oninput="filterGroupStudentChecklist()"
+                                       placeholder="Filtrar alumno..."
+                                       class="px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-[11px] text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
+                                <button type="button" onclick="toggleSelectAllGroupStudents(true)"
+                                        class="text-[11px] font-bold text-bandido-orange hover:underline cursor-pointer">
+                                    Todos
+                                </button>
+                                <span class="text-zinc-600 text-[10px]">|</span>
+                                <button type="button" onclick="toggleSelectAllGroupStudents(false)"
+                                        class="text-[11px] font-semibold text-zinc-400 hover:text-white cursor-pointer">
+                                    Ninguno
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="group-students-checklist"
+                             class="max-h-48 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 p-3 rounded-xl bg-bandido-card border border-bandido-border">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-1">
+                        <button type="submit"
+                                id="save-group-submit-btn"
+                                class="px-5 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/20 cursor-pointer flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Guardar Grupo de Entrenamiento</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Listado de Grupos Creados -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-layer-group text-bandido-orange"></i>
+                            <span>Grupos Organizados</span>
+                        </h4>
+                        <span id="groups-list-counter" class="text-[11px] text-zinc-400">0 grupos</span>
+                    </div>
+                    <div id="training-groups-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <div class="px-5 sm:px-6 py-3.5 bg-bandido-dark border-t border-bandido-border flex items-center justify-between shrink-0">
+                <span class="text-[11px] text-zinc-400">Sincronizado con tus alumnos registrados y respaldo en la nube.</span>
+                <button type="button" onclick="closeTrainingGroupsModal()"
                         class="px-4 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold uppercase text-zinc-200 cursor-pointer">
                     Cerrar
                 </button>
@@ -1105,9 +1326,11 @@
         const PLANS_CLOUD_RECORD_ID = '__bandidos_plans_config__';
         const FINANCE_STORAGE_KEY = 'bandidos_sur_finance_v1';
         const FINANCE_CLOUD_RECORD_ID = '__bandidos_finance_ledger__';
+        const GROUPS_STORAGE_KEY = 'bandidos_sur_training_groups_v1';
+        const GROUPS_CLOUD_RECORD_ID = '__bandidos_training_groups__';
         const ROUTINE_CLIPBOARD_KEY = 'bandidos_sur_routine_clipboard';
 
-        // Catálogo base oficial de planes de Bandidos Sur (con soporte para videos VIP en planes personalizados/superiores)
+        // Catálogo base oficial de planes de Bandidos Sur
         const DEFAULT_GYM_PLANS = {
             general_lv: {
                 name: 'Plan General (Lunes a Viernes)',
@@ -1235,8 +1458,12 @@
 
         let students = [];
         let financeLedger = [];
+        let trainingGroups = [];
         let activeRenewStudentId = null;
         let activeDeleteStudentId = null;
+        let activeHistoryStudentId = null;
+        let activeAthletePayload = null;
+        let selectedAthleteBlockIndex = 0;
         let currentRoutineDraft = { goal: '', notes: '', blocks: [] };
         let alertDismissed = false;
 
@@ -1249,7 +1476,6 @@
             if (plan && typeof plan.allowsVideos === 'boolean') {
                 return plan.allowsVideos;
             }
-            // Fallback inteligente por nombre de plan
             const nameLower = (plan?.name || planKey).toLowerCase();
             if (nameLower.includes('general') || planKey === 'clase_dia') return false;
             if (
@@ -1268,24 +1494,35 @@
         }
 
         // =================================================================
-        // PARSEADOR DE ENLACES DE VIDEO (YouTube, Shorts, Drive, Vimeo, MP4)
+        // PARSEADOR DE ENLACES DE VIDEO VERTICAL (REELS, SHORTS, IG, DRIVE, MP4)
         // =================================================================
         function parseVideoEmbedInfo(rawUrl) {
             const url = (rawUrl || '').trim();
             if (!url) return null;
 
-            // 1. YouTube estándar, Shorts o youtu.be
-            const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            if (ytMatch && ytMatch[1]) {
+            // 1. Instagram Reels, Posts o TV
+            const igMatch = url.match(/instagram\.com\/(?:reel|reels|p|tv)\/([a-zA-Z0-9_-]+)/i);
+            if (igMatch && igMatch[1]) {
                 return {
-                    type: 'iframe',
-                    provider: 'YouTube',
-                    embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`,
+                    type: 'instagram',
+                    provider: 'Instagram Reel',
+                    embedUrl: `https://www.instagram.com/reel/${igMatch[1]}/embed/`,
                     originalUrl: url
                 };
             }
 
-            // 2. Google Drive (/file/d/ID/view)
+            // 2. YouTube estándar, Shorts o youtu.be
+            const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (ytMatch && ytMatch[1]) {
+                return {
+                    type: 'iframe',
+                    provider: 'YouTube Reel',
+                    embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&playsinline=1`,
+                    originalUrl: url
+                };
+            }
+
+            // 3. Google Drive (/file/d/ID/view)
             const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
             if (driveMatch && driveMatch[1]) {
                 return {
@@ -1296,7 +1533,7 @@
                 };
             }
 
-            // 3. Vimeo
+            // 4. Vimeo
             const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
             if (vimeoMatch && vimeoMatch[1]) {
                 return {
@@ -1307,48 +1544,67 @@
                 };
             }
 
-            // 4. Archivo directo (.mp4, .webm, .mov)
+            // 5. Archivo directo (.mp4, .webm, .mov)
             if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)) {
                 return {
                     type: 'video',
-                    provider: 'Video Directo',
+                    provider: 'Reel Directo',
                     embedUrl: url,
                     originalUrl: url
                 };
             }
 
-            // 5. Enlace externo (Instagram Reels, TikTok, etc.)
+            // 6. Enlace externo (TikTok u otro)
             return {
                 type: 'external',
-                provider: 'Enlace de Video',
+                provider: 'Video Externo',
                 embedUrl: url,
                 originalUrl: url
             };
         }
 
-        function renderVideoPlayerHtml(videoUrl, blockTitle = 'Rutina') {
+        function renderReelVideoPlayerHtml(videoUrl, blockTitle = 'Rutina', blockIndex = 0) {
             const info = parseVideoEmbedInfo(videoUrl);
             if (!info) return '';
 
-            if (info.type === 'iframe') {
+            if (info.type === 'instagram' || info.type === 'iframe') {
                 return `
-                    <div class="rounded-xl overflow-hidden border border-bandido-orange/40 bg-black shadow-lg">
-                        <div class="px-3 py-2 bg-bandido-orange/15 border-b border-bandido-orange/30 flex items-center justify-between gap-2">
-                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-play"></i>
-                                <span>Video Demostrativo · ${escapeHtml(blockTitle)}</span>
-                            </span>
-                            <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
-                               class="text-[11px] font-bold text-zinc-300 hover:text-white underline">
-                                Abrir <i class="fa-solid fa-arrow-up-right-from-square ml-0.5 text-[10px]"></i>
-                            </a>
-                        </div>
-                        <div class="relative w-full aspect-video bg-black">
+                    <div class="py-2">
+                        <div class="reel-frame relative rounded-[26px] overflow-hidden border-2 border-bandido-orange/60 bg-zinc-950 shadow-[0_18px_45px_rgba(0,0,0,0.85)] ring-4 ring-bandido-orange/10">
+                            <div class="absolute top-0 inset-x-0 z-20 p-3 bg-gradient-to-b from-black/90 via-black/45 to-transparent flex items-center justify-between gap-2 pointer-events-none">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="w-7 h-7 rounded-full bg-bandido-orange text-black flex items-center justify-center text-xs font-black shrink-0 shadow">
+                                        <i class="fa-solid fa-play"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-white truncate drop-shadow">
+                                            ${escapeHtml(blockTitle)}
+                                        </p>
+                                        <p class="text-[9px] font-bold uppercase tracking-widest text-bandido-orange">
+                                            ${escapeHtml(info.provider)} · Bandidos Sur
+                                        </p>
+                                    </div>
+                                </div>
+                                <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
+                                   class="pointer-events-auto px-2.5 py-1 rounded-full bg-black/75 hover:bg-bandido-orange text-white hover:text-black border border-white/20 text-[10px] font-bold transition shrink-0">
+                                    Abrir <i class="fa-solid fa-arrow-up-right-from-square ml-0.5 text-[9px]"></i>
+                                </a>
+                            </div>
+
                             <iframe src="${escapeHtml(info.embedUrl)}"
-                                    class="absolute inset-0 w-full h-full"
+                                    class="w-full h-full bg-black"
                                     frameborder="0"
+                                    scrolling="no"
+                                    allowtransparency="true"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen></iframe>
+
+                            <div class="absolute bottom-0 inset-x-0 z-10 h-10 bg-gradient-to-t from-black/80 to-transparent pointer-events-none flex items-end justify-between px-3.5 pb-2">
+                                <span class="text-[10px] font-semibold text-zinc-300/90">
+                                    <i class="fa-solid fa-mobile-screen-button text-bandido-orange mr-1"></i>Formato Vertical 9:16
+                                </span>
+                                <span class="text-[10px] font-extrabold text-bandido-orange">#${blockIndex + 1}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1356,33 +1612,49 @@
 
             if (info.type === 'video') {
                 return `
-                    <div class="rounded-xl overflow-hidden border border-bandido-orange/40 bg-black shadow-lg">
-                        <div class="px-3 py-2 bg-bandido-orange/15 border-b border-bandido-orange/30 flex items-center justify-between">
-                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-play"></i>
-                                <span>Video Demostrativo · ${escapeHtml(blockTitle)}</span>
-                            </span>
+                    <div class="py-2">
+                        <div class="reel-frame relative rounded-[26px] overflow-hidden border-2 border-bandido-orange/60 bg-black shadow-[0_18px_45px_rgba(0,0,0,0.85)] ring-4 ring-bandido-orange/10">
+                            <div class="absolute top-0 inset-x-0 z-20 p-3 bg-gradient-to-b from-black/85 via-black/40 to-transparent flex items-center justify-between gap-2 pointer-events-none">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="w-7 h-7 rounded-full bg-bandido-orange text-black flex items-center justify-center text-xs font-black shrink-0">
+                                        <i class="fa-solid fa-film"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-[11px] font-extrabold uppercase tracking-wider text-white truncate">${escapeHtml(blockTitle)}</p>
+                                        <p class="text-[9px] font-bold uppercase tracking-widest text-bandido-orange">Técnica Oficial</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <video src="${escapeHtml(info.embedUrl)}"
+                                   controls
+                                   playsinline
+                                   loop
+                                   class="w-full h-full object-cover bg-black"></video>
                         </div>
-                        <video src="${escapeHtml(info.embedUrl)}" controls playsinline class="w-full max-h-80 bg-black"></video>
                     </div>
                 `;
             }
 
-            // Enlace externo (Instagram / TikTok / otro)
             return `
-                <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
-                   class="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-bandido-orange/20 to-bandido-dark border border-bandido-orange/50 hover:border-bandido-orange transition group">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-10 h-10 rounded-xl bg-bandido-orange text-black flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                            <i class="fa-solid fa-play text-sm"></i>
+                <div class="py-2">
+                    <a href="${escapeHtml(info.originalUrl)}" target="_blank" rel="noopener noreferrer"
+                       class="reel-frame relative rounded-[26px] overflow-hidden border-2 border-bandido-orange/60 bg-gradient-to-b from-zinc-900 via-bandido-dark to-black shadow-2xl p-6 flex flex-col items-center justify-between text-center group hover:border-bandido-orange transition">
+                        <div class="w-full flex items-center justify-between text-[10px] font-extrabold uppercase tracking-widest text-bandido-orange">
+                            <span><i class="fa-solid fa-clapperboard mr-1"></i>Reel Demostrativo</span>
+                            <span>Bandidos Sur</span>
                         </div>
-                        <div class="min-w-0">
-                            <p class="text-xs font-extrabold uppercase tracking-wider text-bandido-orange">Ver Video Demostrativo del Día</p>
-                            <p class="text-[11px] text-zinc-300 truncate">${escapeHtml(info.originalUrl)}</p>
+                        <div class="space-y-3 my-auto">
+                            <div class="w-16 h-16 rounded-full bg-bandido-orange text-black flex items-center justify-center mx-auto shadow-lg shadow-orange-500/30 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-play text-xl ml-0.5"></i>
+                            </div>
+                            <h4 class="font-display text-lg font-bold uppercase text-white">${escapeHtml(blockTitle)}</h4>
+                            <p class="text-xs text-zinc-300 leading-relaxed">Toca aquí para reproducir el video vertical de técnica en pantalla completa.</p>
                         </div>
-                    </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-bandido-orange shrink-0"></i>
-                </a>
+                        <span class="w-full py-2.5 rounded-xl bg-bandido-orange text-black text-xs font-extrabold uppercase tracking-wider">
+                            Ver Video Ahora <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </span>
+                    </a>
+                </div>
             `;
         }
 
@@ -1509,7 +1781,6 @@
                 if (rawPlans) {
                     const parsed = JSON.parse(rawPlans);
                     if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
-                        // Asegurar que los planes existentes conserven allowsVideos si no lo tenían definido
                         Object.entries(parsed).forEach(([k, v]) => {
                             if (typeof v.allowsVideos !== 'boolean') {
                                 v.allowsVideos = planSupportsVideos(k);
@@ -1529,6 +1800,15 @@
                 }
             } catch (e) {
                 console.warn('Error leyendo finanzas locales:', e);
+            }
+            try {
+                const rawGroups = localStorage.getItem(GROUPS_STORAGE_KEY);
+                if (rawGroups) {
+                    const parsedGroups = JSON.parse(rawGroups);
+                    if (Array.isArray(parsedGroups)) trainingGroups = parsedGroups;
+                }
+            } catch (e) {
+                console.warn('Error leyendo grupos locales:', e);
             }
         }
 
@@ -1636,11 +1916,19 @@
                                 localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify(financeLedger));
                             }
 
+                            const groupsRow = rows.find(r => r.id === GROUPS_CLOUD_RECORD_ID || r.payload?._isTrainingGroups);
+                            if (groupsRow && Array.isArray(groupsRow.payload?.groups)) {
+                                trainingGroups = groupsRow.payload.groups;
+                                localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(trainingGroups));
+                            }
+
                             const studentRows = rows.filter(r =>
                                 r.id !== PLANS_CLOUD_RECORD_ID &&
                                 !r.payload?._isPlansConfig &&
                                 r.id !== FINANCE_CLOUD_RECORD_ID &&
-                                !r.payload?._isFinanceLedger
+                                !r.payload?._isFinanceLedger &&
+                                r.id !== GROUPS_CLOUD_RECORD_ID &&
+                                !r.payload?._isTrainingGroups
                             );
                             if (studentRows.length > 0) {
                                 students = studentRows
@@ -1648,7 +1936,8 @@
                                     .map((r, idx) => ({
                                         ...r.payload,
                                         id: r.payload.id || r.id || ('st_legacy_' + idx),
-                                        name: (r.payload.name || 'Atleta').trim() || 'Atleta'
+                                        name: (r.payload.name || 'Atleta').trim() || 'Atleta',
+                                        dailyLogs: Array.isArray(r.payload.dailyLogs) ? r.payload.dailyLogs : []
                                     }));
                                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(students));
                                 populatePlanSelectOptions();
@@ -1661,7 +1950,8 @@
                                 .map((st, idx) => ({
                                     ...st,
                                     id: st.id || ('st_local_' + idx),
-                                    name: (st.name || 'Atleta').trim() || 'Atleta'
+                                    name: (st.name || 'Atleta').trim() || 'Atleta',
+                                    dailyLogs: Array.isArray(st.dailyLogs) ? st.dailyLogs : []
                                 }));
                             for (const st of students) {
                                 await upsertSupabaseStudent(st);
@@ -1682,7 +1972,8 @@
                     .map((st, idx) => ({
                         ...st,
                         id: st.id || ('st_local_' + idx),
-                        name: (st.name || 'Atleta').trim() || 'Atleta'
+                        name: (st.name || 'Atleta').trim() || 'Atleta',
+                        dailyLogs: Array.isArray(st.dailyLogs) ? st.dailyLogs : []
                     }));
             } else {
                 const today = getTodayStr();
@@ -1692,11 +1983,12 @@
                         name: 'Mateo Rivera',
                         phone: '5512345678',
                         level: 'Intermedio',
-                        trainingDays: '5 días (Lun a Vie)',
+                        trainingDays: '3 días (Lun, Mié, Vie)',
                         planKey: 'personalizado',
                         payDate: addDaysToDateStr(today, -28),
                         endDate: addDaysToDateStr(today, 2),
                         evaluations: [],
+                        dailyLogs: [],
                         routine: {
                             goal: 'Fuerza Base Tirón & Empuje',
                             notes: 'Descansar 90 seg entre circuitos.',
@@ -1705,6 +1997,11 @@
                                     title: 'Día 1 — Tirón y Empuje',
                                     videoUrl: '',
                                     text: 'Retracciones escapulares / 10 reps\nProtracciones escapulares / 10 reps\nHold / 20 seg\n4 series'
+                                },
+                                {
+                                    title: 'Día 2 — Core & Pierna',
+                                    videoUrl: '',
+                                    text: 'L-Sit en paralelas / 20 seg\nSentadilla libre / 25 reps\nPlancha abdominal / 60 seg\n4 series'
                                 }
                             ]
                         },
@@ -1995,6 +2292,30 @@
             }
         }
 
+        async function saveTrainingGroupsToCloud() {
+            localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(trainingGroups));
+            const cfg = getSupabaseConfig();
+            if (!cfg.enabled) return;
+
+            try {
+                await fetch(`${cfg.url}/rest/v1/bandidos_students`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': cfg.key,
+                        'Authorization': `Bearer ${cfg.key}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        id: GROUPS_CLOUD_RECORD_ID,
+                        payload: { _isTrainingGroups: true, groups: trainingGroups }
+                    })
+                });
+            } catch (err) {
+                console.warn('Error guardando grupos de entrenamiento en Supabase:', err);
+            }
+        }
+
         // =================================================================
         // RENDERIZADO DE ESTADÍSTICAS, ALERTAS Y TABLA DE ALUMNOS
         // =================================================================
@@ -2028,7 +2349,12 @@
             document.getElementById('stat-expiring').textContent = expiringCount;
             document.getElementById('stat-expired').textContent = expiredCount;
 
-            // Badge de la campana
+            const groupsCount = Array.isArray(trainingGroups) ? trainingGroups.length : 0;
+            const statGroupsEl = document.getElementById('stat-groups');
+            const groupsBtnCountEl = document.getElementById('groups-btn-count');
+            if (statGroupsEl) statGroupsEl.textContent = groupsCount;
+            if (groupsBtnCountEl) groupsBtnCountEl.textContent = groupsCount;
+
             const badge = document.getElementById('notif-badge');
             const summary = document.getElementById('notif-summary');
             const notifList = document.getElementById('notif-list');
@@ -2068,7 +2394,6 @@
                 `).join('');
             }
 
-            // Banner superior de alerta (<= 3 días o vencidos)
             const banner = document.getElementById('expiration-alert-banner');
             const bannerText = document.getElementById('alert-banner-text');
             if (!alertDismissed && (expiringCount > 0 || expiredCount > 0)) {
@@ -2153,14 +2478,15 @@
             }
             emptyState.classList.add('hidden');
 
-            // Renderizado Escritorio
             tbody.innerHTML = filtered.map(st => {
                 const safeName = String(st.name || 'Atleta').trim() || 'Atleta';
                 const plan = GYM_PLANS[st.planKey] || { name: 'Plan Personalizado', price: 0 };
                 const hasVideoBenefit = planSupportsVideos(st.planKey);
                 const status = getMembershipStatus(st);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
+                const logsCount = Array.isArray(st.dailyLogs) ? st.dailyLogs.length : 0;
                 const historyCount = Array.isArray(st.routineHistory) ? st.routineHistory.length : 0;
+                const totalHistoryBadge = logsCount + historyCount;
                 const hasRoutine = st.routine && Array.isArray(st.routine.blocks) && st.routine.blocks.length > 0;
                 const videoCount = hasRoutine
                     ? st.routine.blocks.filter(b => b && b.videoUrl && b.videoUrl.trim()).length
@@ -2231,10 +2557,10 @@
                                     Renovar
                                 </button>
                                 <button onclick="openRoutineHistoryModal('${st.id}')"
-                                        title="Historial de rutinas por mes"
+                                        title="Historial de rutinas y progreso diario"
                                         class="px-2.5 py-1.5 rounded-lg bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-200 hover:text-bandido-orange transition cursor-pointer flex items-center gap-1">
                                     <i class="fa-solid fa-clock-rotate-left text-bandido-orange"></i>
-                                    <span>Historial${historyCount > 0 ? ` (${historyCount})` : ''}</span>
+                                    <span>Historial${totalHistoryBadge > 0 ? ` (${totalHistoryBadge})` : ''}</span>
                                 </button>
                                 <button onclick="openStudentModal('${st.id}')"
                                         title="Editar alumno"
@@ -2252,14 +2578,15 @@
                 `;
             }).join('');
 
-            // Renderizado Móvil
             mobileList.innerHTML = filtered.map(st => {
                 const safeName = String(st.name || 'Atleta').trim() || 'Atleta';
                 const plan = GYM_PLANS[st.planKey] || { name: 'Plan Personalizado', price: 0 };
                 const hasVideoBenefit = planSupportsVideos(st.planKey);
                 const status = getMembershipStatus(st);
                 const evalCount = Array.isArray(st.evaluations) ? st.evaluations.length : 0;
+                const logsCount = Array.isArray(st.dailyLogs) ? st.dailyLogs.length : 0;
                 const historyCount = Array.isArray(st.routineHistory) ? st.routineHistory.length : 0;
+                const totalHistoryBadge = logsCount + historyCount;
 
                 return `
                     <div class="p-4 space-y-3">
@@ -2312,7 +2639,7 @@
                             <button onclick="openRoutineHistoryModal('${st.id}')"
                                     class="flex-1 py-2 px-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-bold text-zinc-200 flex items-center justify-center gap-1 cursor-pointer">
                                 <i class="fa-solid fa-clock-rotate-left text-bandido-orange"></i>
-                                <span>Historial${historyCount > 0 ? ` (${historyCount})` : ''}</span>
+                                <span>Historial${totalHistoryBadge > 0 ? ` (${totalHistoryBadge})` : ''}</span>
                             </button>
                             <button onclick="openStudentModal('${st.id}')"
                                     class="p-2 rounded-xl bg-bandido-dark border border-bandido-border text-zinc-300 cursor-pointer">
@@ -2448,6 +2775,7 @@
                     payDate,
                     endDate,
                     evaluations: [],
+                    dailyLogs: [],
                     routine: { goal: '', notes: '', blocks: [] },
                     routineHistory: []
                 };
@@ -2472,7 +2800,7 @@
         }
 
         // =================================================================
-        // RENOVACIÓN Y ELIMINACIÓN DE ALUMNOS
+        // RENOVACIÓN, ACCESO Y ELIMINACIÓN DE ALUMNOS
         // =================================================================
         function openRenewModal(studentId) {
             const st = students.find(s => s.id === studentId);
@@ -2662,10 +2990,7 @@
         }
 
         function getCombinedMonthlyTransactions(selectedMonth) {
-            // 1. Movimientos guardados explícitamente en el libro de finanzas
             const explicitEntries = financeLedger.filter(e => (e.date || '').startsWith(selectedMonth));
-
-            // 2. Respaldo inteligente: si un alumno tiene fecha de pago en ese mes pero aún no estaba en el libro
             const fallbackEntries = [];
             students.forEach(st => {
                 if (!st || !(st.payDate || '').startsWith(selectedMonth)) return;
@@ -2696,7 +3021,6 @@
 
             const allMonthEntries = getCombinedMonthlyTransactions(selectedMonth);
 
-            // Cálculo semanal del mes completo (para las 4 tarjetas de semana)
             const weekTotals = { 1: 0, 2: 0, 3: 0, 4: 0 };
             const weekCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
             allMonthEntries.forEach(item => {
@@ -2725,7 +3049,6 @@
                 `;
             }).join('');
 
-            // Filtrado final según semana seleccionada
             const visibleEntries = selectedWeek === 'all'
                 ? allMonthEntries
                 : allMonthEntries.filter(item => String(getWeekOfMonthFromDate(item.date)) === String(selectedWeek));
@@ -2802,6 +3125,281 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // =================================================================
+        // GESTIÓN DE GRUPOS DE ENTRENAMIENTO (LUGAR, FECHA, HORA, ALUMNOS)
+        // =================================================================
+        function openTrainingGroupsModal() {
+            resetTrainingGroupForm();
+            renderTrainingGroupsList();
+            const modal = document.getElementById('training-groups-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeTrainingGroupsModal() {
+            const modal = document.getElementById('training-groups-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function resetTrainingGroupForm() {
+            document.getElementById('training-group-form').reset();
+            document.getElementById('edit-group-id').value = '';
+            document.getElementById('group-date-input').value = getTodayStr();
+            document.getElementById('group-time-input').value = '18:00';
+            document.getElementById('group-student-filter').value = '';
+            document.getElementById('group-form-heading').innerHTML = `<i class="fa-solid fa-plus-circle"></i><span>Crear Nuevo Grupo de Entrenamiento</span>`;
+            document.getElementById('cancel-edit-group-btn').classList.add('hidden');
+            document.getElementById('save-group-submit-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Guardar Grupo de Entrenamiento</span>`;
+            renderGroupStudentsChecklist([]);
+        }
+
+        function renderGroupStudentsChecklist(selectedIds = []) {
+            const container = document.getElementById('group-students-checklist');
+            if (!container) return;
+
+            if (!Array.isArray(students) || students.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-xs text-zinc-400 py-3">Aún no tienes alumnos registrados. Agrega alumnos primero para asignarlos a un grupo.</p>`;
+                updateSelectedGroupStudentsCount();
+                return;
+            }
+
+            const selectedSet = new Set((selectedIds || []).map(String));
+            container.innerHTML = students.map(st => {
+                const isChecked = selectedSet.has(String(st.id));
+                const safeName = String(st.name || 'Atleta').trim();
+                const levelText = st.level || 'Básico';
+                return `
+                    <label data-group-student-item="${escapeHtml(safeName.toLowerCase())}"
+                           class="flex items-center gap-2.5 p-2.5 rounded-xl bg-bandido-dark hover:bg-zinc-900 border ${isChecked ? 'border-bandido-orange/60 bg-bandido-orange/10' : 'border-bandido-border'} cursor-pointer select-none transition">
+                        <input type="checkbox"
+                               value="${escapeHtml(st.id)}"
+                               ${isChecked ? 'checked' : ''}
+                               onchange="updateSelectedGroupStudentsCount(); this.closest('label').classList.toggle('border-bandido-orange/60', this.checked); this.closest('label').classList.toggle('bg-bandido-orange/10', this.checked);"
+                               class="group-student-checkbox w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-white truncate">${escapeHtml(safeName)}</p>
+                            <p class="text-[10px] text-zinc-400 truncate">${escapeHtml(levelText)}</p>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            updateSelectedGroupStudentsCount();
+        }
+
+        function filterGroupStudentChecklist() {
+            const q = (document.getElementById('group-student-filter')?.value || '').toLowerCase().trim();
+            document.querySelectorAll('[data-group-student-item]').forEach(el => {
+                const name = el.getAttribute('data-group-student-item') || '';
+                el.classList.toggle('hidden', Boolean(q && !name.includes(q)));
+            });
+        }
+
+        function toggleSelectAllGroupStudents(checkedState) {
+            document.querySelectorAll('.group-student-checkbox').forEach(cb => {
+                const parentLabel = cb.closest('[data-group-student-item]');
+                if (parentLabel && parentLabel.classList.contains('hidden')) return;
+                cb.checked = checkedState;
+                if (parentLabel) {
+                    parentLabel.classList.toggle('border-bandido-orange/60', checkedState);
+                    parentLabel.classList.toggle('bg-bandido-orange/10', checkedState);
+                }
+            });
+            updateSelectedGroupStudentsCount();
+        }
+
+        function updateSelectedGroupStudentsCount() {
+            const count = document.querySelectorAll('.group-student-checkbox:checked').length;
+            const el = document.getElementById('group-selected-students-count');
+            if (el) el.textContent = count;
+        }
+
+        function startEditTrainingGroup(groupId) {
+            const grp = trainingGroups.find(g => g.id === groupId);
+            if (!grp) return;
+
+            document.getElementById('edit-group-id').value = grp.id;
+            document.getElementById('group-name-input').value = grp.name || '';
+            document.getElementById('group-location-input').value = grp.location || '';
+            document.getElementById('group-date-input').value = grp.date || getTodayStr();
+            document.getElementById('group-time-input').value = grp.time || '18:00';
+            document.getElementById('group-instructions-input').value = grp.instructions || '';
+            document.getElementById('group-student-filter').value = '';
+
+            renderGroupStudentsChecklist(grp.studentIds || []);
+
+            document.getElementById('group-form-heading').innerHTML = `<i class="fa-solid fa-pen"></i><span>Editando Grupo: ${escapeHtml(grp.name)}</span>`;
+            document.getElementById('cancel-edit-group-btn').classList.remove('hidden');
+            document.getElementById('save-group-submit-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Actualizar Grupo</span>`;
+        }
+
+        async function saveTrainingGroup(event) {
+            event.preventDefault();
+            const existingId = document.getElementById('edit-group-id').value.trim();
+            const name = document.getElementById('group-name-input').value.trim();
+            const location = document.getElementById('group-location-input').value.trim();
+            const date = document.getElementById('group-date-input').value;
+            const time = document.getElementById('group-time-input').value;
+            const instructions = document.getElementById('group-instructions-input').value.trim();
+
+            if (!name || !location || !date || !time) return;
+
+            const studentIds = Array.from(document.querySelectorAll('.group-student-checkbox:checked')).map(cb => cb.value);
+
+            if (existingId) {
+                const idx = trainingGroups.findIndex(g => g.id === existingId);
+                if (idx !== -1) {
+                    trainingGroups[idx] = {
+                        ...trainingGroups[idx],
+                        name,
+                        location,
+                        date,
+                        time,
+                        instructions,
+                        studentIds
+                    };
+                }
+            } else {
+                trainingGroups.unshift({
+                    id: 'grp_' + Date.now(),
+                    name,
+                    location,
+                    date,
+                    time,
+                    instructions,
+                    studentIds,
+                    createdAt: getTodayStr()
+                });
+            }
+
+            await saveTrainingGroupsToCloud();
+            resetTrainingGroupForm();
+            renderTrainingGroupsList();
+            renderStatsAndAlerts();
+            showToast(existingId ? 'Grupo de entrenamiento actualizado.' : 'Grupo de entrenamiento creado.');
+        }
+
+        async function deleteTrainingGroup(groupId) {
+            trainingGroups = trainingGroups.filter(g => g.id !== groupId);
+            await saveTrainingGroupsToCloud();
+            renderTrainingGroupsList();
+            renderStatsAndAlerts();
+            showToast('Grupo eliminado.');
+        }
+
+        function shareTrainingGroupWhatsApp(groupId) {
+            const grp = trainingGroups.find(g => g.id === groupId);
+            if (!grp) return;
+
+            const assignedNames = (grp.studentIds || [])
+                .map(id => students.find(s => String(s.id) === String(id))?.name)
+                .filter(Boolean);
+
+            let msg = `*BANDIDOS SUR — ENTRENAMIENTO GRUPAL*\n\n`;
+            msg += `*Grupo:* ${grp.name}\n`;
+            msg += `*Lugar:* ${grp.location}\n`;
+            msg += `*Fecha:* ${formatDisplayDate(grp.date)}\n`;
+            msg += `*Hora:* ${grp.time} hrs\n\n`;
+            msg += `*Indicaciones:*\n${grp.instructions}\n`;
+            if (assignedNames.length > 0) {
+                msg += `\n*Atletas convocados (${assignedNames.length}):*\n• ${assignedNames.join('\n• ')}`;
+            }
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+        }
+
+        function renderTrainingGroupsList() {
+            const listEl = document.getElementById('training-groups-list');
+            const counterEl = document.getElementById('groups-list-counter');
+            if (!listEl) return;
+
+            if (counterEl) {
+                counterEl.textContent = `${trainingGroups.length} grupo${trainingGroups.length === 1 ? '' : 's'}`;
+            }
+
+            if (trainingGroups.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-8 rounded-2xl bg-bandido-dark border border-bandido-border text-center space-y-2">
+                        <div class="w-12 h-12 rounded-2xl bg-bandido-card border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
+                            <i class="fa-solid fa-people-group text-lg"></i>
+                        </div>
+                        <p class="text-sm font-bold text-white">Aún no hay grupos de entrenamiento creados</p>
+                        <p class="text-xs text-zinc-400 max-w-md mx-auto">Usa el formulario superior para organizar tu próxima sesión grupal con lugar, fecha, hora y tus alumnos.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = trainingGroups.map(grp => {
+                const memberObjs = (grp.studentIds || [])
+                    .map(id => students.find(s => String(s.id) === String(id)))
+                    .filter(Boolean);
+
+                const membersBadges = memberObjs.length > 0
+                    ? memberObjs.map(m => `
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-[11px] font-semibold text-zinc-200">
+                            <span class="w-4 h-4 rounded-full bg-bandido-orange/20 text-bandido-orange text-[9px] font-black flex items-center justify-center">
+                                ${escapeHtml((m.name || 'A').charAt(0).toUpperCase())}
+                            </span>
+                            ${escapeHtml(m.name)}
+                        </span>
+                    `).join('')
+                    : `<span class="text-[11px] text-zinc-500 italic">Sin alumnos asignados todavía</span>`;
+
+                return `
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border hover:border-bandido-orange/40 transition space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-bandido-border/80 pb-3">
+                            <div class="space-y-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h5 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(grp.name)}</h5>
+                                    <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold">
+                                        ${memberObjs.length} alumno${memberObjs.length === 1 ? '' : 's'}
+                                    </span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300">
+                                    <span><i class="fa-solid fa-location-dot text-bandido-orange mr-1.5"></i>${escapeHtml(grp.location)}</span>
+                                    <span><i class="fa-solid fa-calendar-day text-bandido-orange mr-1.5"></i>${formatDisplayDate(grp.date)}</span>
+                                    <span><i class="fa-solid fa-clock text-bandido-orange mr-1.5"></i>${escapeHtml(grp.time)} hrs</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-start">
+                                <button type="button" onclick="shareTrainingGroupWhatsApp('${grp.id}')"
+                                        title="Compartir convocatoria por WhatsApp"
+                                        class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 transition cursor-pointer flex items-center gap-1">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <span class="hidden sm:inline">Compartir</span>
+                                </button>
+                                <button type="button" onclick="startEditTrainingGroup('${grp.id}')"
+                                        title="Editar grupo"
+                                        class="p-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-zinc-300 hover:text-bandido-orange transition cursor-pointer">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button type="button" onclick="deleteTrainingGroup('${grp.id}')"
+                                        title="Eliminar grupo"
+                                        class="p-2 rounded-xl bg-bandido-card hover:bg-rose-500/20 border border-bandido-border text-zinc-400 hover:text-rose-400 transition cursor-pointer">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-bandido-card/80 border border-bandido-border/70 space-y-1">
+                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-bandido-orange">Indicaciones del Entrenamiento</p>
+                            <p class="text-xs text-zinc-200 whitespace-pre-line leading-relaxed">${escapeHtml(grp.instructions || '')}</p>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Integrantes del Grupo</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${membersBadges}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // =================================================================
@@ -2929,7 +3527,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-purple-200">Plan con Plus de Videos Demostrativos Activo</p>
-                            <p class="text-[11px] text-zinc-300">Pega el enlace del video (YouTube, Shorts, Drive, Instagram, TikTok o MP4) en cada día.</p>
+                            <p class="text-[11px] text-zinc-300">Pega el enlace del video (Instagram Reels, YouTube Shorts, Drive o MP4) en cada día.</p>
                         </div>
                     </div>
                     <span class="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 text-[10px] font-extrabold uppercase shrink-0">VIP Video</span>
@@ -2988,7 +3586,6 @@
             currentRoutineDraft.goal = document.getElementById('routine-goal-input').value;
             currentRoutineDraft.notes = document.getElementById('routine-notes-input').value;
             const titleInputs = document.querySelectorAll('[data-block-title]');
-            const videoInputs = document.querySelectorAll('[data-block-video]');
             const textInputs = document.querySelectorAll('[data-block-text]');
 
             currentRoutineDraft.blocks = Array.from(titleInputs).map((inp, idx) => {
@@ -3043,7 +3640,7 @@
                             <input type="url"
                                    data-block-video="${idx}"
                                    value="${escapeHtml(block.videoUrl || '')}"
-                                   placeholder="Pega aquí la URL del video (YouTube, Shorts, Drive, Instagram, MP4)..."
+                                   placeholder="Pega aquí la URL del video (Instagram Reels, YouTube Shorts, Drive, MP4)..."
                                    class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
                         </div>
                     ` : ''}
@@ -3174,15 +3771,139 @@
         }
 
         // =================================================================
-        // MODAL 6: HISTORIAL DE RUTINAS DEL ALUMNO
+        // MODAL 6: HISTORIAL DE RUTINAS Y BITÁCORA DIARIA DEL ALUMNO
         // =================================================================
-        function openRoutineHistoryModal(studentId) {
+        function getFeelingBadgeInfo(feeling) {
+            const map = {
+                excelente: { label: '🔥 Excelente', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+                bien: { label: '💪 Bien / Sólido', cls: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
+                pesado: { label: '😓 Pesado', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+                cansado: { label: '🪫 Cansado / Fatiga', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' }
+            };
+            return map[feeling] || { label: '💪 Completado', cls: 'bg-zinc-800 text-zinc-200 border-zinc-700' };
+        }
+
+        function switchHistoryTab(tabName) {
+            const progressList = document.getElementById('daily-progress-history-list');
+            const routinesList = document.getElementById('routine-history-list');
+            const btnProgress = document.getElementById('tab-btn-daily-progress');
+            const btnRoutines = document.getElementById('tab-btn-assigned-routines');
+
+            if (tabName === 'progress') {
+                progressList.classList.remove('hidden');
+                routinesList.classList.add('hidden');
+                btnProgress.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
+                btnRoutines.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
+            } else {
+                progressList.classList.add('hidden');
+                routinesList.classList.remove('hidden');
+                btnRoutines.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
+                btnProgress.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
+            }
+        }
+
+        async function openRoutineHistoryModal(studentId) {
+            activeHistoryStudentId = studentId;
             const st = students.find(s => s.id === studentId);
             if (!st) return;
 
-            document.getElementById('history-student-title').textContent = `Historial de Rutinas — ${st.name}`;
-            document.getElementById('history-student-subtitle').textContent = `${st.trainingDays || 'Entrenamiento'} · Nivel ${st.level || 'Básico'}`;
+            const liveCheck = await fetchLiveStudentFromSupabase(studentId);
+            if (liveCheck && !liveCheck.deleted && liveCheck.student) {
+                const idx = students.findIndex(s => s.id === studentId);
+                if (idx !== -1) {
+                    students[idx] = {
+                        ...students[idx],
+                        ...liveCheck.student,
+                        dailyLogs: Array.isArray(liveCheck.student.dailyLogs) ? liveCheck.student.dailyLogs : []
+                    };
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(students));
+                }
+            }
 
+            const currentStudent = students.find(s => s.id === studentId) || st;
+            document.getElementById('history-student-title').textContent = `Historial — ${currentStudent.name}`;
+            document.getElementById('history-student-subtitle').textContent = `${currentStudent.trainingDays || 'Entrenamiento'} · Nivel ${currentStudent.level || 'Básico'}`;
+
+            renderDailyProgressHistoryList(currentStudent);
+            renderAssignedRoutinesHistoryList(currentStudent);
+
+            const logsCount = Array.isArray(currentStudent.dailyLogs) ? currentStudent.dailyLogs.length : 0;
+            const histCount = Array.isArray(currentStudent.routineHistory) ? currentStudent.routineHistory.length : 0;
+            document.getElementById('tab-badge-progress').textContent = logsCount;
+            document.getElementById('tab-badge-routines').textContent = histCount;
+
+            switchHistoryTab('progress');
+
+            const modal = document.getElementById('routine-history-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderDailyProgressHistoryList(student) {
+            const container = document.getElementById('daily-progress-history-list');
+            const logs = Array.isArray(student.dailyLogs) ? student.dailyLogs : [];
+
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center space-y-2.5">
+                        <div class="w-12 h-12 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
+                            <i class="fa-solid fa-clipboard-list text-lg"></i>
+                        </div>
+                        <p class="text-sm font-bold text-white">Aún no hay reportes diarios de ${escapeHtml(student.name)}</p>
+                        <p class="text-xs text-zinc-400 max-w-md mx-auto">Cuando el alumno entre a su rutina y guarde cómo le fue ese día, sus sensaciones, esfuerzo (RPE) y comentarios aparecerán aquí.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = logs.map((log, idx) => {
+                const feelingInfo = getFeelingBadgeInfo(log.feeling);
+                const rpeVal = Number(log.rpe || 7);
+                return `
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border/80 pb-2.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-lg bg-bandido-orange/20 text-bandido-orange text-xs font-extrabold">
+                                    <i class="fa-solid fa-calendar-day mr-1"></i>${formatDisplayDate(log.date)}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg border text-xs font-bold ${feelingInfo.cls}">
+                                    ${feelingInfo.label}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-200 text-xs font-bold">
+                                    Esfuerzo RPE: <strong class="text-bandido-orange">${rpeVal}/10</strong>
+                                </span>
+                            </div>
+                            <button type="button" onclick="deleteDailyProgressLog('${student.id}', ${idx})"
+                                    title="Eliminar registro"
+                                    class="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            ${log.blockTitle ? `<p class="text-xs font-bold text-zinc-300"><i class="fa-solid fa-dumbbell text-bandido-orange mr-1.5"></i>Sesión entrenada: <span class="text-white">${escapeHtml(log.blockTitle)}</span></p>` : ''}
+                            ${log.completedCount ? `<p class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-double mr-1"></i>${escapeHtml(log.completedCount)}</p>` : ''}
+                            <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70 text-xs text-zinc-200 leading-relaxed">
+                                ${log.notes ? escapeHtml(log.notes) : '<span class="text-zinc-500 italic">Sin comentarios adicionales del alumno.</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function deleteDailyProgressLog(studentId, logIndex) {
+            const st = students.find(s => s.id === studentId);
+            if (!st || !Array.isArray(st.dailyLogs)) return;
+            st.dailyLogs.splice(logIndex, 1);
+            await upsertSupabaseStudent(st);
+            renderDailyProgressHistoryList(st);
+            document.getElementById('tab-badge-progress').textContent = st.dailyLogs.length;
+            renderTable();
+            showToast('Registro diario eliminado.');
+        }
+
+        function renderAssignedRoutinesHistoryList(st) {
             const listEl = document.getElementById('routine-history-list');
             const history = Array.isArray(st.routineHistory) ? st.routineHistory : [];
 
@@ -3241,16 +3962,13 @@
                     `;
                 }).join('');
             }
-
-            const modal = document.getElementById('routine-history-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
         }
 
         function closeRoutineHistoryModal() {
             const modal = document.getElementById('routine-history-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            activeHistoryStudentId = null;
         }
 
         function loadHistoryRoutineIntoEditor(studentId, historyIndex) {
@@ -3315,6 +4033,7 @@
                 n: student.name,
                 l: student.level || 'Básico',
                 p: plan.name,
+                d: student.trainingDays || '',
                 v: allowVideos ? 1 : 0,
                 g: student.routine?.goal || '',
                 o: student.routine?.notes || '',
@@ -3339,6 +4058,7 @@
                 n: st.name,
                 l: st.level || 'Básico',
                 p: plan.name,
+                d: st.trainingDays || '',
                 v: allowVideos ? 1 : 0,
                 g: st.routine?.goal || '',
                 o: st.routine?.notes || '',
@@ -3346,9 +4066,11 @@
                     t: blk.title,
                     u: allowVideos ? (blk.videoUrl || '') : '',
                     x: blk.text
-                }))
+                })),
+                logs: Array.isArray(st.dailyLogs) ? st.dailyLogs : []
             };
             closeRoutineModal();
+            selectedAthleteBlockIndex = 0;
             renderAthletePrivateView(payload, true);
         }
 
@@ -3376,6 +4098,96 @@
                 ? `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`
                 : `https://wa.me/?text=${encodeURIComponent(message)}`;
             window.open(waUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // =================================================================
+        // GUARDADO DE PROGRESO DIARIO DESDE LA VISTA DEL ALUMNO -> ADMIN
+        // =================================================================
+        async function submitAthleteDailyProgress(event) {
+            event.preventDefault();
+            if (!activeAthletePayload) return;
+
+            const btn = document.getElementById('athlete-save-progress-btn');
+            const dateVal = document.getElementById('athlete-log-date')?.value || getTodayStr();
+            const blockTitle = document.getElementById('athlete-log-block')?.value || 'Sesión de Entrenamiento';
+            const feelingInput = document.querySelector('input[name="athlete_feeling"]:checked');
+            const feeling = feelingInput ? feelingInput.value : 'bien';
+            const rpe = Number(document.getElementById('athlete-log-rpe')?.value || 7);
+            const notes = (document.getElementById('athlete-log-notes')?.value || '').trim();
+
+            const allChecks = document.querySelectorAll('.athlete-ex-checkbox');
+            const checkedCount = Array.from(allChecks).filter(c => c.checked).length;
+            const completedCount = allChecks.length > 0
+                ? `${checkedCount} de ${allChecks.length} ejercicios marcados como completados`
+                : '';
+
+            const newLogEntry = {
+                id: 'log_' + Date.now(),
+                date: dateVal,
+                blockTitle,
+                feeling,
+                rpe,
+                notes,
+                completedCount,
+                createdAt: new Date().toISOString()
+            };
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Guardando progreso...</span>`;
+            }
+
+            try {
+                const studentId = activeAthletePayload.id;
+                let savedToCloud = false;
+
+                if (studentId) {
+                    const liveCheck = await fetchLiveStudentFromSupabase(studentId);
+                    if (liveCheck && !liveCheck.deleted && liveCheck.student) {
+                        const targetSt = liveCheck.student;
+                        if (!Array.isArray(targetSt.dailyLogs)) targetSt.dailyLogs = [];
+                        targetSt.dailyLogs.unshift(newLogEntry);
+                        await upsertSupabaseStudent(targetSt);
+                        savedToCloud = true;
+                    }
+
+                    const localIdx = students.findIndex(s => s.id === studentId);
+                    if (localIdx !== -1) {
+                        if (!Array.isArray(students[localIdx].dailyLogs)) students[localIdx].dailyLogs = [];
+                        students[localIdx].dailyLogs.unshift(newLogEntry);
+                        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(students));
+                        if (!savedToCloud) {
+                            await upsertSupabaseStudent(students[localIdx]);
+                        }
+                    } else {
+                        try {
+                            const rawLocal = localStorage.getItem(LOCAL_STORAGE_KEY);
+                            const parsedLocal = rawLocal ? JSON.parse(rawLocal) : [];
+                            const idx = parsedLocal.findIndex(s => s.id === studentId);
+                            if (idx !== -1) {
+                                if (!Array.isArray(parsedLocal[idx].dailyLogs)) parsedLocal[idx].dailyLogs = [];
+                                parsedLocal[idx].dailyLogs.unshift(newLogEntry);
+                                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsedLocal));
+                            }
+                        } catch (e) {}
+                    }
+                }
+
+                if (!Array.isArray(activeAthletePayload.logs)) activeAthletePayload.logs = [];
+                activeAthletePayload.logs.unshift(newLogEntry);
+
+                const isPreview = !document.getElementById('exit-preview-btn').classList.contains('hidden');
+                renderAthletePrivateView(activeAthletePayload, isPreview);
+                showToast('¡Progreso guardado! Tu coach ya puede verlo en tu historial.');
+            } catch (err) {
+                console.error('Error guardando progreso del alumno:', err);
+                showToast('No se pudo guardar el progreso. Intenta de nuevo.', true);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>Guardar Progreso en Historial del Coach</span>`;
+                }
+            }
         }
 
         // =================================================================
@@ -3409,6 +4221,7 @@
         }
 
         function renderAthletePrivateView(payload, isPreview = false) {
+            activeAthletePayload = payload;
             document.getElementById('admin-dashboard-wrapper').classList.add('hidden');
             const view = document.getElementById('athlete-routine-view');
             view.classList.remove('hidden');
@@ -3424,16 +4237,65 @@
             const container = document.getElementById('athlete-routine-content');
             const blocks = Array.isArray(payload.b) ? payload.b : [];
             const canWatchVideos = payload.v === 1 || payload.v === true;
+            const recentLogs = Array.isArray(payload.logs) ? payload.logs.slice(0, 5) : [];
 
-            const blocksHtml = blocks.length === 0
-                ? `<div class="p-6 rounded-2xl bg-bandido-card border border-bandido-border text-center text-xs text-zinc-400">Aún no hay bloques cargados en esta rutina.</div>`
-                : blocks.map((blk, bIdx) => {
-                    const blockTitle = blk.t || `Día ${bIdx + 1}`;
-                    const videoHtml = (canWatchVideos && blk.u)
-                        ? renderVideoPlayerHtml(blk.u, blockTitle)
-                        : '';
-                    const circuits = parseBlockCircuits(blk.x || '');
-                    const circuitsHtml = circuits.map((c, cIdx) => `
+            // Asegurar que el índice seleccionado sea válido
+            if (selectedAthleteBlockIndex < 0 || selectedAthleteBlockIndex >= blocks.length) {
+                selectedAthleteBlockIndex = 0;
+            }
+
+            // Pestañas/botones interactivos por cada día de entrenamiento debajo del nombre del alumno
+            const dayTabsHtml = blocks.length > 0 ? `
+                <div class="pt-3 mt-1 border-t border-bandido-border/80 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
+                            <i class="fa-solid fa-calendar-day text-bandido-orange mr-1.5"></i>Selecciona tu día de entrenamiento:
+                        </span>
+                        ${payload.d ? `<span class="text-[11px] font-semibold text-zinc-400">${escapeHtml(payload.d)}</span>` : ''}
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${blocks.map((blk, idx) => {
+                            const isSelected = idx === selectedAthleteBlockIndex;
+                            const tabTitle = blk.t || `Día ${idx + 1}`;
+                            return `
+                                <button type="button"
+                                        onclick="selectAthleteRoutineDay(${idx})"
+                                        class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center gap-2 ${
+                                            isSelected
+                                                ? 'bg-bandido-orange text-black shadow-lg shadow-orange-500/25 ring-2 ring-bandido-orange/50'
+                                                : 'bg-bandido-black/80 hover:bg-zinc-800 text-zinc-200 border border-bandido-border hover:border-bandido-orange/50'
+                                        }">
+                                    <span class="w-5 h-5 rounded-md ${isSelected ? 'bg-black/20 text-black' : 'bg-bandido-orange/20 text-bandido-orange'} text-[11px] font-black flex items-center justify-center shrink-0">
+                                        ${idx + 1}
+                                    </span>
+                                    <span>${escapeHtml(tabTitle)}</span>
+                                    ${(canWatchVideos && blk.u) ? `<i class="fa-solid fa-video text-[11px] ${isSelected ? 'text-black/80' : 'text-bandido-orange'}"></i>` : ''}
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            ` : (payload.d ? `
+                <div class="pt-2 border-t border-bandido-border/80">
+                    <span class="text-xs text-zinc-300"><i class="fa-solid fa-calendar-days text-bandido-orange mr-1.5"></i>Días asignados: <strong>${escapeHtml(payload.d)}</strong></span>
+                </div>
+            ` : '');
+
+            // Renderizar únicamente la rutina del día seleccionado
+            let activeBlockHtml = '';
+            if (blocks.length === 0) {
+                activeBlockHtml = `<div class="p-6 rounded-2xl bg-bandido-card border border-bandido-border text-center text-xs text-zinc-400">Aún no hay rutinas cargadas para tus días de entrenamiento.</div>`;
+            } else {
+                const bIdx = selectedAthleteBlockIndex;
+                const blk = blocks[bIdx];
+                const blockTitle = blk.t || `Día ${bIdx + 1}`;
+                const videoHtml = (canWatchVideos && blk.u)
+                    ? renderReelVideoPlayerHtml(blk.u, blockTitle, bIdx)
+                    : '';
+                const circuits = parseBlockCircuits(blk.x || '');
+                const circuitsHtml = circuits.length === 0
+                    ? `<p class="text-xs text-zinc-400 text-center py-4">Sin ejercicios registrados para este día.</p>`
+                    : circuits.map((c, cIdx) => `
                         <div class="p-3.5 rounded-xl bg-bandido-dark border border-bandido-border/90 space-y-2.5">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Circuito ${cIdx + 1}</span>
@@ -3442,7 +4304,7 @@
                             <div class="space-y-1.5">
                                 ${c.exercises.map(ex => `
                                     <label class="flex items-start gap-2.5 p-2 rounded-lg bg-bandido-card/70 hover:bg-bandido-card cursor-pointer select-none">
-                                        <input type="checkbox" class="mt-0.5 w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
+                                        <input type="checkbox" class="athlete-ex-checkbox mt-0.5 w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
                                         <span class="text-xs sm:text-sm text-zinc-100 leading-snug">${escapeHtml(ex)}</span>
                                     </label>
                                 `).join('')}
@@ -3450,25 +4312,54 @@
                         </div>
                     `).join('');
 
-                    return `
-                        <section class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-3.5 shadow-lg">
-                            <div class="flex items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase">Bloque ${bIdx + 1}</span>
-                                    <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(blockTitle)}</h3>
+                activeBlockHtml = `
+                    <section id="athlete-active-day-section" class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
+                            <div class="flex items-center gap-2.5">
+                                <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange text-black text-[11px] font-extrabold uppercase">Día ${bIdx + 1}</span>
+                                <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(blockTitle)}</h3>
+                            </div>
+                            ${canWatchVideos && blk.u ? `<span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/15 border border-bandido-orange/35 text-bandido-orange text-[10px] font-extrabold"><i class="fa-solid fa-film mr-1"></i>Reel</span>` : ''}
+                        </div>
+                        ${videoHtml}
+                        <div class="space-y-3">
+                            ${circuitsHtml}
+                        </div>
+                    </section>
+                `;
+            }
+
+            const blockOptionsHtml = blocks.length > 0
+                ? blocks.map((blk, i) => {
+                    const optLabel = blk.t || `Día ${i + 1}`;
+                    return `<option value="${escapeHtml(optLabel)}" ${i === selectedAthleteBlockIndex ? 'selected' : ''}>${escapeHtml(optLabel)}</option>`;
+                }).join('') + `<option value="Rutina Completa / General">Rutina Completa / General</option>`
+                : `<option value="Entrenamiento del Día">Entrenamiento del Día</option>`;
+
+            const recentLogsHtml = recentLogs.length > 0 ? `
+                <div class="pt-4 border-t border-bandido-border space-y-2.5">
+                    <p class="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
+                        <i class="fa-solid fa-clock-rotate-left text-bandido-orange mr-1.5"></i>Tus últimos registros guardados
+                    </p>
+                    <div class="space-y-2">
+                        ${recentLogs.map(item => {
+                            const fInfo = getFeelingBadgeInfo(item.feeling);
+                            return `
+                                <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border/80 flex flex-col gap-1.5">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <span class="text-xs font-bold text-white">${formatDisplayDate(item.date)} · <span class="text-bandido-orange">${escapeHtml(item.blockTitle || 'Sesión')}</span></span>
+                                        <span class="px-2 py-0.5 rounded-full border text-[10px] font-bold ${fInfo.cls}">${fInfo.label} · RPE ${item.rpe || 7}/10</span>
+                                    </div>
+                                    ${item.notes ? `<p class="text-xs text-zinc-300">${escapeHtml(item.notes)}</p>` : ''}
                                 </div>
-                                ${canWatchVideos && blk.u ? `<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-extrabold"><i class="fa-solid fa-video mr-1"></i>Video</span>` : ''}
-                            </div>
-                            ${videoHtml}
-                            <div class="space-y-3">
-                                ${circuitsHtml}
-                            </div>
-                        </section>
-                    `;
-                }).join('');
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            ` : '';
 
             container.innerHTML = `
-                <div class="p-5 rounded-2xl bg-gradient-to-br from-bandido-card to-bandido-dark border border-bandido-orange/40 space-y-2">
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-bandido-card to-bandido-dark border border-bandido-orange/40 space-y-3">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
                             <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
@@ -3478,12 +4369,131 @@
                         </div>
                         <span class="text-[11px] text-zinc-400">Bandidos Sur</span>
                     </div>
-                    <h2 class="font-display text-2xl font-bold uppercase text-white">${escapeHtml(payload.n || 'Atleta')}</h2>
-                    ${payload.g ? `<p class="text-xs sm:text-sm text-bandido-orange font-semibold"><i class="fa-solid fa-bullseye mr-1.5"></i>${escapeHtml(payload.g)}</p>` : ''}
-                    ${payload.o ? `<p class="text-xs text-zinc-300 bg-bandido-black/50 p-2.5 rounded-xl border border-bandido-border mt-2"><i class="fa-solid fa-circle-info text-bandido-orange mr-1.5"></i>${escapeHtml(payload.o)}</p>` : ''}
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase text-white">${escapeHtml(payload.n || 'Atleta')}</h2>
+
+                    ${dayTabsHtml}
+
+                    ${payload.g ? `<p class="text-xs sm:text-sm text-bandido-orange font-semibold pt-1"><i class="fa-solid fa-bullseye mr-1.5"></i>${escapeHtml(payload.g)}</p>` : ''}
+                    ${payload.o ? `<p class="text-xs text-zinc-300 bg-bandido-black/50 p-2.5 rounded-xl border border-bandido-border"><i class="fa-solid fa-circle-info text-bandido-orange mr-1.5"></i>${escapeHtml(payload.o)}</p>` : ''}
                 </div>
-                ${blocksHtml}
+
+                ${activeBlockHtml}
+
+                <!-- APARTADO PARA QUE EL ALUMNO REGISTRE SU PROGRESO DEL DÍA -->
+                <section class="p-5 rounded-2xl bg-gradient-to-b from-bandido-card to-bandido-dark border-2 border-bandido-orange/45 shadow-xl space-y-4">
+                    <div class="flex items-start justify-between gap-3 border-b border-bandido-border pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-bandido-orange text-black flex items-center justify-center shrink-0 shadow-md shadow-orange-500/20">
+                                <i class="fa-solid fa-pen-to-square text-base"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-bandido-orange">Bitácora de Entrenamiento</span>
+                                <h3 class="font-display text-lg font-bold uppercase text-white">Registrar mi Progreso de Hoy</h3>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold shrink-0">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i>Sync Coach
+                        </span>
+                    </div>
+
+                    <form id="athlete-daily-progress-form" onsubmit="submitAthleteDailyProgress(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Fecha de Entrenamiento *</label>
+                                <input type="date"
+                                       id="athlete-log-date"
+                                       value="${getTodayStr()}"
+                                       required
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-black border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange" />
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">¿Qué bloque / día entrenaste? *</label>
+                                <select id="athlete-log-block"
+                                        class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-black border border-bandido-border text-xs sm:text-sm text-white focus:outline-none focus:border-bandido-orange cursor-pointer">
+                                    ${blockOptionsHtml}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-2">¿Cómo te sentiste hoy con tu rutina? *</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="athlete_feeling" value="excelente" class="peer hidden" checked />
+                                    <div class="p-2.5 rounded-xl bg-bandido-black border border-bandido-border peer-checked:border-emerald-400 peer-checked:bg-emerald-500/15 text-center transition">
+                                        <span class="text-base block">🔥</span>
+                                        <span class="text-[11px] font-bold text-white block mt-0.5">Excelente</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="athlete_feeling" value="bien" class="peer hidden" />
+                                    <div class="p-2.5 rounded-xl bg-bandido-black border border-bandido-border peer-checked:border-sky-400 peer-checked:bg-sky-500/15 text-center transition">
+                                        <span class="text-base block">💪</span>
+                                        <span class="text-[11px] font-bold text-white block mt-0.5">Bien / Sólido</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="athlete_feeling" value="pesado" class="peer hidden" />
+                                    <div class="p-2.5 rounded-xl bg-bandido-black border border-bandido-border peer-checked:border-amber-400 peer-checked:bg-amber-500/15 text-center transition">
+                                        <span class="text-base block">😓</span>
+                                        <span class="text-[11px] font-bold text-white block mt-0.5">Pesado</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="athlete_feeling" value="cansado" class="peer hidden" />
+                                    <div class="p-2.5 rounded-xl bg-bandido-black border border-bandido-border peer-checked:border-rose-400 peer-checked:bg-rose-500/15 text-center transition">
+                                        <span class="text-base block">🪫</span>
+                                        <span class="text-[11px] font-bold text-white block mt-0.5">Cansado</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Nivel de Esfuerzo Percibido (RPE 1 al 10)</label>
+                                <span id="athlete-rpe-display" class="px-2 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange text-xs font-extrabold">7 / 10</span>
+                            </div>
+                            <input type="range"
+                                   id="athlete-log-rpe"
+                                   min="1"
+                                   max="10"
+                                   value="7"
+                                   oninput="document.getElementById('athlete-rpe-display').textContent = this.value + ' / 10'"
+                                   class="w-full accent-orange-500 cursor-pointer" />
+                            <div class="flex justify-between text-[10px] text-zinc-500 mt-0.5">
+                                <span>1 · Muy suave</span>
+                                <span>5 · Moderado</span>
+                                <span>10 · Al fallo máximo</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Notas de tu sesión (reps logradas, pesos, molestias o sensaciones)</label>
+                            <textarea id="athlete-log-notes"
+                                      rows="3"
+                                      placeholder="Ej. Logré completar todas las series de dominadas limpias, en el último circuito bajé 2 reps por fatiga..."
+                                      class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-black border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange"></textarea>
+                        </div>
+
+                        <button type="submit"
+                                id="athlete-save-progress-btn"
+                                class="w-full py-3 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs sm:text-sm font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/25 cursor-pointer flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Guardar Progreso en Historial del Coach</span>
+                        </button>
+                    </form>
+
+                    ${recentLogsHtml}
+                </section>
             `;
+        }
+
+        function selectAthleteRoutineDay(dayIndex) {
+            if (!activeAthletePayload) return;
+            selectedAthleteBlockIndex = Number(dayIndex) || 0;
+            const isPreview = !document.getElementById('exit-preview-btn').classList.contains('hidden');
+            renderAthletePrivateView(activeAthletePayload, isPreview);
         }
 
         function exitAthletePreview() {
@@ -3577,9 +4587,11 @@
                                 n: liveStudent.name,
                                 l: liveStudent.level || decoded.l || 'Básico',
                                 p: plan.name,
+                                d: liveStudent.trainingDays || decoded.d || '',
                                 v: allowVideos ? 1 : 0,
                                 g: liveStudent.routine?.goal ?? decoded.g ?? '',
                                 o: liveStudent.routine?.notes ?? decoded.o ?? '',
+                                logs: Array.isArray(liveStudent.dailyLogs) ? liveStudent.dailyLogs : [],
                                 b: Array.isArray(liveStudent.routine?.blocks)
                                     ? liveStudent.routine.blocks.map(blk => ({
                                         t: blk.title,
@@ -3588,11 +4600,13 @@
                                     }))
                                     : (decoded.b || [])
                             };
+                            selectedAthleteBlockIndex = 0;
                             renderAthletePrivateView(freshPayload, false);
                             return true;
                         }
                     }
 
+                    selectedAthleteBlockIndex = 0;
                     renderAthletePrivateView(decoded, false);
                     return true;
                 }
