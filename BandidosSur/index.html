@@ -198,11 +198,11 @@
                              class="hidden fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-96 rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl z-50 overflow-hidden">
                             <div class="px-4 py-3 bg-bandido-dark border-b border-bandido-border flex items-center justify-between">
                                 <span class="text-xs font-bold uppercase tracking-wider text-bandido-orange">
-                                    <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Avisos de Corte (≤ 3 días)
+                                    <i class="fa-solid fa-bell mr-1.5"></i>Avisos y Próximos Entrenos
                                 </span>
                                 <span id="notif-summary" class="text-[11px] text-zinc-400">0 avisos</span>
                             </div>
-                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-bandido-border p-2 space-y-1.5"></div>
+                            <div id="notif-list" class="max-h-80 overflow-y-auto divide-y divide-bandido-border p-2 space-y-1.5"></div>
                         </div>
                     </div>
 
@@ -242,62 +242,78 @@
 
             <!-- TARJETAS DE RESUMEN -->
             <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border flex items-center justify-between">
+                <button type="button"
+                        id="stat-card-all"
+                        onclick="filterByStatCard('all')"
+                        title="Mostrar todos los alumnos"
+                        class="p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-border flex items-center justify-between text-left transition cursor-pointer">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">Total Alumnos</p>
                         <p id="stat-total" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">0</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-zinc-800/80 text-bandido-orange flex items-center justify-center">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-zinc-800/80 text-bandido-orange flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-users text-base sm:text-lg"></i>
                     </div>
-                </div>
+                </button>
 
-                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border flex items-center justify-between">
+                <button type="button"
+                        id="stat-card-active"
+                        onclick="filterByStatCard('active')"
+                        title="Filtrar alumnos activos"
+                        class="p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-border flex items-center justify-between text-left transition cursor-pointer">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">Activos</p>
                         <p id="stat-active" class="font-display text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">0</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-circle-check text-base sm:text-lg"></i>
                     </div>
-                </div>
+                </button>
 
-                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border flex items-center justify-between">
+                <button type="button"
+                        id="stat-card-expiring"
+                        onclick="filterByStatCard('expiring')"
+                        title="Filtrar alumnos por vencer (≤ 3 días)"
+                        class="p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-border flex items-center justify-between text-left transition cursor-pointer">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">Vencen ≤ 3 días</p>
                         <p id="stat-expiring" class="font-display text-2xl sm:text-3xl font-bold text-amber-400 mt-1">0</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
                     </div>
-                </div>
+                </button>
 
-                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border flex items-center justify-between">
+                <button type="button"
+                        id="stat-card-expired"
+                        onclick="filterByStatCard('expired')"
+                        title="Filtrar mensualidades vencidas"
+                        class="p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-border flex items-center justify-between text-left transition cursor-pointer">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">Vencidas</p>
                         <p id="stat-expired" class="font-display text-2xl sm:text-3xl font-bold text-rose-400 mt-1">0</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-circle-exclamation text-base sm:text-lg"></i>
                     </div>
-                </div>
+                </button>
 
                 <button type="button"
-                        onclick="openTrainingGroupsModal()"
-                        title="Ver y gestionar grupos de entrenamiento"
+                        onclick="openTrainingGroupsModal('view')"
+                        title="Ver grupos de entrenamiento organizados"
                         class="col-span-2 sm:col-span-1 p-4 sm:p-5 rounded-2xl bg-bandido-card hover:bg-zinc-900 border border-bandido-orange/40 hover:border-bandido-orange flex items-center justify-between text-left transition cursor-pointer group">
                     <div>
                         <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-bandido-orange">Grupos Entreno</p>
                         <p id="stat-groups" class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">0</p>
                     </div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-bandido-orange/15 text-bandido-orange group-hover:bg-bandido-orange group-hover:text-black transition flex items-center justify-center">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-bandido-orange/15 text-bandido-orange group-hover:bg-bandido-orange group-hover:text-black transition flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-people-group text-base sm:text-lg"></i>
                     </div>
                 </button>
             </section>
 
             <!-- BUSCADOR, FILTROS Y GRUPOS DE ENTRENAMIENTO -->
-            <section class="p-3.5 sm:p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <section id="students-filter-bar" class="p-3.5 sm:p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                 <div class="relative flex-1">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
                     <input type="text"
@@ -318,7 +334,7 @@
                     </select>
 
                     <button type="button"
-                            onclick="openTrainingGroupsModal()"
+                            onclick="openTrainingGroupsModal('create')"
                             class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/50 text-xs sm:text-sm font-extrabold uppercase tracking-wide transition cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-md shadow-orange-500/10">
                         <i class="fa-solid fa-people-group"></i>
                         <span>Grupos de Entrenamiento</span>
@@ -327,31 +343,8 @@
                 </div>
             </section>
 
-            <!-- BUSCADOR Y FILTROS -->
-            <section class="p-3.5 sm:p-4 rounded-2xl bg-bandido-card border border-bandido-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-                    <input type="text"
-                           id="search-input"
-                           oninput="renderTable()"
-                           placeholder="Buscar alumno por nombre, plan, días o teléfono..."
-                           class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <select id="filter-status"
-                            onchange="renderTable()"
-                            class="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
-                        <option value="all">Todos los estatus</option>
-                        <option value="active">Activos</option>
-                        <option value="expiring">Por vencer (≤ 3 días)</option>
-                        <option value="expired">Vencidos</option>
-                    </select>
-                </div>
-            </section>
-
             <!-- LISTADO DE ALUMNOS (TABLA EN ESCRITORIO / TARJETAS EN MÓVIL) -->
-            <section class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
+            <section id="students-list-section" class="rounded-2xl bg-bandido-card border border-bandido-border overflow-hidden shadow-xl">
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -1282,7 +1275,7 @@
                 </form>
 
                 <!-- Listado de Grupos Creados -->
-                <div class="space-y-3">
+                <div id="training-groups-list-section" class="space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                             <i class="fa-solid fa-layer-group text-bandido-orange"></i>
@@ -2344,6 +2337,28 @@
                 }
             });
 
+            // Detectar grupos de entrenamiento próximos a realizarse (Hoy, Mañana o dentro de 3 días)
+            const upcomingGroups = [];
+            (Array.isArray(trainingGroups) ? trainingGroups : []).forEach(grp => {
+                if (!grp || !grp.date) return;
+                const daysUntil = getDaysRemaining(grp.date);
+                if (daysUntil >= 0 && daysUntil <= 3) {
+                    let timeLabel = `En ${daysUntil}d`;
+                    let badgeCls = 'bg-sky-500/15 text-sky-300 border-sky-500/30';
+                    if (daysUntil === 0) {
+                        timeLabel = `HOY · ${grp.time || ''} hrs`;
+                        badgeCls = 'bg-bandido-orange/20 text-bandido-orange border-bandido-orange/40';
+                    } else if (daysUntil === 1) {
+                        timeLabel = `Mañana · ${grp.time || ''} hrs`;
+                        badgeCls = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+                    } else {
+                        timeLabel = `En ${daysUntil}d · ${grp.time || ''}`;
+                    }
+                    upcomingGroups.push({ group: grp, daysUntil, timeLabel, badgeCls });
+                }
+            });
+            upcomingGroups.sort((a, b) => a.daysUntil - b.daysUntil || String(a.group.time || '').localeCompare(String(b.group.time || '')));
+
             document.getElementById('stat-total').textContent = students.length;
             document.getElementById('stat-active').textContent = activeCount;
             document.getElementById('stat-expiring').textContent = expiringCount;
@@ -2358,97 +2373,185 @@
             const badge = document.getElementById('notif-badge');
             const summary = document.getElementById('notif-summary');
             const notifList = document.getElementById('notif-list');
+            const totalNotifCount = alertItems.length + upcomingGroups.length;
 
-            if (alertItems.length > 0) {
-                badge.textContent = alertItems.length;
+            if (totalNotifCount > 0) {
+                badge.textContent = totalNotifCount;
                 badge.classList.remove('hidden');
             } else {
                 badge.classList.add('hidden');
             }
-            summary.textContent = `${alertItems.length} aviso${alertItems.length === 1 ? '' : 's'}`;
+            summary.textContent = `${totalNotifCount} aviso${totalNotifCount === 1 ? '' : 's'}`;
 
-            if (alertItems.length === 0) {
-                notifList.innerHTML = `<p class="p-4 text-center text-xs text-zinc-400">Todas las mensualidades están al corriente.</p>`;
+            if (totalNotifCount === 0) {
+                notifList.innerHTML = `<p class="p-4 text-center text-xs text-zinc-400">Sin vencimientos ni grupos próximos en los siguientes 3 días.</p>`;
             } else {
-                notifList.innerHTML = alertItems.map(({ student, status }) => `
-                    <div class="p-2.5 rounded-xl bg-bandido-dark/80 flex items-center justify-between gap-2">
-                        <div class="min-w-0">
-                            <p class="text-xs font-bold text-white truncate">${escapeHtml(student.name)}</p>
-                            <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(GYM_PLANS[student.planKey]?.name || '')}</p>
+                let htmlParts = [];
+
+                if (upcomingGroups.length > 0) {
+                    htmlParts.push(`
+                        <div class="px-2 pt-1 pb-0.5 text-[10px] font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-1.5">
+                            <i class="fa-solid fa-people-group"></i>
+                            <span>Grupos Próximos a Realizarse (${upcomingGroups.length})</span>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${status.badgeClass}">
-                                ${status.label}
-                            </span>
-                            <button onclick="sendExpirationWhatsApp('${student.id}'); toggleNotificationsPanel(false);"
-                                    title="Avisar por WhatsApp"
-                                    class="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs transition cursor-pointer">
-                                <i class="fa-brands fa-whatsapp"></i>
-                            </button>
-                            <button onclick="openRenewModal('${student.id}'); toggleNotificationsPanel(false);"
-                                    class="px-2 py-1 rounded-lg bg-bandido-orange text-black text-[10px] font-extrabold uppercase cursor-pointer">
-                                Renovar
-                            </button>
+                    `);
+                    htmlParts.push(...upcomingGroups.map(({ group, timeLabel, badgeCls }) => {
+                        const membersCount = Array.isArray(group.studentIds) ? group.studentIds.length : 0;
+                        return `
+                            <div class="p-2.5 rounded-xl bg-bandido-dark/90 border border-bandido-orange/25 flex items-center justify-between gap-2">
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-white truncate">${escapeHtml(group.name)}</p>
+                                    <p class="text-[11px] text-zinc-400 truncate">
+                                        <i class="fa-solid fa-location-dot text-bandido-orange mr-1"></i>${escapeHtml(group.location || 'Sede')} · ${membersCount} atleta(s)
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${badgeCls}">
+                                        ${escapeHtml(timeLabel)}
+                                    </span>
+                                    <button onclick="sendTrainingGroupWhatsApp('${group.id}'); toggleNotificationsPanel(false);"
+                                            title="Enviar convocatoria por WhatsApp"
+                                            class="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs transition cursor-pointer">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </button>
+                                    <button onclick="openTrainingGroupsModal('view'); toggleNotificationsPanel(false);"
+                                            class="px-2 py-1 rounded-lg bg-bandido-card hover:bg-zinc-800 border border-bandido-orange/40 text-bandido-orange text-[10px] font-extrabold uppercase cursor-pointer">
+                                        Ver
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }));
+                }
+
+                if (alertItems.length > 0) {
+                    htmlParts.push(`
+                        <div class="px-2 pt-2 pb-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Vencimientos de Mensualidad (${alertItems.length})</span>
                         </div>
-                    </div>
-                `).join('');
+                    `);
+                    htmlParts.push(...alertItems.map(({ student, status }) => `
+                        <div class="p-2.5 rounded-xl bg-bandido-dark/80 flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-white truncate">${escapeHtml(student.name)}</p>
+                                <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(GYM_PLANS[student.planKey]?.name || '')}</p>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${status.badgeClass}">
+                                    ${status.label}
+                                </span>
+                                <button onclick="sendExpirationWhatsApp('${student.id}'); toggleNotificationsPanel(false);"
+                                        title="Avisar por WhatsApp"
+                                        class="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs transition cursor-pointer">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </button>
+                                <button onclick="openRenewModal('${student.id}'); toggleNotificationsPanel(false);"
+                                        class="px-2 py-1 rounded-lg bg-bandido-orange text-black text-[10px] font-extrabold uppercase cursor-pointer">
+                                    Renovar
+                                </button>
+                            </div>
+                        </div>
+                    `));
+                }
+
+                notifList.innerHTML = htmlParts.join('');
             }
 
-            const banner = document.getElementById('expiration-alert-banner');
-            const bannerText = document.getElementById('alert-banner-text');
-            if (!alertDismissed && (expiringCount > 0 || expiredCount > 0)) {
-                const names = alertItems.slice(0, 3).map(a => a.student.name).join(', ');
-                const extra = alertItems.length > 3 ? ` y ${alertItems.length - 3} más` : '';
-                bannerText.textContent = `Atención Coach: ${alertItems.length} alumno(s) próximos a vencer o vencidos (${names}${extra}).`;
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
+            const alertBanner = document.getElementById('expiration-alert-banner');
+            const alertBannerText = document.getElementById('alert-banner-text');
+            if (alertBanner && alertBannerText) {
+                if (alertItems.length > 0 && !alertDismissed) {
+                    alertBannerText.textContent = `Tienes ${alertItems.length} alumno${alertItems.length === 1 ? '' : 's'} con mensualidad por vencer (≤ 3 días) o vencida.`;
+                    alertBanner.classList.remove('hidden');
+                } else {
+                    alertBanner.classList.add('hidden');
+                }
             }
+        }
+
+        function toggleNotificationsPanel(forceState) {
+            const panel = document.getElementById('notifications-panel');
+            if (!panel) return;
+            const show = typeof forceState === 'boolean' ? forceState : panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !show);
+        }
+
+        function dismissAlertBanner() {
+            alertDismissed = true;
+            const alertBanner = document.getElementById('expiration-alert-banner');
+            if (alertBanner) alertBanner.classList.add('hidden');
         }
 
         function sendExpirationWhatsApp(studentId) {
             const st = students.find(s => s.id === studentId);
             if (!st) return;
-
-            const status = getMembershipStatus(st);
             const plan = GYM_PLANS[st.planKey] || { name: 'Mensualidad', price: 0 };
+            const status = getMembershipStatus(st);
             const cleanPhone = (st.phone || '').replace(/\D/g, '');
             const phoneWithCountry = cleanPhone.length === 10 ? `52${cleanPhone}` : cleanPhone;
-
-            let message = `¡Hola *${st.name}*! Te saludamos de *Bandidos Sur Calistenia*.\n\n`;
-            if (status.daysLeft < 0) {
-                message += `Te recordamos que tu *${plan.name}* venció el *${formatDisplayDate(st.endDate)}* (${status.label}).\n`;
-            } else if (status.daysLeft === 0) {
-                message += `Te recordamos que tu *${plan.name}* vence *HOY (${formatDisplayDate(st.endDate)})*.\n`;
-            } else {
-                message += `Te recordamos que tu *${plan.name}* está próxima a vencer el *${formatDisplayDate(st.endDate)}* (${status.label}).\n`;
-            }
-            message += `Monto de renovación: *$${plan.price} MXN*.\n\n¡Nos vemos en el entrenamiento!`;
-
+            const message = `Hola *${st.name}*, te recordamos de *Bandidos Sur* que tu *${plan.name}* ($${plan.price}) está en estatus: *${status.label}* (corte: ${formatDisplayDate(st.endDate)}). ¡Avísanos para renovar y seguir entrenando!`;
             const waUrl = phoneWithCountry
                 ? `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`
                 : `https://wa.me/?text=${encodeURIComponent(message)}`;
             window.open(waUrl, '_blank', 'noopener,noreferrer');
         }
 
-        function dismissAlertBanner() {
-            alertDismissed = true;
-            document.getElementById('expiration-alert-banner').classList.add('hidden');
+        function filterByStatCard(statusCode) {
+            const select = document.getElementById('filter-status');
+            if (select) {
+                select.value = statusCode;
+            }
+            renderTable();
+            const listSection = document.getElementById('students-list-section');
+            if (listSection) {
+                listSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
-        function toggleNotificationsPanel(forceState) {
-            const panel = document.getElementById('notifications-panel');
-            if (!panel) return;
-            if (typeof forceState === 'boolean') {
-                panel.classList.toggle('hidden', !forceState);
-            } else {
-                panel.classList.toggle('hidden');
-            }
+        function updateActiveStatCardHighlight(activeStatus) {
+            const styles = {
+                all: {
+                    id: 'stat-card-all',
+                    active: 'border-bandido-orange ring-2 ring-bandido-orange/35',
+                    inactive: 'border-bandido-border'
+                },
+                active: {
+                    id: 'stat-card-active',
+                    active: 'border-emerald-400 ring-2 ring-emerald-400/35',
+                    inactive: 'border-bandido-border hover:border-emerald-400/60'
+                },
+                expiring: {
+                    id: 'stat-card-expiring',
+                    active: 'border-amber-400 ring-2 ring-amber-400/35',
+                    inactive: 'border-bandido-border hover:border-amber-400/60'
+                },
+                expired: {
+                    id: 'stat-card-expired',
+                    active: 'border-rose-400 ring-2 ring-rose-400/35',
+                    inactive: 'border-bandido-border hover:border-rose-400/60'
+                }
+            };
+
+            Object.entries(styles).forEach(([key, cfg]) => {
+                const el = document.getElementById(cfg.id);
+                if (!el) return;
+                el.classList.remove(
+                    'border-bandido-orange', 'border-bandido-orange/70', 'ring-1', 'ring-bandido-orange/30', 'ring-2', 'ring-bandido-orange/35',
+                    'border-emerald-400', 'ring-emerald-400/35', 'hover:border-emerald-400/60',
+                    'border-amber-400', 'ring-amber-400/35', 'hover:border-amber-400/60',
+                    'border-rose-400', 'ring-rose-400/35', 'hover:border-rose-400/60',
+                    'border-bandido-border'
+                );
+                const classesToAdd = (key === activeStatus ? cfg.active : cfg.inactive).split(' ');
+                el.classList.add(...classesToAdd);
+            });
         }
 
         function renderTable() {
             const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
             const statusFilter = document.getElementById('filter-status')?.value || 'all';
+            updateActiveStatCardHighlight(statusFilter);
 
             const filtered = students.filter(st => {
                 if (!st || typeof st !== 'object') return false;
@@ -3130,9 +3233,26 @@
         // =================================================================
         // GESTIÓN DE GRUPOS DE ENTRENAMIENTO (LUGAR, FECHA, HORA, ALUMNOS)
         // =================================================================
-        function openTrainingGroupsModal() {
+        let trainingGroupsModalMode = 'create';
+
+        function openTrainingGroupsModal(mode = 'create') {
+            trainingGroupsModalMode = mode;
             resetTrainingGroupForm();
             renderTrainingGroupsList();
+
+            const formEl = document.getElementById('training-group-form');
+            const listSectionEl = document.getElementById('training-groups-list-section');
+
+            if (mode === 'view') {
+                // Solo mostrar los grupos organizados
+                formEl.classList.add('hidden');
+                listSectionEl.classList.remove('hidden');
+            } else {
+                // Mostrar formulario de creación y listado debajo
+                formEl.classList.remove('hidden');
+                listSectionEl.classList.remove('hidden');
+            }
+
             const modal = document.getElementById('training-groups-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -3154,72 +3274,17 @@
             document.getElementById('cancel-edit-group-btn').classList.add('hidden');
             document.getElementById('save-group-submit-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Guardar Grupo de Entrenamiento</span>`;
             renderGroupStudentsChecklist([]);
-        }
 
-        function renderGroupStudentsChecklist(selectedIds = []) {
-            const container = document.getElementById('group-students-checklist');
-            if (!container) return;
-
-            if (!Array.isArray(students) || students.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center text-xs text-zinc-400 py-3">Aún no tienes alumnos registrados. Agrega alumnos primero para asignarlos a un grupo.</p>`;
-                updateSelectedGroupStudentsCount();
-                return;
+            if (trainingGroupsModalMode === 'view') {
+                document.getElementById('training-group-form').classList.add('hidden');
             }
-
-            const selectedSet = new Set((selectedIds || []).map(String));
-            container.innerHTML = students.map(st => {
-                const isChecked = selectedSet.has(String(st.id));
-                const safeName = String(st.name || 'Atleta').trim();
-                const levelText = st.level || 'Básico';
-                return `
-                    <label data-group-student-item="${escapeHtml(safeName.toLowerCase())}"
-                           class="flex items-center gap-2.5 p-2.5 rounded-xl bg-bandido-dark hover:bg-zinc-900 border ${isChecked ? 'border-bandido-orange/60 bg-bandido-orange/10' : 'border-bandido-border'} cursor-pointer select-none transition">
-                        <input type="checkbox"
-                               value="${escapeHtml(st.id)}"
-                               ${isChecked ? 'checked' : ''}
-                               onchange="updateSelectedGroupStudentsCount(); this.closest('label').classList.toggle('border-bandido-orange/60', this.checked); this.closest('label').classList.toggle('bg-bandido-orange/10', this.checked);"
-                               class="group-student-checkbox w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
-                        <div class="min-w-0">
-                            <p class="text-xs font-bold text-white truncate">${escapeHtml(safeName)}</p>
-                            <p class="text-[10px] text-zinc-400 truncate">${escapeHtml(levelText)}</p>
-                        </div>
-                    </label>
-                `;
-            }).join('');
-
-            updateSelectedGroupStudentsCount();
         }
-
-        function filterGroupStudentChecklist() {
-            const q = (document.getElementById('group-student-filter')?.value || '').toLowerCase().trim();
-            document.querySelectorAll('[data-group-student-item]').forEach(el => {
-                const name = el.getAttribute('data-group-student-item') || '';
-                el.classList.toggle('hidden', Boolean(q && !name.includes(q)));
-            });
-        }
-
-        function toggleSelectAllGroupStudents(checkedState) {
-            document.querySelectorAll('.group-student-checkbox').forEach(cb => {
-                const parentLabel = cb.closest('[data-group-student-item]');
-                if (parentLabel && parentLabel.classList.contains('hidden')) return;
-                cb.checked = checkedState;
-                if (parentLabel) {
-                    parentLabel.classList.toggle('border-bandido-orange/60', checkedState);
-                    parentLabel.classList.toggle('bg-bandido-orange/10', checkedState);
-                }
-            });
-            updateSelectedGroupStudentsCount();
-        }
-
-        function updateSelectedGroupStudentsCount() {
-            const count = document.querySelectorAll('.group-student-checkbox:checked').length;
-            const el = document.getElementById('group-selected-students-count');
-            if (el) el.textContent = count;
-        }
-
         function startEditTrainingGroup(groupId) {
             const grp = trainingGroups.find(g => g.id === groupId);
             if (!grp) return;
+
+            const formEl = document.getElementById('training-group-form');
+            formEl.classList.remove('hidden');
 
             document.getElementById('edit-group-id').value = grp.id;
             document.getElementById('group-name-input').value = grp.name || '';
@@ -3234,23 +3299,80 @@
             document.getElementById('group-form-heading').innerHTML = `<i class="fa-solid fa-pen"></i><span>Editando Grupo: ${escapeHtml(grp.name)}</span>`;
             document.getElementById('cancel-edit-group-btn').classList.remove('hidden');
             document.getElementById('save-group-submit-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>Actualizar Grupo</span>`;
+            formEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function renderGroupStudentsChecklist(selectedIds = []) {
+            const container = document.getElementById('group-students-checklist');
+            if (!container) return;
+
+            if (!Array.isArray(students) || students.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-xs text-zinc-400 text-center py-3">Aún no tienes alumnos registrados.</p>`;
+                updateSelectedGroupStudentsCount();
+                return;
+            }
+
+            const selectedSet = new Set(selectedIds.map(String));
+            container.innerHTML = students.map(st => {
+                const isChecked = selectedSet.has(String(st.id));
+                const planName = GYM_PLANS[st.planKey]?.name || st.level || 'Atleta';
+                return `
+                    <label data-group-student-item="${escapeHtml((st.name || '').toLowerCase())}"
+                           class="flex items-center gap-2 p-2 rounded-lg bg-bandido-dark hover:bg-zinc-800 border border-bandido-border/80 cursor-pointer select-none">
+                        <input type="checkbox"
+                               value="${escapeHtml(st.id)}"
+                               onchange="updateSelectedGroupStudentsCount()"
+                               ${isChecked ? 'checked' : ''}
+                               class="group-student-checkbox w-4 h-4 accent-orange-500 rounded cursor-pointer shrink-0" />
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-white truncate">${escapeHtml(st.name || 'Atleta')}</p>
+                            <p class="text-[10px] text-zinc-400 truncate">${escapeHtml(planName)}</p>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            updateSelectedGroupStudentsCount();
+        }
+
+        function filterGroupStudentChecklist() {
+            const q = (document.getElementById('group-student-filter')?.value || '').toLowerCase().trim();
+            document.querySelectorAll('[data-group-student-item]').forEach(el => {
+                const nameAttr = el.getAttribute('data-group-student-item') || '';
+                el.classList.toggle('hidden', q !== '' && !nameAttr.includes(q));
+            });
+        }
+
+        function toggleSelectAllGroupStudents(selectAll) {
+            document.querySelectorAll('.group-student-checkbox').forEach(cb => {
+                const parent = cb.closest('[data-group-student-item]');
+                if (!parent || !parent.classList.contains('hidden')) {
+                    cb.checked = selectAll;
+                }
+            });
+            updateSelectedGroupStudentsCount();
+        }
+
+        function updateSelectedGroupStudentsCount() {
+            const count = document.querySelectorAll('.group-student-checkbox:checked').length;
+            const countEl = document.getElementById('group-selected-students-count');
+            if (countEl) countEl.textContent = count;
         }
 
         async function saveTrainingGroup(event) {
             event.preventDefault();
-            const existingId = document.getElementById('edit-group-id').value.trim();
+            const editId = document.getElementById('edit-group-id').value.trim();
             const name = document.getElementById('group-name-input').value.trim();
             const location = document.getElementById('group-location-input').value.trim();
             const date = document.getElementById('group-date-input').value;
             const time = document.getElementById('group-time-input').value;
             const instructions = document.getElementById('group-instructions-input').value.trim();
+            const studentIds = Array.from(document.querySelectorAll('.group-student-checkbox:checked')).map(cb => cb.value);
 
             if (!name || !location || !date || !time) return;
 
-            const studentIds = Array.from(document.querySelectorAll('.group-student-checkbox:checked')).map(cb => cb.value);
-
-            if (existingId) {
-                const idx = trainingGroups.findIndex(g => g.id === existingId);
+            if (editId) {
+                const idx = trainingGroups.findIndex(g => g.id === editId);
                 if (idx !== -1) {
                     trainingGroups[idx] = {
                         ...trainingGroups[idx],
@@ -3279,7 +3401,7 @@
             resetTrainingGroupForm();
             renderTrainingGroupsList();
             renderStatsAndAlerts();
-            showToast(existingId ? 'Grupo de entrenamiento actualizado.' : 'Grupo de entrenamiento creado.');
+            showToast(editId ? 'Grupo de entrenamiento actualizado.' : 'Grupo de entrenamiento creado.');
         }
 
         async function deleteTrainingGroup(groupId) {
@@ -3290,22 +3412,24 @@
             showToast('Grupo eliminado.');
         }
 
-        function shareTrainingGroupWhatsApp(groupId) {
+        function sendTrainingGroupWhatsApp(groupId) {
             const grp = trainingGroups.find(g => g.id === groupId);
             if (!grp) return;
 
-            const assignedNames = (grp.studentIds || [])
+            const memberNames = (grp.studentIds || [])
                 .map(id => students.find(s => String(s.id) === String(id))?.name)
                 .filter(Boolean);
 
-            let msg = `*BANDIDOS SUR — ENTRENAMIENTO GRUPAL*\n\n`;
-            msg += `*Grupo:* ${grp.name}\n`;
+            let msg = `*BANDIDOS SUR — GRUPO DE ENTRENAMIENTO*\n\n`;
+            msg += `*Sesión:* ${grp.name}\n`;
             msg += `*Lugar:* ${grp.location}\n`;
             msg += `*Fecha:* ${formatDisplayDate(grp.date)}\n`;
-            msg += `*Hora:* ${grp.time} hrs\n\n`;
-            msg += `*Indicaciones:*\n${grp.instructions}\n`;
-            if (assignedNames.length > 0) {
-                msg += `\n*Atletas convocados (${assignedNames.length}):*\n• ${assignedNames.join('\n• ')}`;
+            msg += `*Hora:* ${grp.time} hrs\n`;
+            if (grp.instructions) {
+                msg += `\n*Indicaciones:*\n${grp.instructions}\n`;
+            }
+            if (memberNames.length > 0) {
+                msg += `\n*Atletas convocados (${memberNames.length}):*\n• ${memberNames.join('\n• ')}`;
             }
 
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
@@ -3316,62 +3440,61 @@
             const counterEl = document.getElementById('groups-list-counter');
             if (!listEl) return;
 
+            const groups = Array.isArray(trainingGroups) ? trainingGroups : [];
             if (counterEl) {
-                counterEl.textContent = `${trainingGroups.length} grupo${trainingGroups.length === 1 ? '' : 's'}`;
+                counterEl.textContent = `${groups.length} grupo${groups.length === 1 ? '' : 's'}`;
             }
 
-            if (trainingGroups.length === 0) {
+            if (groups.length === 0) {
                 listEl.innerHTML = `
                     <div class="p-8 rounded-2xl bg-bandido-dark border border-bandido-border text-center space-y-2">
                         <div class="w-12 h-12 rounded-2xl bg-bandido-card border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-people-group text-lg"></i>
                         </div>
                         <p class="text-sm font-bold text-white">Aún no hay grupos de entrenamiento creados</p>
-                        <p class="text-xs text-zinc-400 max-w-md mx-auto">Usa el formulario superior para organizar tu próxima sesión grupal con lugar, fecha, hora y tus alumnos.</p>
+                        <p class="text-xs text-zinc-400">Usa el botón naranja "Grupos de Entrenamiento" para crear tu primera sesión grupal.</p>
                     </div>
                 `;
                 return;
             }
 
-            listEl.innerHTML = trainingGroups.map(grp => {
-                const memberObjs = (grp.studentIds || [])
+            listEl.innerHTML = groups.map(grp => {
+                const assignedStudents = (grp.studentIds || [])
                     .map(id => students.find(s => String(s.id) === String(id)))
                     .filter(Boolean);
 
-                const membersBadges = memberObjs.length > 0
-                    ? memberObjs.map(m => `
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-[11px] font-semibold text-zinc-200">
-                            <span class="w-4 h-4 rounded-full bg-bandido-orange/20 text-bandido-orange text-[9px] font-black flex items-center justify-center">
-                                ${escapeHtml((m.name || 'A').charAt(0).toUpperCase())}
-                            </span>
-                            ${escapeHtml(m.name)}
+                const badgesHtml = assignedStudents.length > 0
+                    ? assignedStudents.map(st => `
+                        <span class="px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-xs font-semibold text-zinc-200">
+                            <i class="fa-solid fa-user text-bandido-orange mr-1 text-[10px]"></i>${escapeHtml(st.name)}
                         </span>
                     `).join('')
-                    : `<span class="text-[11px] text-zinc-500 italic">Sin alumnos asignados todavía</span>`;
+                    : `<span class="text-xs text-zinc-500 italic">Sin alumnos asignados todavía</span>`;
 
                 return `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border hover:border-bandido-orange/40 transition space-y-3">
-                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-bandido-border/80 pb-3">
+                    <div class="p-4 sm:p-5 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-bandido-border/80 pb-3">
                             <div class="space-y-1">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <h5 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(grp.name)}</h5>
-                                    <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold">
-                                        ${memberObjs.length} alumno${memberObjs.length === 1 ? '' : 's'}
+                                <h5 class="font-display text-base sm:text-lg font-bold uppercase text-white">${escapeHtml(grp.name)}</h5>
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-zinc-300">
+                                    <span class="px-2.5 py-0.5 rounded-md bg-bandido-orange/15 text-bandido-orange font-bold">
+                                        <i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(grp.location)}
                                     </span>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300">
-                                    <span><i class="fa-solid fa-location-dot text-bandido-orange mr-1.5"></i>${escapeHtml(grp.location)}</span>
-                                    <span><i class="fa-solid fa-calendar-day text-bandido-orange mr-1.5"></i>${formatDisplayDate(grp.date)}</span>
-                                    <span><i class="fa-solid fa-clock text-bandido-orange mr-1.5"></i>${escapeHtml(grp.time)} hrs</span>
+                                    <span class="px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-200 font-semibold">
+                                        <i class="fa-solid fa-calendar-day text-bandido-orange mr-1"></i>${formatDisplayDate(grp.date)}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-200 font-semibold">
+                                        <i class="fa-solid fa-clock text-bandido-orange mr-1"></i>${escapeHtml(grp.time)} hrs
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-start">
-                                <button type="button" onclick="shareTrainingGroupWhatsApp('${grp.id}')"
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" onclick="sendTrainingGroupWhatsApp('${grp.id}')"
                                         title="Compartir convocatoria por WhatsApp"
-                                        class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 transition cursor-pointer flex items-center gap-1">
+                                        class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 transition cursor-pointer flex items-center gap-1.5">
                                     <i class="fa-brands fa-whatsapp"></i>
-                                    <span class="hidden sm:inline">Compartir</span>
+                                    <span>WhatsApp</span>
                                 </button>
                                 <button type="button" onclick="startEditTrainingGroup('${grp.id}')"
                                         title="Editar grupo"
@@ -3386,513 +3509,478 @@
                             </div>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-bandido-card/80 border border-bandido-border/70 space-y-1">
-                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-bandido-orange">Indicaciones del Entrenamiento</p>
-                            <p class="text-xs text-zinc-200 whitespace-pre-line leading-relaxed">${escapeHtml(grp.instructions || '')}</p>
+                        <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70 text-xs text-zinc-200 whitespace-pre-line leading-relaxed">
+                            <span class="block text-[10px] font-extrabold uppercase tracking-wider text-bandido-orange mb-1">Indicaciones:</span>
+                            ${escapeHtml(grp.instructions || '')}
                         </div>
 
                         <div class="space-y-1.5">
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Integrantes del Grupo</p>
-                            <div class="flex flex-wrap gap-1.5">
-                                ${membersBadges}
-                            </div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                            Alumnos asignados (${assignedStudents.length})
+                        </p>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${badgesHtml}
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
-
-        // =================================================================
-        // EVALUACIÓN MENSUAL DE CALISTENIA
-        // =================================================================
-        function openEvalModal(studentId) {
-            const st = students.find(s => s.id === studentId);
-            if (!st) return;
-            if (!Array.isArray(st.evaluations)) st.evaluations = [];
-
-            document.getElementById('eval-student-id').value = st.id;
-            document.getElementById('eval-student-title').textContent = `Evaluación — ${st.name}`;
-            document.getElementById('eval-student-subtitle').textContent = `Nivel: ${st.level || 'Básico'} · ${st.trainingDays || ''}`;
-
-            const select = document.getElementById('eval-history-select');
-            select.innerHTML = `<option value="new">+ Nueva Evaluación (${getMonthYearLabel()})</option>` +
-                st.evaluations.map((ev, idx) => `<option value="${idx}">${escapeHtml(ev.monthLabel)} (${formatDisplayDate(ev.date)})</option>`).join('');
-
-            select.value = st.evaluations.length > 0 ? String(st.evaluations.length - 1) : 'new';
-            loadSelectedEvaluation();
-
-            const modal = document.getElementById('eval-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeEvalModal() {
-            const modal = document.getElementById('eval-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function loadSelectedEvaluation() {
-            const stId = document.getElementById('eval-student-id').value;
-            const st = students.find(s => s.id === stId);
-            if (!st) return;
-            const val = document.getElementById('eval-history-select').value;
-            const ev = val !== 'new' ? st.evaluations[Number(val)] : null;
-
-            document.getElementById('eval-month-label').value = ev ? ev.monthLabel : `Mes ${st.evaluations.length + 1} — ${getMonthYearLabel()}`;
-            document.getElementById('eval-date').value = ev ? ev.date : getTodayStr();
-            document.getElementById('eval-weight').value = ev ? (ev.weight || '') : '';
-            document.getElementById('eval-notes').value = ev ? (ev.notes || '') : '';
-
-            const container = document.getElementById('eval-categories-container');
-            container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` +
-                EVAL_CATEGORIES.map(cat => `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                        <div class="flex items-center gap-2 text-bandido-orange font-bold text-xs uppercase tracking-wider">
-                            <i class="fa-solid ${cat.icon}"></i>
-                            <span>${cat.title}</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            ${cat.fields.map(f => `
-                                <div>
-                                    <label class="block text-[11px] text-zinc-400 mb-1">${f.label}</label>
-                                    <input type="text"
-                                           data-eval-key="${f.key}"
-                                           value="${escapeHtml(ev?.metrics?.[f.key] || '')}"
-                                           placeholder="${f.placeholder}"
-                                           class="w-full px-3 py-1.5 rounded-lg bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `).join('') + `</div>`;
-        }
-
-        async function saveEvaluation(event) {
-            event.preventDefault();
-            const stId = document.getElementById('eval-student-id').value;
-            const st = students.find(s => s.id === stId);
-            if (!st) return;
-            if (!Array.isArray(st.evaluations)) st.evaluations = [];
-
-            const selectVal = document.getElementById('eval-history-select').value;
-            const metrics = {};
-            document.querySelectorAll('[data-eval-key]').forEach(inp => {
-                metrics[inp.getAttribute('data-eval-key')] = inp.value.trim();
-            });
-
-            const record = {
-                monthLabel: document.getElementById('eval-month-label').value.trim(),
-                date: document.getElementById('eval-date').value,
-                weight: document.getElementById('eval-weight').value.trim(),
-                notes: document.getElementById('eval-notes').value.trim(),
-                metrics
-            };
-
-            if (selectVal === 'new') {
-                st.evaluations.push(record);
-            } else {
-                st.evaluations[Number(selectVal)] = record;
-            }
-
-            await upsertSupabaseStudent(st);
-            closeEvalModal();
-            renderAll();
-            showToast('Evaluación mensual guardada.');
-        }
-
-        // =================================================================
-        // CREADOR DE RUTINAS POR BLOQUES + VIDEOS DEMOSTRATIVOS VIP
-        // =================================================================
-        let activeRoutineAllowsVideos = false;
-
-        function openRoutineModal(studentId) {
-            const st = students.find(s => s.id === studentId);
-            if (!st) return;
-
-            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General', price: 0 };
-            activeRoutineAllowsVideos = planSupportsVideos(st.planKey);
-
-            document.getElementById('routine-student-id').value = st.id;
-            document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
-            document.getElementById('routine-student-subtitle').textContent = `${plan.name} · ${st.trainingDays || 'Entrenamiento'} · Nivel ${st.level || 'Básico'}`;
-
-            const tierBanner = document.getElementById('routine-plan-tier-banner');
-            if (activeRoutineAllowsVideos) {
-                tierBanner.className = 'p-3.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 flex items-center justify-between gap-3';
-                tierBanner.innerHTML = `
-                    <div class="flex items-center gap-2.5 text-xs">
-                        <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-video"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-purple-200">Plan con Plus de Videos Demostrativos Activo</p>
-                            <p class="text-[11px] text-zinc-300">Pega el enlace del video (Instagram Reels, YouTube Shorts, Drive o MP4) en cada día.</p>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 text-[10px] font-extrabold uppercase shrink-0">VIP Video</span>
-                `;
-            } else {
-                tierBanner.className = 'p-3.5 rounded-2xl border border-bandido-border bg-bandido-dark flex items-center justify-between gap-3';
-                tierBanner.innerHTML = `
-                    <div class="flex items-center gap-2.5 text-xs">
-                        <div class="w-8 h-8 rounded-xl bg-zinc-800 text-bandido-orange flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-list-check"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-white">Plan Estándar (Solo Rutina Escrita)</p>
-                            <p class="text-[11px] text-zinc-400">Este alumno solo visualizará sus bloques y ejercicios escritos. Cambia a Plan Personalizado o superior para activar videos.</p>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-400 text-[10px] font-bold uppercase shrink-0">Solo Texto</span>
-                `;
-            }
-
-            const existing = st.routine || { goal: '', notes: '', blocks: [] };
-            currentRoutineDraft = {
-                goal: existing.goal || '',
-                notes: existing.notes || '',
-                blocks: Array.isArray(existing.blocks) && existing.blocks.length > 0
-                    ? existing.blocks.map(b => ({
-                        title: b.title || '',
-                        videoUrl: b.videoUrl || '',
-                        text: b.text || ''
-                    }))
-                    : [{ title: 'Día 1 — Tirón y Empuje', videoUrl: '', text: '' }]
-            };
-
-            document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
-            document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
-
-            const importSelect = document.getElementById('import-routine-from-student');
-            const others = students.filter(s => s.id !== st.id && s.routine && Array.isArray(s.routine.blocks) && s.routine.blocks.length > 0);
-            importSelect.innerHTML = `<option value="">Importar rutina de otro alumno...</option>` +
-                others.map(o => `<option value="${o.id}">${escapeHtml(o.name)} (${o.routine.blocks.length} bloques)</option>`).join('');
-
-            renderRoutineBlocksEditor();
-
-            const modal = document.getElementById('routine-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeRoutineModal() {
-            const modal = document.getElementById('routine-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function syncDraftFromInputs() {
-            currentRoutineDraft.goal = document.getElementById('routine-goal-input').value;
-            currentRoutineDraft.notes = document.getElementById('routine-notes-input').value;
-            const titleInputs = document.querySelectorAll('[data-block-title]');
-            const textInputs = document.querySelectorAll('[data-block-text]');
-
-            currentRoutineDraft.blocks = Array.from(titleInputs).map((inp, idx) => {
-                const existingVid = currentRoutineDraft.blocks[idx]?.videoUrl || '';
-                const vidInp = document.querySelector(`[data-block-video="${idx}"]`);
-                return {
-                    title: inp.value,
-                    videoUrl: vidInp ? vidInp.value : existingVid,
-                    text: textInputs[idx]?.value || ''
-                };
-            });
-        }
-
-        function renderRoutineBlocksEditor() {
-            const container = document.getElementById('routine-blocks-container');
-            container.innerHTML = currentRoutineDraft.blocks.map((block, idx) => `
-                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 flex-1">
-                            <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[11px] font-extrabold uppercase shrink-0">
-                                Bloque ${idx + 1}
-                            </span>
-                            <input type="text"
-                                   data-block-title="${idx}"
-                                   value="${escapeHtml(block.title)}"
-                                   placeholder="Ej. Día ${idx + 1} — Tirón (Pull)"
-                                   class="w-full px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-bandido-orange" />
-                        </div>
-                        ${currentRoutineDraft.blocks.length > 1 ? `
-                            <button type="button" onclick="removeRoutineBlock(${idx})"
-                                    title="Eliminar bloque"
-                                    class="p-2 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-
-                    ${activeRoutineAllowsVideos ? `
-                        <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/35 space-y-2">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <label class="text-[11px] font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-video"></i>
-                                    <span>Enlace de Video Demostrativo (Plus VIP)</span>
-                                </label>
-                                ${block.videoUrl ? `
-                                    <a href="${escapeHtml(block.videoUrl)}" target="_blank" rel="noopener noreferrer"
-                                       class="px-2 py-1 rounded-lg bg-bandido-card border border-purple-500/40 text-[10px] font-bold text-purple-200 hover:text-white">
-                                        Probar enlace <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
-                                    </a>
-                                ` : ''}
-                            </div>
-                            <input type="url"
-                                   data-block-video="${idx}"
-                                   value="${escapeHtml(block.videoUrl || '')}"
-                                   placeholder="Pega aquí la URL del video (Instagram Reels, YouTube Shorts, Drive, MP4)..."
-                                   class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
-                        </div>
-                    ` : ''}
-
-                    <textarea data-block-text="${idx}"
-                              rows="6"
-                              placeholder="Escribe los circuitos seguidos, por ejemplo:&#10;Pull up - 12 reps&#10;Push up - 10 reps&#10;4 series&#10;&#10;Fondos - 20 reps&#10;Muscle up - 10 reps&#10;3 series"
-                              class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs sm:text-sm text-zinc-100 placeholder-zinc-600 font-mono leading-relaxed focus:outline-none focus:border-bandido-orange">${escapeHtml(block.text)}</textarea>
                 </div>
-            `).join('');
+            `;
+        }).join('');
+    }
+
+    // =================================================================
+    // MODAL 2: EVALUACIÓN MENSUAL DE CALISTENIA
+    // =================================================================
+    function openEvalModal(studentId) {
+        const st = students.find(s => s.id === studentId);
+        if (!st) return;
+        if (!Array.isArray(st.evaluations)) st.evaluations = [];
+
+        document.getElementById('eval-student-id').value = st.id;
+        document.getElementById('eval-student-title').textContent = `Evaluación — ${st.name}`;
+        document.getElementById('eval-student-subtitle').textContent = `Nivel ${st.level || 'Básico'} · ${st.evaluations.length} evaluación(es) registrada(s)`;
+
+        const historySelect = document.getElementById('eval-history-select');
+        let optionsHtml = `<option value="new">+ Nueva Evaluación Mensual</option>`;
+        st.evaluations.forEach((ev, idx) => {
+            optionsHtml += `<option value="${idx}">${escapeHtml(ev.monthLabel || `Mes ${idx + 1}`)} (${formatDisplayDate(ev.date)})</option>`;
+        });
+        historySelect.innerHTML = optionsHtml;
+        historySelect.value = 'new';
+
+        renderEvalCategoryFields({});
+        document.getElementById('eval-month-label').value = `Mes ${st.evaluations.length + 1} - ${getMonthYearLabel()}`;
+        document.getElementById('eval-date').value = getTodayStr();
+        document.getElementById('eval-weight').value = '';
+        document.getElementById('eval-notes').value = '';
+
+        const modal = document.getElementById('eval-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeEvalModal() {
+        const modal = document.getElementById('eval-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function renderEvalCategoryFields(metrics = {}) {
+        const container = document.getElementById('eval-categories-container');
+        if (!container) return;
+
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+        container.innerHTML = EVAL_CATEGORIES.map(cat => `
+            <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-bandido-orange flex items-center gap-2 border-b border-bandido-border pb-2">
+                    <i class="fa-solid ${cat.icon}"></i>
+                    <span>${escapeHtml(cat.title)}</span>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    ${cat.fields.map(f => `
+                        <div>
+                            <label class="block text-[10px] font-semibold text-zinc-400 mb-1">${escapeHtml(f.label)}</label>
+                            <input type="text"
+                                   data-eval-metric="${escapeHtml(f.key)}"
+                                   value="${escapeHtml(metrics[f.key] || '')}"
+                                   placeholder="${escapeHtml(f.placeholder)}"
+                                   class="w-full px-2.5 py-1.5 rounded-lg bg-bandido-card border border-bandido-border text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-bandido-orange" />
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadSelectedEvaluation() {
+        const studentId = document.getElementById('eval-student-id').value;
+        const st = students.find(s => s.id === studentId);
+        if (!st) return;
+        const val = document.getElementById('eval-history-select').value;
+
+        if (val === 'new') {
+            document.getElementById('eval-month-label').value = `Mes ${(st.evaluations?.length || 0) + 1} - ${getMonthYearLabel()}`;
+            document.getElementById('eval-date').value = getTodayStr();
+            document.getElementById('eval-weight').value = '';
+            document.getElementById('eval-notes').value = '';
+            renderEvalCategoryFields({});
+            return;
         }
 
-        function addRoutineTextBlock() {
-            syncDraftFromInputs();
-            const nextNum = currentRoutineDraft.blocks.length + 1;
-            currentRoutineDraft.blocks.push({
-                title: `Día ${nextNum} — `,
-                videoUrl: '',
-                text: ''
-            });
-            renderRoutineBlocksEditor();
+        const ev = st.evaluations[Number(val)];
+        if (!ev) return;
+        document.getElementById('eval-month-label').value = ev.monthLabel || '';
+        document.getElementById('eval-date').value = ev.date || getTodayStr();
+        document.getElementById('eval-weight').value = ev.weight || '';
+        document.getElementById('eval-notes').value = ev.notes || '';
+        renderEvalCategoryFields(ev.metrics || {});
+    }
+
+    async function saveEvaluation(event) {
+        event.preventDefault();
+        const studentId = document.getElementById('eval-student-id').value;
+        const st = students.find(s => s.id === studentId);
+        if (!st) return;
+        if (!Array.isArray(st.evaluations)) st.evaluations = [];
+
+        const metrics = {};
+        document.querySelectorAll('[data-eval-metric]').forEach(inp => {
+            const key = inp.getAttribute('data-eval-metric');
+            const val = inp.value.trim();
+            if (val) metrics[key] = val;
+        });
+
+        const entry = {
+            id: 'eval_' + Date.now(),
+            monthLabel: document.getElementById('eval-month-label').value.trim(),
+            date: document.getElementById('eval-date').value,
+            weight: document.getElementById('eval-weight').value.trim(),
+            notes: document.getElementById('eval-notes').value.trim(),
+            metrics
+        };
+
+        const selVal = document.getElementById('eval-history-select').value;
+        if (selVal === 'new') {
+            st.evaluations.push(entry);
+        } else {
+            st.evaluations[Number(selVal)] = entry;
         }
 
-        function removeRoutineBlock(index) {
-            syncDraftFromInputs();
-            currentRoutineDraft.blocks.splice(index, 1);
-            renderRoutineBlocksEditor();
+        await upsertSupabaseStudent(st);
+        closeEvalModal();
+        renderTable();
+        showToast(`Evaluación física de ${st.name} guardada.`);
+    }
+
+    // =================================================================
+    // MODAL 3: CREADOR Y COMPARTIDOR DE RUTINA PRIVADA
+    // =================================================================
+    let activeRoutineAllowsVideos = false;
+
+    function openRoutineModal(studentId) {
+        const st = students.find(s => s.id === studentId);
+        if (!st) return;
+
+        document.getElementById('routine-student-id').value = st.id;
+        document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
+        const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
+        activeRoutineAllowsVideos = planSupportsVideos(st.planKey);
+        document.getElementById('routine-student-subtitle').textContent = `${plan.name} · Días: ${st.trainingDays || 'Sin especificar'}`;
+
+        const bannerEl = document.getElementById('routine-plan-tier-banner');
+        if (activeRoutineAllowsVideos) {
+            bannerEl.className = 'p-3.5 rounded-2xl border border-purple-500/40 bg-purple-500/10 flex items-center justify-between gap-3';
+            bannerEl.innerHTML = `
+                <div class="flex items-center gap-2.5 text-xs text-purple-200">
+                    <i class="fa-solid fa-video text-purple-400 text-base"></i>
+                    <div>
+                        <p class="font-bold text-white">Plan con Videos Demostrativos Activo (VIP)</p>
+                        <p class="text-[11px] text-purple-200/80">Puedes pegar enlaces de Reels, Shorts, Drive o MP4 en cada día para que el alumno los vea.</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            bannerEl.className = 'p-3.5 rounded-2xl border border-bandido-border bg-bandido-dark flex items-center justify-between gap-3';
+            bannerEl.innerHTML = `
+                <div class="flex items-center gap-2.5 text-xs text-zinc-300">
+                    <i class="fa-solid fa-list-check text-bandido-orange text-base"></i>
+                    <div>
+                        <p class="font-bold text-white">Plan Estándar (Solo Rutina Escrita)</p>
+                        <p class="text-[11px] text-zinc-400">Este plan muestra únicamente los ejercicios escritos sin reproductor de video.</p>
+                    </div>
+                </div>
+            `;
         }
 
-        function copyFullRoutineToClipboardBuffer() {
-            syncDraftFromInputs();
-            localStorage.setItem(ROUTINE_CLIPBOARD_KEY, JSON.stringify(currentRoutineDraft));
-            showToast('Rutina completa copiada. Ahora puedes pegarla en otro alumno.');
-        }
+        const existingRoutine = st.routine || { goal: '', notes: '', blocks: [] };
+        currentRoutineDraft = {
+            goal: existingRoutine.goal || '',
+            notes: existingRoutine.notes || '',
+            blocks: Array.isArray(existingRoutine.blocks) && existingRoutine.blocks.length > 0
+                ? JSON.parse(JSON.stringify(existingRoutine.blocks))
+                : [{ title: 'Día 1 — Entrenamiento', videoUrl: '', text: '' }]
+        };
 
-        function pasteFullRoutineFromBuffer() {
+        document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
+        document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
+
+        const importSelect = document.getElementById('import-routine-from-student');
+        const othersWithRoutine = students.filter(other => other.id !== st.id && other.routine?.blocks?.length > 0);
+        importSelect.innerHTML = `<option value="">Importar rutina de otro alumno...</option>` +
+            othersWithRoutine.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)} (${o.routine.blocks.length} días)</option>`).join('');
+
+        renderRoutineBlocksEditor();
+
+        const modal = document.getElementById('routine-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeRoutineModal() {
+        const modal = document.getElementById('routine-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function syncRoutineDraftFromDOM() {
+        currentRoutineDraft.goal = document.getElementById('routine-goal-input')?.value || '';
+        currentRoutineDraft.notes = document.getElementById('routine-notes-input')?.value || '';
+
+        const cards = document.querySelectorAll('[data-routine-block-idx]');
+        cards.forEach(card => {
+            const idx = Number(card.getAttribute('data-routine-block-idx'));
+            if (!currentRoutineDraft.blocks[idx]) return;
+            const titleEl = card.querySelector('.routine-block-title');
+            const videoEl = card.querySelector('.routine-block-video');
+            const textEl = card.querySelector('.routine-block-text');
+            if (titleEl) currentRoutineDraft.blocks[idx].title = titleEl.value;
+            if (videoEl) currentRoutineDraft.blocks[idx].videoUrl = videoEl.value;
+            if (textEl) currentRoutineDraft.blocks[idx].text = textEl.value;
+        });
+    }
+
+    function renderRoutineBlocksEditor() {
+        const container = document.getElementById('routine-blocks-container');
+        if (!container) return;
+
+        container.innerHTML = currentRoutineDraft.blocks.map((blk, idx) => `
+            <div data-routine-block-idx="${idx}" class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 flex-1">
+                        <span class="px-2 py-0.5 rounded bg-bandido-orange text-black text-[10px] font-black uppercase">Día ${idx + 1}</span>
+                        <input type="text"
+                               value="${escapeHtml(blk.title || `Día ${idx + 1}`)}"
+                               placeholder="Ej. Día 1 — Tirón y Core"
+                               class="routine-block-title flex-1 px-3 py-1.5 rounded-xl bg-bandido-card border border-bandido-border text-xs font-bold text-white focus:outline-none focus:border-bandido-orange" />
+                    </div>
+                    ${currentRoutineDraft.blocks.length > 1 ? `
+                        <button type="button" onclick="removeRoutineTextBlock(${idx})"
+                                title="Eliminar bloque"
+                                class="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 cursor-pointer">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    ` : ''}
+                </div>
+
+                ${activeRoutineAllowsVideos ? `
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-purple-300 mb-1">
+                            <i class="fa-solid fa-video mr-1"></i>Enlace de Video Demostrativo (IG Reel, YouTube Short, Drive o MP4)
+                        </label>
+                        <input type="url"
+                               value="${escapeHtml(blk.videoUrl || '')}"
+                               placeholder="https://www.instagram.com/reel/..."
+                               class="routine-block-video w-full px-3 py-2 rounded-xl bg-bandido-card border border-purple-500/30 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-purple-400" />
+                    </div>
+                ` : ''}
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                        Ejercicios, repeticiones y series (escribe "4 series" al final de cada circuito para agruparlo)
+                    </label>
+                    <textarea rows="4"
+                              placeholder="Dominadas pronas / 8 reps&#10;Fondos en paralelas / 12 reps&#10;4 series"
+                              class="routine-block-text w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange font-mono leading-relaxed">${escapeHtml(blk.text || '')}</textarea>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addRoutineTextBlock() {
+        syncRoutineDraftFromDOM();
+        const nextNum = currentRoutineDraft.blocks.length + 1;
+        currentRoutineDraft.blocks.push({
+            title: `Día ${nextNum} — Entrenamiento`,
+            videoUrl: '',
+            text: ''
+        });
+        renderRoutineBlocksEditor();
+    }
+
+    function removeRoutineTextBlock(index) {
+        syncRoutineDraftFromDOM();
+        currentRoutineDraft.blocks.splice(index, 1);
+        renderRoutineBlocksEditor();
+    }
+
+    function copyFullRoutineToClipboardBuffer() {
+        syncRoutineDraftFromDOM();
+        localStorage.setItem(ROUTINE_CLIPBOARD_KEY, JSON.stringify(currentRoutineDraft));
+        showToast('Rutina completa copiada. Ahora puedes pegarla en otro alumno.');
+    }
+
+    function pasteFullRoutineFromBuffer() {
+        try {
             const raw = localStorage.getItem(ROUTINE_CLIPBOARD_KEY);
             if (!raw) {
-                showToast('No hay ninguna rutina copiada todavía.', true);
+                showToast('No hay ninguna rutina copiada en memoria.', true);
                 return;
             }
-            try {
-                const copied = JSON.parse(raw);
-                currentRoutineDraft = {
-                    goal: copied.goal || '',
-                    notes: copied.notes || '',
-                    blocks: Array.isArray(copied.blocks)
-                        ? copied.blocks.map(b => ({
-                            title: b.title || '',
-                            videoUrl: b.videoUrl || '',
-                            text: b.text || ''
-                        }))
-                        : []
-                };
-                document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
-                document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
-                renderRoutineBlocksEditor();
-                showToast('Rutina pegada correctamente.');
-            } catch (e) {
-                showToast('Error al pegar la rutina.', true);
-            }
-        }
-
-        function importRoutineFromAnotherStudent(sourceStudentId) {
-            if (!sourceStudentId) return;
-            const source = students.find(s => s.id === sourceStudentId);
-            if (!source || !source.routine) return;
+            const parsed = JSON.parse(raw);
             currentRoutineDraft = {
-                goal: source.routine.goal || '',
-                notes: source.routine.notes || '',
-                blocks: (source.routine.blocks || []).map(b => ({
-                    title: b.title || '',
-                    videoUrl: b.videoUrl || '',
-                    text: b.text || ''
-                }))
+                goal: parsed.goal || '',
+                notes: parsed.notes || '',
+                blocks: Array.isArray(parsed.blocks) ? parsed.blocks : []
             };
             document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
             document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
             renderRoutineBlocksEditor();
-            showToast(`Rutina importada desde ${source.name}.`);
+            showToast('Rutina pegada correctamente.');
+        } catch (e) {
+            showToast('Error al pegar la rutina.', true);
         }
+    }
 
-        async function saveStudentRoutine(silent = false) {
-            syncDraftFromInputs();
-            const stId = document.getElementById('routine-student-id').value;
-            const st = students.find(s => s.id === stId);
-            if (!st) return null;
+    function importRoutineFromAnotherStudent(sourceStudentId) {
+        if (!sourceStudentId) return;
+        const source = students.find(s => s.id === sourceStudentId);
+        if (!source || !source.routine) return;
+        currentRoutineDraft = JSON.parse(JSON.stringify(source.routine));
+        document.getElementById('routine-goal-input').value = currentRoutineDraft.goal || '';
+        document.getElementById('routine-notes-input').value = currentRoutineDraft.notes || '';
+        renderRoutineBlocksEditor();
+        showToast(`Rutina importada desde ${source.name}.`);
+    }
 
-            const cleanRoutine = {
-                goal: currentRoutineDraft.goal.trim(),
-                notes: currentRoutineDraft.notes.trim(),
-                updatedAt: getTodayStr(),
-                blocks: currentRoutineDraft.blocks
-                    .filter(b => b.title.trim() || b.text.trim() || (b.videoUrl && b.videoUrl.trim()))
-                    .map(b => ({
-                        title: b.title.trim(),
-                        videoUrl: (b.videoUrl || '').trim(),
-                        text: b.text.trim()
-                    }))
-            };
+    async function saveStudentRoutine(silent = false) {
+        const studentId = document.getElementById('routine-student-id').value;
+        const st = students.find(s => s.id === studentId);
+        if (!st) return null;
 
-            st.routine = cleanRoutine;
+        syncRoutineDraftFromDOM();
+        const today = getTodayStr();
+        const routineToSave = {
+            goal: currentRoutineDraft.goal.trim(),
+            notes: currentRoutineDraft.notes.trim(),
+            updatedAt: today,
+            blocks: currentRoutineDraft.blocks.map(b => ({
+                title: (b.title || 'Bloque').trim(),
+                videoUrl: activeRoutineAllowsVideos ? (b.videoUrl || '').trim() : '',
+                text: (b.text || '').trim()
+            }))
+        };
 
-            if (cleanRoutine.blocks.length > 0) {
-                if (!Array.isArray(st.routineHistory)) st.routineHistory = [];
-                const monthLabel = getMonthYearLabel(new Date());
-                const snapshot = {
-                    id: 'hist_' + Date.now(),
-                    monthLabel,
-                    savedDate: getTodayStr(),
-                    routine: JSON.parse(JSON.stringify(cleanRoutine))
-                };
+        st.routine = routineToSave;
+        if (!Array.isArray(st.routineHistory)) st.routineHistory = [];
+        st.routineHistory.unshift({
+            id: 'rh_' + Date.now(),
+            monthLabel: getMonthYearLabel(new Date()),
+            savedDate: today,
+            routine: JSON.parse(JSON.stringify(routineToSave))
+        });
 
-                const sameMonthIdx = st.routineHistory.findIndex(h => h.monthLabel === monthLabel);
-                if (sameMonthIdx !== -1) {
-                    st.routineHistory[sameMonthIdx] = snapshot;
-                } else {
-                    st.routineHistory.unshift(snapshot);
-                }
-            }
-
-            await upsertSupabaseStudent(st);
-            renderTable();
-            if (!silent) {
-                showToast('Rutina guardada y archivada en el historial.');
-            }
-            return st;
+        await upsertSupabaseStudent(st);
+        renderTable();
+        if (!silent) {
+            closeRoutineModal();
+            showToast(`Rutina de ${st.name} guardada y archivada.`);
         }
+        return st;
+    }
 
-        // =================================================================
-        // MODAL 6: HISTORIAL DE RUTINAS Y BITÁCORA DIARIA DEL ALUMNO
-        // =================================================================
-        function getFeelingBadgeInfo(feeling) {
-            const map = {
-                excelente: { label: '🔥 Excelente', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
-                bien: { label: '💪 Bien / Sólido', cls: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
-                pesado: { label: '😓 Pesado', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
-                cansado: { label: '🪫 Cansado / Fatiga', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' }
-            };
-            return map[feeling] || { label: '💪 Completado', cls: 'bg-zinc-800 text-zinc-200 border-zinc-700' };
+    // =================================================================
+    // MODAL 6: HISTORIAL DE RUTINAS Y BITÁCORA DIARIA DEL ALUMNO
+    // =================================================================
+    function getFeelingBadgeInfo(feeling) {
+        switch (feeling) {
+            case 'excelente':
+                return { label: '🔥 Excelente', cls: 'bg-emerald-500/15 border-emerald-500/35 text-emerald-300' };
+            case 'bien':
+                return { label: '💪 Bien / Sólido', cls: 'bg-sky-500/15 border-sky-500/35 text-sky-300' };
+            case 'pesado':
+                return { label: '😓 Pesado', cls: 'bg-amber-500/15 border-amber-500/35 text-amber-300' };
+            case 'cansado':
+                return { label: '🪫 Cansado', cls: 'bg-rose-500/15 border-rose-500/35 text-rose-300' };
+            default:
+                return { label: '💪 Completado', cls: 'bg-zinc-800 border-zinc-700 text-zinc-300' };
         }
+    }
 
-        function switchHistoryTab(tabName) {
-            const progressList = document.getElementById('daily-progress-history-list');
-            const routinesList = document.getElementById('routine-history-list');
-            const btnProgress = document.getElementById('tab-btn-daily-progress');
-            const btnRoutines = document.getElementById('tab-btn-assigned-routines');
+    function openRoutineHistoryModal(studentId) {
+        const st = students.find(s => s.id === studentId);
+        if (!st) return;
+        activeHistoryStudentId = studentId;
 
-            if (tabName === 'progress') {
-                progressList.classList.remove('hidden');
-                routinesList.classList.add('hidden');
-                btnProgress.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
-                btnRoutines.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
-            } else {
-                progressList.classList.add('hidden');
-                routinesList.classList.remove('hidden');
-                btnRoutines.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
-                btnProgress.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
-            }
+        const logsCount = Array.isArray(st.dailyLogs) ? st.dailyLogs.length : 0;
+        const routinesCount = Array.isArray(st.routineHistory) ? st.routineHistory.length : 0;
+
+        document.getElementById('history-student-title').textContent = `Historial — ${st.name}`;
+        document.getElementById('history-student-subtitle').textContent = `${logsCount} reporte(s) diarios · ${routinesCount} rutina(s) archivadas`;
+        document.getElementById('tab-badge-progress').textContent = logsCount;
+        document.getElementById('tab-badge-routines').textContent = routinesCount;
+
+        renderDailyProgressHistoryList(st);
+        renderAssignedRoutinesHistoryList(st);
+        switchHistoryTab('progress');
+
+        const modal = document.getElementById('routine-history-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function switchHistoryTab(tabName) {
+        const btnProgress = document.getElementById('tab-btn-daily-progress');
+        const btnRoutines = document.getElementById('tab-btn-assigned-routines');
+        const listProgress = document.getElementById('daily-progress-history-list');
+        const listRoutines = document.getElementById('routine-history-list');
+
+        if (tabName === 'progress') {
+            btnProgress.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
+            btnRoutines.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
+            listProgress.classList.remove('hidden');
+            listRoutines.classList.add('hidden');
+        } else {
+            btnRoutines.className = 'px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider border-b-2 border-bandido-orange text-bandido-orange transition cursor-pointer flex items-center gap-1.5';
+            btnProgress.className = 'px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 transition cursor-pointer flex items-center gap-1.5';
+            listRoutines.classList.remove('hidden');
+            listProgress.classList.add('hidden');
         }
+    }
 
-        async function openRoutineHistoryModal(studentId) {
-            activeHistoryStudentId = studentId;
-            const st = students.find(s => s.id === studentId);
-            if (!st) return;
+    function renderDailyProgressHistoryList(st) {
+        const listEl = document.getElementById('daily-progress-history-list');
+        const logs = Array.isArray(st.dailyLogs) ? st.dailyLogs : [];
 
-            const liveCheck = await fetchLiveStudentFromSupabase(studentId);
-            if (liveCheck && !liveCheck.deleted && liveCheck.student) {
-                const idx = students.findIndex(s => s.id === studentId);
-                if (idx !== -1) {
-                    students[idx] = {
-                        ...students[idx],
-                        ...liveCheck.student,
-                        dailyLogs: Array.isArray(liveCheck.student.dailyLogs) ? liveCheck.student.dailyLogs : []
-                    };
-                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(students));
-                }
-            }
-
-            const currentStudent = students.find(s => s.id === studentId) || st;
-            document.getElementById('history-student-title').textContent = `Historial — ${currentStudent.name}`;
-            document.getElementById('history-student-subtitle').textContent = `${currentStudent.trainingDays || 'Entrenamiento'} · Nivel ${currentStudent.level || 'Básico'}`;
-
-            renderDailyProgressHistoryList(currentStudent);
-            renderAssignedRoutinesHistoryList(currentStudent);
-
-            const logsCount = Array.isArray(currentStudent.dailyLogs) ? currentStudent.dailyLogs.length : 0;
-            const histCount = Array.isArray(currentStudent.routineHistory) ? currentStudent.routineHistory.length : 0;
-            document.getElementById('tab-badge-progress').textContent = logsCount;
-            document.getElementById('tab-badge-routines').textContent = histCount;
-
-            switchHistoryTab('progress');
-
-            const modal = document.getElementById('routine-history-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function renderDailyProgressHistoryList(student) {
-            const container = document.getElementById('daily-progress-history-list');
-            const logs = Array.isArray(student.dailyLogs) ? student.dailyLogs : [];
-
-            if (logs.length === 0) {
-                container.innerHTML = `
-                    <div class="p-8 text-center space-y-2.5">
-                        <div class="w-12 h-12 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-clipboard-list text-lg"></i>
-                        </div>
-                        <p class="text-sm font-bold text-white">Aún no hay reportes diarios de ${escapeHtml(student.name)}</p>
-                        <p class="text-xs text-zinc-400 max-w-md mx-auto">Cuando el alumno entre a su rutina y guarde cómo le fue ese día, sus sensaciones, esfuerzo (RPE) y comentarios aparecerán aquí.</p>
+        if (logs.length === 0) {
+            listEl.innerHTML = `
+                <div class="p-8 text-center space-y-2.5">
+                    <div class="w-12 h-12 rounded-2xl bg-bandido-dark border border-bandido-border text-bandido-orange flex items-center justify-center mx-auto">
+                        <i class="fa-solid fa-clipboard-list text-lg"></i>
                     </div>
-                `;
-                return;
-            }
+                    <p class="text-sm font-bold text-white">Sin reportes diarios todavía</p>
+                    <p class="text-xs text-zinc-400">Cuando ${escapeHtml(st.name)} entre a su enlace privado y guarde su progreso del día, aparecerá aquí.</p>
+                </div>
+            `;
+            return;
+        }
 
-            container.innerHTML = logs.map((log, idx) => {
-                const feelingInfo = getFeelingBadgeInfo(log.feeling);
-                const rpeVal = Number(log.rpe || 7);
-                return `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border/80 pb-2.5">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-lg bg-bandido-orange/20 text-bandido-orange text-xs font-extrabold">
-                                    <i class="fa-solid fa-calendar-day mr-1"></i>${formatDisplayDate(log.date)}
-                                </span>
-                                <span class="px-2.5 py-1 rounded-lg border text-xs font-bold ${feelingInfo.cls}">
-                                    ${feelingInfo.label}
-                                </span>
-                                <span class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-200 text-xs font-bold">
-                                    Esfuerzo RPE: <strong class="text-bandido-orange">${rpeVal}/10</strong>
-                                </span>
-                            </div>
-                            <button type="button" onclick="deleteDailyProgressLog('${student.id}', ${idx})"
-                                    title="Eliminar registro"
+        listEl.innerHTML = logs.map((log, idx) => {
+            const fInfo = getFeelingBadgeInfo(log.feeling);
+            return `
+                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border/80 pb-2">
+                        <div>
+                            <span class="text-xs font-extrabold text-bandido-orange">${escapeHtml(log.blockTitle || 'Sesión')}</span>
+                            <span class="text-[11px] text-zinc-400 ml-2">${formatDisplayDate(log.date)}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${fInfo.cls}">
+                                ${fInfo.label} · RPE ${log.rpe || 7}/10
+                            </span>
+                            <button type="button" onclick="deleteDailyProgressLog('${st.id}', ${idx})"
+                                    title="Eliminar reporte"
                                     class="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
-
-                        <div class="space-y-1.5">
-                            ${log.blockTitle ? `<p class="text-xs font-bold text-zinc-300"><i class="fa-solid fa-dumbbell text-bandido-orange mr-1.5"></i>Sesión entrenada: <span class="text-white">${escapeHtml(log.blockTitle)}</span></p>` : ''}
-                            ${log.completedCount ? `<p class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-double mr-1"></i>${escapeHtml(log.completedCount)}</p>` : ''}
-                            <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70 text-xs text-zinc-200 leading-relaxed">
-                                ${log.notes ? escapeHtml(log.notes) : '<span class="text-zinc-500 italic">Sin comentarios adicionales del alumno.</span>'}
-                            </div>
-                        </div>
                     </div>
-                `;
-            }).join('');
-        }
+                    ${log.completedCount ? `<p class="text-[11px] font-semibold text-emerald-400"><i class="fa-solid fa-check-double mr-1"></i>${escapeHtml(log.completedCount)}</p>` : ''}
+                    ${log.notes ? `<p class="text-xs text-zinc-200 bg-bandido-card p-3 rounded-xl border border-bandido-border/70">${escapeHtml(log.notes)}</p>` : '<p class="text-[11px] text-zinc-500 italic">Sin observaciones adicionales.</p>'}
+                </div>
+            `;
+        }).join('');
+    }
 
-        async function deleteDailyProgressLog(studentId, logIndex) {
+    async function deleteDailyProgressLog(studentId, logIndex) {
             const st = students.find(s => s.id === studentId);
             if (!st || !Array.isArray(st.dailyLogs)) return;
             st.dailyLogs.splice(logIndex, 1);
