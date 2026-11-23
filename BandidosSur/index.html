@@ -843,6 +843,7 @@
                     </span>
                     <h4 id="qr-student-name" class="font-display text-xl font-bold uppercase text-white mt-2">Atleta</h4>
                     <p id="qr-student-goal" class="text-xs text-zinc-400 mt-0.5">Escanea el código con la cámara del celular para abrir la rutina</p>
+                    <div id="qr-student-phone-badge" class="mt-2 flex items-center justify-center"></div>
                 </div>
 
                 <!-- Tarjeta visual del QR -->
@@ -854,7 +855,7 @@
                 </div>
 
                 <p class="text-[11px] text-zinc-400 leading-relaxed max-w-xs mx-auto">
-                    Tu alumno puede escanear este QR directamente desde tu pantalla o puedes enviárselo como imagen por WhatsApp sin enlaces largos.
+                    Al dar clic en WhatsApp se abrirá directamente el chat de tu alumno con la imagen del QR lista para pegar y enviar.
                 </p>
 
                 <!-- Botones de Acción para el QR -->
@@ -875,7 +876,7 @@
                 <button type="button" onclick="shareRoutineQrOnWhatsApp()"
                         class="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs sm:text-sm font-extrabold uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp text-base"></i>
-                    <span>Enviar Imagen QR por WhatsApp</span>
+                    <span id="qr-whatsapp-btn-label">Abrir Chat de WhatsApp del Alumno</span>
                 </button>
             </div>
         </div>
@@ -1895,8 +1896,18 @@
         }
 
         // =================================================================
-        // UTILIDADES DE FECHAS, PORTAPAPELES Y FORMATO
+        // UTILIDADES DE FECHAS, TELÉFONO WHATSAPP Y FORMATO
         // =================================================================
+        function formatWhatsAppPhone(rawPhone) {
+            const digits = (rawPhone || '').replace(/\D/g, '');
+            if (!digits) return '';
+            // Si el teléfono tiene 10 dígitos (ej. México 55 1234 5678), anteponer 52
+            if (digits.length === 10) return `52${digits}`;
+            // Si empieza con 521 + 10 dígitos (13 dígitos), limpiar a 52 + 10 dígitos
+            if (digits.length === 13 && digits.startsWith('521')) return `52${digits.slice(3)}`;
+            return digits;
+        }
+
         function getTodayStr() {
             const d = new Date();
             const year = d.getFullYear();
@@ -2010,7 +2021,7 @@
             window._toastTimer = setTimeout(() => {
                 toast.classList.add('hidden');
                 toast.classList.remove('flex');
-            }, 3500);
+            }, 3800);
         }
 
         // =================================================================
@@ -2789,8 +2800,7 @@
             if (!st) return;
             const plan = GYM_PLANS[st.planKey] || { name: 'Mensualidad', price: 0 };
             const status = getMembershipStatus(st);
-            const cleanPhone = (st.phone || '').replace(/\D/g, '');
-            const phoneWithCountry = cleanPhone.length === 10 ? `52${cleanPhone}` : cleanPhone;
+            const phoneWithCountry = formatWhatsAppPhone(st.phone);
             const message = `Hola *${st.name}*, te recordamos de *Bandidos Sur* que tu *${plan.name}* ($${plan.price}) está en estatus: *${status.label}* (corte: ${formatDisplayDate(st.endDate)}). ¡Avísanos para renovar y seguir entrenando!`;
             const waUrl = phoneWithCountry
                 ? `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`
@@ -4409,89 +4419,90 @@
             }
         }
 
-        function renderDailyProgressHistoryList(studentObj = null) {
+        function renderDailyProgressHistoryList(studentObj) {
             const st = studentObj || students.find(s => s.id === activeHistoryStudentId);
-            if (!st) return;
-
             const listEl = document.getElementById('daily-progress-history-list');
             const summaryBar = document.getElementById('daily-progress-summary-bar');
             const filtersBar = document.getElementById('daily-progress-filters');
-            const allLogs = Array.isArray(st.dailyLogs) ? st.dailyLogs : [];
+            if (!listEl || !st) return;
 
-            if (allLogs.length === 0) {
+            const logs = Array.isArray(st.dailyLogs) ? st.dailyLogs : [];
+            if (logs.length === 0) {
                 if (summaryBar) summaryBar.classList.add('hidden');
                 if (filtersBar) filtersBar.classList.add('hidden');
                 listEl.innerHTML = `
-                    <div class="p-8 rounded-2xl bg-bandido-dark border border-bandido-border text-center space-y-2">
+                    <div class="p-8 text-center rounded-2xl bg-bandido-dark border border-bandido-border space-y-2">
                         <i class="fa-solid fa-clipboard-list text-2xl text-bandido-orange"></i>
-                        <p class="text-sm font-bold text-white">Aún no hay reportes diarios del alumno</p>
-                        <p class="text-xs text-zinc-400">Cuando ${escapeHtml(st.name)} complete su entrenamiento desde su enlace privado, sus sensaciones, RPE y notas aparecerán aquí.</p>
+                        <p class="text-sm font-bold text-white">Aún no hay reportes diarios enviados por ${escapeHtml(st.name)}</p>
+                        <p class="text-xs text-zinc-400">Cuando el alumno abra su QR y guarde su progreso del día, aparecerá aquí automáticamente.</p>
                     </div>
                 `;
                 return;
             }
 
+            const totalSessions = logs.length;
+            const rpeValues = logs.map(l => Number(l.rpe)).filter(n => !Number.isNaN(n) && n > 0);
+            const avgRpe = rpeValues.length > 0
+                ? (rpeValues.reduce((acc, v) => acc + v, 0) / rpeValues.length).toFixed(1)
+                : '—';
+            const totalCheckedCount = logs.reduce((acc, l) => acc + (Array.isArray(l.completedItems) ? l.completedItems.length : 0), 0);
+
             if (summaryBar) {
                 summaryBar.classList.remove('hidden');
-                const avgRpe = (allLogs.reduce((acc, l) => acc + Number(l.rpe || 7), 0) / allLogs.length).toFixed(1);
-                const excellentOrGood = allLogs.filter(l => l.feeling === 'excelente' || l.feeling === 'bien').length;
-                const highFatigueCount = allLogs.filter(l => l.feeling === 'cansado' || Number(l.rpe) >= 9).length;
-
                 summaryBar.innerHTML = `
-                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border text-center">
-                        <p class="text-[10px] font-bold uppercase text-zinc-400">Sesiones Reportadas</p>
-                        <p class="font-display text-xl font-bold text-white mt-0.5">${allLogs.length}</p>
+                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Entrenos Reportados</p>
+                        <p class="font-display text-xl font-bold text-white mt-0.5">${totalSessions}</p>
                     </div>
-                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border text-center">
-                        <p class="text-[10px] font-bold uppercase text-zinc-400">RPE Promedio</p>
-                        <p class="font-display text-xl font-bold text-bandido-orange mt-0.5">${avgRpe} / 10</p>
+                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">RPE Promedio</p>
+                        <p class="font-display text-xl font-bold text-bandido-orange mt-0.5">${avgRpe} <span class="text-xs font-normal text-zinc-500">/ 10</span></p>
                     </div>
-                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border text-center">
-                        <p class="text-[10px] font-bold uppercase text-zinc-400">Sensación Óptima</p>
-                        <p class="font-display text-xl font-bold text-emerald-400 mt-0.5">${excellentOrGood}/${allLogs.length}</p>
-                        ${highFatigueCount > 0 ? `<p class="text-[9px] text-rose-400 font-semibold">${highFatigueCount} con fatiga alta</p>` : ''}
+                    <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Bloques Completados</p>
+                        <p class="font-display text-xl font-bold text-emerald-400 mt-0.5">${totalCheckedCount}</p>
                     </div>
                 `;
             }
-
-            if (filtersBar) {
-                filtersBar.classList.remove('hidden');
-            }
+            if (filtersBar) filtersBar.classList.remove('hidden');
 
             const feelingFilter = document.getElementById('daily-log-feeling-filter')?.value || 'all';
             const searchQuery = (document.getElementById('daily-log-search-filter')?.value || '').toLowerCase().trim();
 
-            const filteredLogs = allLogs.filter(log => {
-                const matchFeeling = feelingFilter === 'all' || log.feeling === feelingFilter;
-                const matchSearch = !searchQuery ||
-                    (log.dayTitle || '').toLowerCase().includes(searchQuery) ||
-                    (log.notes || '').toLowerCase().includes(searchQuery);
-                return matchFeeling && matchSearch;
+            const filteredLogs = logs.filter(log => {
+                const matchesFeeling = feelingFilter === 'all' || log.feeling === feelingFilter;
+                const matchesQuery = !searchQuery ||
+                    (log.blockTitle || '').toLowerCase().includes(searchQuery) ||
+                    (log.notes || '').toLowerCase().includes(searchQuery) ||
+                    (log.date || '').includes(searchQuery);
+                return matchesFeeling && matchesQuery;
             });
 
             if (filteredLogs.length === 0) {
-                listEl.innerHTML = `<p class="p-6 text-center text-xs text-zinc-400">No hay reportes que coincidan con el filtro seleccionado.</p>`;
+                listEl.innerHTML = `
+                    <div class="p-6 text-center rounded-2xl bg-bandido-dark border border-bandido-border text-xs text-zinc-400">
+                        No hay reportes diarios que coincidan con ese filtro.
+                    </div>
+                `;
                 return;
             }
 
             listEl.innerHTML = filteredLogs.map(log => {
                 const badge = getFeelingBadgeInfo(log.feeling);
                 const rpeVal = Number(log.rpe || 7);
-                const rpeColor = rpeVal >= 9 ? 'text-rose-400' : rpeVal >= 7 ? 'text-amber-400' : 'text-emerald-400';
-
+                const rpeColor = rpeVal >= 9 ? 'text-rose-400' : rpeVal >= 7 ? 'text-bandido-orange' : 'text-emerald-400';
+                const checkedItems = Array.isArray(log.completedItems) ? log.completedItems : [];
                 return `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-2.5">
-                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border/70 pb-2.5">
+                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase">
+                                    <span class="px-2 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase">
                                         ${formatDisplayDate(log.date)}
                                     </span>
-                                    <h4 class="text-xs sm:text-sm font-bold text-white">${escapeHtml(log.dayTitle || 'Sesión Entrenada')}</h4>
+                                    <span class="text-xs sm:text-sm font-bold text-white">${escapeHtml(log.blockTitle || 'Sesión de Entrenamiento')}</span>
                                 </div>
-                                <p class="text-[11px] text-zinc-400 mt-0.5">
-                                    Ejercicios marcados: <strong class="text-zinc-200">${log.completedCount || 0}/${log.totalCount || 0}</strong>
-                                </p>
+                                ${log.goal ? `<p class="text-[11px] text-zinc-400 mt-0.5">Enfoque: ${escapeHtml(log.goal)}</p>` : ''}
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-lg border text-[11px] font-bold ${badge.cls}">
@@ -4500,17 +4511,49 @@
                                 <span class="px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-[11px] font-extrabold ${rpeColor}">
                                     RPE ${rpeVal}/10
                                 </span>
+                                <button type="button" onclick="deleteStudentDailyLog('${log.id}')"
+                                        title="Eliminar este registro"
+                                        class="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
                             </div>
                         </div>
-                        ${log.notes ? `
-                            <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70 text-xs text-zinc-200">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-bandido-orange block mb-0.5">Nota del Alumno:</span>
-                                ${escapeHtml(log.notes)}
+
+                        ${checkedItems.length > 0 ? `
+                            <div class="space-y-1">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                    <i class="fa-solid fa-check-double mr-1"></i>Ejercicios / Circuitos Completados (${checkedItems.length})
+                                </p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${checkedItems.map(txt => `
+                                        <span class="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-[11px] text-emerald-200">
+                                            ✓ ${escapeHtml(txt)}
+                                        </span>
+                                    `).join('')}
+                                </div>
                             </div>
-                        ` : `<p class="text-[11px] text-zinc-500 italic">Sin comentarios adicionales en esta sesión.</p>`}
+                        ` : ''}
+
+                        ${log.notes ? `
+                            <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/80 text-xs text-zinc-200">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-bandido-orange block mb-1">Comentarios / Pesos / Reps del Alumno:</span>
+                                <p class="whitespace-pre-line leading-relaxed">${escapeHtml(log.notes)}</p>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
+        }
+
+        async function deleteStudentDailyLog(logId) {
+            const st = students.find(s => s.id === activeHistoryStudentId);
+            if (!st || !Array.isArray(st.dailyLogs)) return;
+            st.dailyLogs = st.dailyLogs.filter(l => l.id !== logId);
+            await upsertSupabaseStudent(st);
+            document.getElementById('tab-badge-progress').textContent = st.dailyLogs.length;
+            renderDailyProgressHistoryList(st);
+            renderTable();
+            showToast('Registro de bitácora eliminado.');
         }
 
         function renderAssignedRoutinesHistoryList(st) {
@@ -4519,47 +4562,42 @@
 
             if (history.length === 0) {
                 listEl.innerHTML = `
-                    <div class="p-8 rounded-2xl bg-bandido-dark border border-bandido-border text-center space-y-2">
+                    <div class="p-8 text-center rounded-2xl bg-bandido-dark border border-bandido-border space-y-2">
                         <i class="fa-solid fa-folder-open text-2xl text-bandido-orange"></i>
-                        <p class="text-sm font-bold text-white">Aún no hay rutinas archivadas</p>
-                        <p class="text-xs text-zinc-400">Cada vez que guardes una rutina para ${escapeHtml(st.name)}, se archivará automáticamente aquí.</p>
+                        <p class="text-sm font-bold text-white">Aún no hay rutinas archivadas en el historial</p>
+                        <p class="text-xs text-zinc-400">Cada vez que guardes una rutina para este alumno, se guardará automáticamente aquí.</p>
                     </div>
                 `;
                 return;
             }
 
-            listEl.innerHTML = history.map((item, idx) => {
-                const r = item.routine || {};
-                const blocks = Array.isArray(r.blocks) ? r.blocks : [];
-                return `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
-                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase">
-                                        ${escapeHtml(item.monthLabel || 'Archivo')}
-                                    </span>
-                                    <span class="text-xs text-zinc-400">Guardada: ${formatDisplayDate(item.savedDate)}</span>
-                                </div>
-                                ${r.goal ? `<p class="text-xs font-bold text-white mt-1">Objetivo: ${escapeHtml(r.goal)}</p>` : ''}
+            listEl.innerHTML = history.map((item, idx) => `
+                <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border pb-2.5">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded bg-bandido-orange text-black text-[10px] font-black uppercase">
+                                    ${escapeHtml(item.monthLabel || 'Registro')}
+                                </span>
+                                <span class="text-xs text-zinc-400">Guardada el ${formatDisplayDate(item.savedDate)}</span>
                             </div>
-                            <button type="button" onclick="restoreHistoryRoutine(${idx})"
-                                    class="px-3 py-1.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
-                                <i class="fa-solid fa-rotate-left"></i>
-                                <span>Reutilizar Rutina</span>
-                            </button>
+                            <p class="text-sm font-bold text-white mt-1">${escapeHtml(item.routine?.goal || 'Entrenamiento General')}</p>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            ${blocks.map(b => `
-                                <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70">
-                                    <p class="text-xs font-bold text-bandido-orange mb-1">${escapeHtml(b.title || 'Bloque')}</p>
-                                    <p class="text-xs text-zinc-300 whitespace-pre-line font-mono">${escapeHtml(b.text || '')}</p>
-                                </div>
-                            `).join('')}
-                        </div>
+                        <button type="button" onclick="restoreRoutineFromHistory(${idx})"
+                                class="px-3 py-1.5 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/40 text-xs font-bold transition cursor-pointer">
+                            <i class="fa-solid fa-rotate-left mr-1"></i>Cargar como Rutina Actual
+                        </button>
                     </div>
-                `;
-            }).join('');
+                    <div class="space-y-2">
+                        ${(item.routine?.blocks || []).map(b => `
+                            <div class="p-3 rounded-xl bg-bandido-card border border-bandido-border/70 text-xs">
+                                <p class="font-bold text-bandido-orange mb-1">${escapeHtml(b.title || '')}</p>
+                                <pre class="whitespace-pre-wrap font-sans text-zinc-300 leading-relaxed">${escapeHtml(b.text || '')}</pre>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
         }
 
         function closeRoutineHistoryModal() {
@@ -4569,53 +4607,174 @@
             activeHistoryStudentId = null;
         }
 
-        async function restoreHistoryRoutine(historyIndex) {
-            if (!activeHistoryStudentId) return;
+        async function restoreRoutineFromHistory(historyIndex) {
             const st = students.find(s => s.id === activeHistoryStudentId);
-            if (!st || !Array.isArray(st.routineHistory) || !st.routineHistory[historyIndex]) return;
-
-            const chosen = st.routineHistory[historyIndex];
-            st.routine = JSON.parse(JSON.stringify(chosen.routine));
+            if (!st || !st.routineHistory?.[historyIndex]) return;
+            st.routine = JSON.parse(JSON.stringify(st.routineHistory[historyIndex].routine));
             await upsertSupabaseStudent(st);
             closeRoutineHistoryModal();
-            openRoutineModal(st.id);
-            showToast(`Rutina de "${chosen.monthLabel}" cargada en el editor.`);
+            renderTable();
+            showToast(`Rutina restaurada como activa para ${st.name}.`);
         }
 
         // =================================================================
-        // URL ULTRA CORTA Y COMPARTICIÓN POR CÓDIGO QR
+        // CODIFICACIÓN COMPACTA PARA QR Y ENLACE PRIVADO
         // =================================================================
-        function buildShortRoutineUrl(student) {
+        function encodeRoutineToUrl(student) {
+            const plan = GYM_PLANS[student.planKey] || { name: 'Plan General' };
+            const hasVideoBenefit = planSupportsVideos(student.planKey);
+            const minimal = {
+                i: student.id,
+                n: student.name,
+                p: plan.name,
+                k: student.planKey,
+                v: hasVideoBenefit ? 1 : 0,
+                g: student.routine?.goal || '',
+                o: student.routine?.notes || '',
+                b: (student.routine?.blocks || []).map(blk => ({
+                    t: blk.title || '',
+                    u: hasVideoBenefit ? (blk.videoUrl || '') : '',
+                    x: blk.text || ''
+                }))
+            };
+            const jsonStr = JSON.stringify(minimal);
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binStr = '';
+            for (let i = 0; i < bytes.length; i++) binStr += String.fromCharCode(bytes[i]);
+            const base64Url = btoa(binStr).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
             const baseUrl = window.location.href.split('#')[0];
-            return `${baseUrl}#r=${encodeURIComponent(student.id)}`;
+            return `${baseUrl}#r=${base64Url}`;
         }
 
+        function decodeRoutineFromHash() {
+            const hash = window.location.hash || '';
+            if (hash.startsWith('#r=')) {
+                try {
+                    let b64 = hash.slice(3).replace(/-/g, '+').replace(/_/g, '/');
+                    while (b64.length % 4) b64 += '=';
+                    const binStr = atob(b64);
+                    const bytes = new Uint8Array(binStr.length);
+                    for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+                    const jsonStr = new TextDecoder().decode(bytes);
+                    const m = JSON.parse(jsonStr);
+                    const hasVideoBenefit = m.v !== undefined ? Boolean(m.v) : planSupportsVideos(m.k);
+                    return {
+                        id: m.i || '',
+                        name: m.n,
+                        planName: m.p,
+                        planKey: m.k || '',
+                        allowsVideos: hasVideoBenefit,
+                        routine: {
+                            goal: m.g,
+                            notes: m.o,
+                            blocks: (m.b || []).map(blk => ({
+                                title: blk.t,
+                                videoUrl: hasVideoBenefit ? (blk.u || '') : '',
+                                text: blk.x
+                            }))
+                        }
+                    };
+                } catch (e) {
+                    console.error('Error decodificando formato compacto:', e);
+                }
+            }
+            if (hash.startsWith('#rutina=')) {
+                try {
+                    const encoded = hash.slice(8);
+                    const jsonStr = decodeURIComponent(escape(atob(encoded)));
+                    return JSON.parse(jsonStr);
+                } catch (e) {
+                    console.error('Error decodificando formato legado:', e);
+                }
+            }
+            return null;
+        }
+
+        // =================================================================
+        // MODAL DE CÓDIGO QR PRIVADO DE RUTINA (DESCARGAR / COPIAR / WHATSAPP DIRECTO)
+        // =================================================================
         async function openRoutineQrModal() {
             const st = await saveStudentRoutine(true);
             if (!st) return;
 
             activeQrStudent = st;
-            const shortUrl = buildShortRoutineUrl(st);
+            const shareUrl = encodeRoutineToUrl(st);
+            const cleanWaPhone = formatWhatsAppPhone(st.phone);
 
-            document.getElementById('qr-student-name').textContent = st.name || 'Atleta';
+            document.getElementById('qr-student-name').textContent = st.name;
             document.getElementById('qr-student-goal').textContent = st.routine?.goal
-                ? `Objetivo: ${st.routine.goal}`
-                : 'Escanea con la cámara para abrir tu rutina privada';
+                ? `Enfoque: ${st.routine.goal}`
+                : 'Escanea este QR con la cámara del celular para abrir la rutina';
+
+            const phoneBadgeEl = document.getElementById('qr-student-phone-badge');
+            const waBtnLabelEl = document.getElementById('qr-whatsapp-btn-label');
+            if (phoneBadgeEl && waBtnLabelEl) {
+                if (cleanWaPhone) {
+                    phoneBadgeEl.innerHTML = `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 text-[11px] font-bold">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>Chat directo: ${escapeHtml(st.phone)}</span>
+                        </span>
+                    `;
+                    waBtnLabelEl.textContent = `Enviar por WhatsApp a ${st.name.split(' ')[0]}`;
+                } else {
+                    phoneBadgeEl.innerHTML = `
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] font-semibold">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Sin teléfono registrado (se abrirá selector de chat)</span>
+                        </span>
+                    `;
+                    waBtnLabelEl.textContent = 'Abrir WhatsApp y Elegir Alumno';
+                }
+            }
 
             const qrBox = document.getElementById('routine-qrcode-box');
             qrBox.innerHTML = '';
 
             if (typeof QRCode !== 'undefined') {
-                new QRCode(qrBox, {
-                    text: shortUrl,
-                    width: 220,
-                    height: 220,
-                    colorDark: '#09090b',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.M
-                });
+                try {
+                    // CorrectLevel.L aumenta la capacidad máxima de caracteres y evita el desbordamiento interno de qrcodejs
+                    new QRCode(qrBox, {
+                        text: shareUrl,
+                        width: 220,
+                        height: 220,
+                        colorDark: '#09090b',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+                } catch (qrErr) {
+                    console.warn('URL extensa para QR completo, generando versión compacta:', qrErr);
+                    qrBox.innerHTML = '';
+                    // Respaldo compacto con los bloques principales si la rutina excede el límite máximo del estándar QR
+                    const compactStudent = {
+                        ...st,
+                        routine: {
+                            goal: (st.routine?.goal || '').slice(0, 80),
+                            notes: (st.routine?.notes || '').slice(0, 120),
+                            blocks: (st.routine?.blocks || []).slice(0, 4).map(b => ({
+                                title: (b.title || '').slice(0, 50),
+                                videoUrl: (b.videoUrl || '').slice(0, 140),
+                                text: (b.text || '').slice(0, 320)
+                            }))
+                        }
+                    };
+                    const fallbackUrl = encodeRoutineToUrl(compactStudent);
+                    try {
+                        new QRCode(qrBox, {
+                            text: fallbackUrl,
+                            width: 220,
+                            height: 220,
+                            colorDark: '#09090b',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.L
+                        });
+                        showToast('Rutina muy extensa: se generó un QR optimizado para lectura rápida.');
+                    } catch (fallbackErr) {
+                        qrBox.innerHTML = `<p class="text-xs text-rose-600 p-4 font-semibold">La rutina contiene demasiado texto para un solo código QR. Reduce ligeramente el texto o divídela en menos bloques.</p>`;
+                    }
+                }
             } else {
-                qrBox.innerHTML = `<p class="text-xs text-rose-600 font-bold p-4">No se pudo cargar el generador QR. Revisa tu conexión a internet.</p>`;
+                qrBox.innerHTML = `<p class="text-xs text-rose-600 p-4">No se pudo cargar el generador QR.</p>`;
             }
 
             const modal = document.getElementById('routine-qr-modal');
@@ -4629,502 +4788,484 @@
             modal.classList.remove('flex');
         }
 
-        // Construye una tarjeta PNG limpia con el logo/título Bandidos Sur + Nombre del Alumno + QR
-        function generateBrandedQrCanvas() {
+        function buildBrandedQrCanvas() {
             const qrBox = document.getElementById('routine-qrcode-box');
-            const sourceCanvas = qrBox?.querySelector('canvas');
-            const sourceImg = qrBox?.querySelector('img');
+            const srcCanvas = qrBox?.querySelector('canvas');
+            const srcImg = qrBox?.querySelector('img');
 
-            const cardW = 420;
-            const cardH = 510;
-            const canvas = document.createElement('canvas');
-            canvas.width = cardW;
-            canvas.height = cardH;
-            const ctx = canvas.getContext('2d');
+            const outCanvas = document.createElement('canvas');
+            const width = 420;
+            const height = 510;
+            outCanvas.width = width;
+            outCanvas.height = height;
+            const ctx = outCanvas.getContext('2d');
 
-            // Fondo oscuro premium
             ctx.fillStyle = '#09090b';
-            ctx.fillRect(0, 0, cardW, cardH);
+            ctx.fillRect(0, 0, width, height);
 
-            // Borde naranja Bandidos Sur
             ctx.strokeStyle = '#f97316';
             ctx.lineWidth = 8;
-            ctx.strokeRect(4, 4, cardW - 8, cardH - 8);
+            ctx.strokeRect(10, 10, width - 20, height - 20);
 
-            // Título Superior
-            ctx.fillStyle = '#f97316';
-            ctx.font = 'bold 26px Oswald, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px Oswald, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('BANDIDOS SUR', cardW / 2, 48);
+            ctx.fillText('BANDIDOS SUR', width / 2, 58);
 
-            // Nombre del Alumno
+            ctx.fillStyle = '#f97316';
+            ctx.font = 'bold 14px Inter, sans-serif';
             const athleteName = (activeQrStudent?.name || 'ATLETA').toUpperCase();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 18px Inter, sans-serif';
-            ctx.fillText(athleteName, cardW / 2, 80);
+            ctx.fillText(`RUTINA PRIVADA · ${athleteName}`, width / 2, 86);
 
-            // Caja blanca para el QR
-            const qrSize = 270;
-            const qrPad = 18;
-            const boxX = (cardW - (qrSize + qrPad * 2)) / 2;
-            const boxY = 104;
+            const qrBgSize = 300;
+            const qrBgX = (width - qrBgSize) / 2;
+            const qrBgY = 110;
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(boxX, boxY, qrSize + qrPad * 2, qrSize + qrPad * 2);
+            ctx.fillRect(qrBgX, qrBgY, qrBgSize, qrBgSize);
 
-            if (sourceCanvas) {
-                ctx.drawImage(sourceCanvas, boxX + qrPad, boxY + qrPad, qrSize, qrSize);
-            } else if (sourceImg && sourceImg.complete) {
-                ctx.drawImage(sourceImg, boxX + qrPad, boxY + qrPad, qrSize, qrSize);
+            const qrPadding = 20;
+            const qrDrawSize = qrBgSize - qrPadding * 2;
+            if (srcCanvas) {
+                ctx.drawImage(srcCanvas, qrBgX + qrPadding, qrBgY + qrPadding, qrDrawSize, qrDrawSize);
+            } else if (srcImg && srcImg.complete) {
+                ctx.drawImage(srcImg, qrBgX + qrPadding, qrBgY + qrPadding, qrDrawSize, qrDrawSize);
             }
 
-            // Pie de tarjeta
-            ctx.fillStyle = '#a1a1aa';
+            ctx.fillStyle = '#d4d4d8';
             ctx.font = '600 13px Inter, sans-serif';
-            ctx.fillText('ESCANEA CON TU CÁMARA PARA VER TU RUTINA', cardW / 2, 446);
+            ctx.fillText('Escanea este código QR con tu cámara', width / 2, 448);
+            ctx.fillStyle = '#a1a1aa';
+            ctx.font = '500 12px Inter, sans-serif';
+            ctx.fillText('para abrir tu programa de entrenamiento', width / 2, 468);
 
-            ctx.fillStyle = '#f97316';
-            ctx.font = 'bold 12px Inter, sans-serif';
-            ctx.fillText('ENTRENA INTELIGENTE', cardW / 2, 472);
-
-            return canvas;
+            return outCanvas;
         }
 
         function downloadRoutineQrPng() {
-            const canvas = generateBrandedQrCanvas();
+            const canvas = buildBrandedQrCanvas();
             const safeName = (activeQrStudent?.name || 'alumno').toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const link = document.createElement('a');
-            link.download = `qr-rutina-${safeName}-bandidos-sur.png`;
+            link.download = `qr-rutina-bandidos-${safeName}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-            showToast('Imagen del Código QR descargada.');
+            showToast('Imagen QR descargada en tu dispositivo.');
         }
 
-        async function copyRoutineQrImageToClipboard() {
+        async function copyRoutineQrImageToClipboard(silent = false) {
             try {
-                const canvas = generateBrandedQrCanvas();
+                const canvas = buildBrandedQrCanvas();
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                if (navigator.clipboard && window.ClipboardItem && blob) {
+                if (blob && navigator.clipboard && window.ClipboardItem) {
                     await navigator.clipboard.write([
                         new ClipboardItem({ 'image/png': blob })
                     ]);
-                    showToast('Imagen QR copiada. ¡Solo pégala (Ctrl+V) en WhatsApp!');
+                    if (!silent) {
+                        showToast('Imagen QR copiada. Pégala directo en el chat de WhatsApp (Ctrl+V o Pegar).');
+                    }
                     return true;
                 }
-            } catch (err) {
-                console.warn('No se pudo copiar imagen al portapapeles:', err);
+            } catch (e) {
+                console.warn('No se pudo copiar imagen al portapapeles:', e);
             }
-            downloadRoutineQrPng();
-            showToast('Se descargó la imagen QR para que la adjuntes en WhatsApp.');
+            if (!silent) {
+                downloadRoutineQrPng();
+                showToast('Tu navegador no permite copiar imágenes directo; se descargó el PNG para adjuntarlo.');
+            }
             return false;
         }
 
         async function shareRoutineQrOnWhatsApp() {
             if (!activeQrStudent) return;
+            const firstName = (activeQrStudent.name || 'Atleta').split(' ')[0];
+            const cleanWaPhone = formatWhatsAppPhone(activeQrStudent.phone);
+            const message = `¡Hola *${firstName}*! Aquí tienes tu código QR privado de entrenamiento en *Bandidos Sur*. Escanéalo con tu celular para ver tu rutina actualizada:`;
 
-            const canvas = generateBrandedQrCanvas();
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            const safeName = (activeQrStudent.name || 'alumno').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            const fileName = `qr-rutina-${safeName}.png`;
-
-            // 1. En celulares compatibles con Web Share API (Android / iPhone), envía la imagen QR directa a WhatsApp
-            if (blob && navigator.canShare && navigator.share) {
-                try {
-                    const file = new File([blob], fileName, { type: 'image/png' });
-                    if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            files: [file],
-                            title: `Rutina Bandidos Sur — ${activeQrStudent.name}`,
-                            text: `Hola ${activeQrStudent.name}, aquí tienes tu Código QR de Bandidos Sur. Escanéalo para ver tu rutina.`
-                        });
-                        return;
-                    }
-                } catch (err) {
-                    if (err && err.name === 'AbortError') return;
-                }
-            }
-
-            // 2. En computadora / WhatsApp Web: copia la imagen QR al portapapeles y abre el chat sin links largos
-            await copyRoutineQrImageToClipboard();
-
-            const cleanPhone = (activeQrStudent.phone || '').replace(/\D/g, '');
-            const phoneWithCountry = cleanPhone.length === 10 ? `52${cleanPhone}` : cleanPhone;
-            const message = `Hola *${activeQrStudent.name}*, aquí tienes tu código QR de *Bandidos Sur*. Escanéalo con tu cámara para ver tu rutina actualizada.`;
-
-            const waUrl = phoneWithCountry
-                ? `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`
+            // Construye el enlace directo al chat del alumno si tiene teléfono guardado
+            const waUrl = cleanWaPhone
+                ? `https://wa.me/${cleanWaPhone}?text=${encodeURIComponent(message)}`
                 : `https://wa.me/?text=${encodeURIComponent(message)}`;
 
-            window.open(waUrl, '_blank', 'noopener,noreferrer');
+            try {
+                const canvas = buildBrandedQrCanvas();
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = blob ? new File([blob], `qr-bandidos-${firstName.toLowerCase()}.png`, { type: 'image/png' }) : null;
+
+                // En celulares compatibles con compartir archivo directo (Web Share API)
+                if (file && navigator.canShare && navigator.canShare({ files: [file] }) && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                    await navigator.share({
+                        files: [file],
+                        title: `Rutina Bandidos Sur — ${activeQrStudent.name}`,
+                        text: message
+                    });
+                    return;
+                }
+
+                // Copia la imagen del QR al portapapeles en silencio para que el coach solo dé Pegar (Ctrl+V) en el chat
+                const copied = await copyRoutineQrImageToClipboard(true);
+                if (!copied) {
+                    downloadRoutineQrPng();
+                }
+
+                window.open(waUrl, '_blank', 'noopener,noreferrer');
+
+                if (cleanWaPhone) {
+                    showToast(
+                        copied
+                            ? `Abriendo chat con ${activeQrStudent.name} y QR copiado: solo presiona Pegar (Ctrl+V) en WhatsApp.`
+                            : `Abriendo chat con ${activeQrStudent.name}. Adjunta la imagen QR descargada.`
+                    );
+                } else {
+                    showToast('El alumno no tiene teléfono guardado. Se abrió WhatsApp para elegir contacto y el QR se copió.');
+                }
+            } catch (e) {
+                window.open(waUrl, '_blank', 'noopener,noreferrer');
+            }
         }
 
         async function previewStudentRoutine() {
             const st = await saveStudentRoutine(true);
             if (!st) return;
-
-            const payload = {
+            closeRoutineModal();
+            const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
+            renderAthleteView({
                 id: st.id,
                 name: st.name,
+                planName: plan.name,
                 planKey: st.planKey,
-                planName: GYM_PLANS[st.planKey]?.name || 'Plan Bandidos Sur',
-                trainingDays: st.trainingDays,
-                endDate: st.endDate,
-                routinePaused: Boolean(st.routinePaused),
-                routine: st.routine,
-                dailyLogs: Array.isArray(st.dailyLogs) ? st.dailyLogs : [],
-                evaluations: Array.isArray(st.evaluations) ? st.evaluations : []
-            };
-
-            closeRoutineModal();
-            openAthleteView(payload, true);
+                allowsVideos: planSupportsVideos(st.planKey),
+                routine: st.routine
+            }, true);
         }
 
         // =================================================================
-        // VISTA PRIVADA DEL ALUMNO (PARSEO DE BLOQUES + REPRODUCTOR REELS)
+        // VISTA PRIVADA DEL ALUMNO (CIRCUITOS AGRUPADOS + CHECKLIST + BITÁCORA)
         // =================================================================
-        function parseBlockItemsAndRounds(rawText) {
-            const lines = (rawText || '').split('\n').map(l => l.trim()).filter(Boolean);
-            const groups = [];
-            let currentItems = [];
+        function parseBlockIntoCircuits(rawText) {
+            const lines = (rawText || '')
+                .split('\n')
+                .map(l => l.trim())
+                .filter(Boolean);
+
+            const circuits = [];
+            let currentExercises = [];
 
             lines.forEach(line => {
-                const roundsMatch = line.match(/^(\d+)\s*(series|rondas|vueltas|sets)\b/i);
-                if (roundsMatch && currentItems.length > 0) {
-                    groups.push({
-                        items: currentItems,
-                        rounds: Number(roundsMatch[1])
+                if (/^\d+\s*series?\b/i.test(line)) {
+                    circuits.push({
+                        seriesLabel: line,
+                        exercises: currentExercises.length > 0 ? currentExercises : [line]
                     });
-                    currentItems = [];
+                    currentExercises = [];
                 } else {
-                    const parts = line.split('/');
-                    const exerciseName = parts[0].trim();
-                    const repsInfo = parts.slice(1).join('/').trim();
-                    currentItems.push({ name: exerciseName, reps: repsInfo });
+                    currentExercises.push(line);
                 }
             });
 
-            if (currentItems.length > 0) {
-                groups.push({
-                    items: currentItems,
-                    rounds: 1
+            if (currentExercises.length > 0) {
+                circuits.push({
+                    seriesLabel: null,
+                    exercises: currentExercises
                 });
             }
 
-            return groups;
+            return circuits;
         }
 
-        function getAthleteChecksStorageKey(payload) {
-            const updated = payload?.routine?.updatedAt || 'default';
-            const athleteKey = payload?.id || (payload?.name || 'atleta').toLowerCase().replace(/\s+/g, '_');
-            return `${ATHLETE_CHECKS_PREFIX}${athleteKey}_${updated}`;
+        function getAthleteCheckStorageKey(payload) {
+            const slug = (payload?.id || payload?.name || 'atleta').toLowerCase().replace(/[^a-z0-9]/g, '_');
+            return `${ATHLETE_CHECKS_PREFIX}${slug}`;
         }
 
-        function getAthleteCompletedMap(payload) {
+        function getAthleteCheckedItemsSet(payload) {
             try {
-                const raw = localStorage.getItem(getAthleteChecksStorageKey(payload));
-                return raw ? JSON.parse(raw) : {};
+                const raw = localStorage.getItem(getAthleteCheckStorageKey(payload));
+                const arr = raw ? JSON.parse(raw) : [];
+                return new Set(Array.isArray(arr) ? arr : []);
             } catch (e) {
-                return {};
+                return new Set();
             }
         }
 
-        function toggleAthleteExerciseCheck(itemKey) {
+        function toggleAthleteChecklistItem(checkKey) {
             if (!activeAthletePayload) return;
-            const map = getAthleteCompletedMap(activeAthletePayload);
-            map[itemKey] = !map[itemKey];
-            localStorage.setItem(getAthleteChecksStorageKey(activeAthletePayload), JSON.stringify(map));
-            renderAthleteRoutineContent(activeAthletePayload, document.getElementById('exit-preview-btn')?.classList.contains('hidden') === false);
+            const storageKey = getAthleteCheckStorageKey(activeAthletePayload);
+            const set = getAthleteCheckedItemsSet(activeAthletePayload);
+            if (set.has(checkKey)) {
+                set.delete(checkKey);
+            } else {
+                set.add(checkKey);
+            }
+            localStorage.setItem(storageKey, JSON.stringify(Array.from(set)));
+            renderAthleteView(activeAthletePayload, !document.getElementById('exit-preview-btn').classList.contains('hidden'));
         }
 
-        function selectAthleteDayTab(dayIndex) {
-            selectedAthleteBlockIndex = dayIndex;
+        function selectAthleteDayBlock(idx) {
             if (!activeAthletePayload) return;
-            const isPreview = !document.getElementById('exit-preview-btn')?.classList.contains('hidden');
-            renderAthleteRoutineContent(activeAthletePayload, isPreview);
+            selectedAthleteBlockIndex = idx;
+            const isPreview = !document.getElementById('exit-preview-btn').classList.contains('hidden');
+            renderAthleteView(activeAthletePayload, isPreview);
         }
 
         async function submitAthleteDailyProgress(event) {
             event.preventDefault();
             if (!activeAthletePayload) return;
 
-            const blocks = Array.isArray(activeAthletePayload.routine?.blocks) ? activeAthletePayload.routine.blocks : [];
-            const activeBlk = blocks[selectedAthleteBlockIndex] || blocks[0];
-            if (!activeBlk) return;
-
+            const blocks = activeAthletePayload.routine?.blocks || [];
+            const currentBlock = blocks[selectedAthleteBlockIndex] || blocks[0];
+            const blockTitle = currentBlock?.title || `Día ${selectedAthleteBlockIndex + 1}`;
             const feeling = document.getElementById('athlete-log-feeling')?.value || 'bien';
             const rpe = Number(document.getElementById('athlete-log-rpe')?.value || 7);
             const notes = (document.getElementById('athlete-log-notes')?.value || '').trim();
 
-            const completedMap = getAthleteCompletedMap(activeAthletePayload);
-            const groups = parseBlockItemsAndRounds(activeBlk.text);
-            let totalItems = 0;
-            let completedItems = 0;
-            groups.forEach((grp, gIdx) => {
-                grp.items.forEach((_, iIdx) => {
-                    totalItems++;
-                    const key = `b${selectedAthleteBlockIndex}_g${gIdx}_i${iIdx}`;
-                    if (completedMap[key]) completedItems++;
+            const checkedSet = getAthleteCheckedItemsSet(activeAthletePayload);
+            const circuits = parseBlockIntoCircuits(currentBlock?.text || '');
+            const completedExercises = [];
+            circuits.forEach((c, cIdx) => {
+                c.exercises.forEach((ex, eIdx) => {
+                    const key = `b${selectedAthleteBlockIndex}_c${cIdx}_e${eIdx}`;
+                    if (checkedSet.has(key)) {
+                        completedExercises.push(ex);
+                    }
                 });
             });
 
-            const newLog = {
+            const today = getTodayStr();
+            const newLogEntry = {
                 id: 'log_' + Date.now(),
-                date: getTodayStr(),
-                dayTitle: activeBlk.title || `Día ${selectedAthleteBlockIndex + 1}`,
+                date: today,
+                blockTitle,
+                goal: activeAthletePayload.routine?.goal || '',
                 feeling,
                 rpe,
                 notes,
-                completedCount: completedItems,
-                totalCount: totalItems
+                completedItems: completedExercises
             };
 
-            if (!Array.isArray(activeAthletePayload.dailyLogs)) {
-                activeAthletePayload.dailyLogs = [];
-            }
-            activeAthletePayload.dailyLogs.unshift(newLog);
+            let targetStudent = students.find(s =>
+                (activeAthletePayload.id && String(s.id) === String(activeAthletePayload.id)) ||
+                (s.name || '').toLowerCase().trim() === (activeAthletePayload.name || '').toLowerCase().trim()
+            );
 
-            const studentId = activeAthletePayload.id;
-            if (studentId) {
-                const localIdx = students.findIndex(s => s.id === studentId);
-                if (localIdx !== -1) {
-                    if (!Array.isArray(students[localIdx].dailyLogs)) students[localIdx].dailyLogs = [];
-                    students[localIdx].dailyLogs.unshift(newLog);
-                    await upsertSupabaseStudent(students[localIdx]);
-                } else {
-                    const cfg = getSupabaseConfig();
-                    if (cfg.enabled) {
-                        try {
-                            const res = await fetch(`${cfg.url}/rest/v1/bandidos_students?id=eq.${encodeURIComponent(studentId)}&select=id,payload`, {
-                                headers: {
-                                    'apikey': cfg.key,
-                                    'Authorization': `Bearer ${cfg.key}`
-                                }
-                            });
-                            if (res.ok) {
-                                const rows = await res.json();
-                                if (Array.isArray(rows) && rows[0]?.payload) {
-                                    const remoteStudent = rows[0].payload;
-                                    if (!Array.isArray(remoteStudent.dailyLogs)) remoteStudent.dailyLogs = [];
-                                    remoteStudent.dailyLogs.unshift(newLog);
-                                    await fetch(`${cfg.url}/rest/v1/bandidos_students`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'apikey': cfg.key,
-                                            'Authorization': `Bearer ${cfg.key}`,
-                                            'Content-Type': 'application/json',
-                                            'Prefer': 'resolution=merge-duplicates'
-                                        },
-                                        body: JSON.stringify({ id: studentId, payload: remoteStudent })
-                                    });
-                                }
+            if (!targetStudent) {
+                const cfg = getSupabaseConfig();
+                if (cfg.enabled && activeAthletePayload.id) {
+                    try {
+                        const res = await fetch(`${cfg.url}/rest/v1/bandidos_students?id=eq.${encodeURIComponent(activeAthletePayload.id)}&select=id,payload`, {
+                            headers: {
+                                'apikey': cfg.key,
+                                'Authorization': `Bearer ${cfg.key}`
                             }
-                        } catch (e) {
-                            console.warn('No se pudo sincronizar el avance diario a la nube:', e);
+                        });
+                        if (res.ok) {
+                            const rows = await res.json();
+                            if (rows?.[0]?.payload) {
+                                targetStudent = rows[0].payload;
+                                students.push(targetStudent);
+                            }
                         }
+                    } catch (e) {
+                        console.warn('No se pudo recuperar el perfil remoto del alumno:', e);
                     }
                 }
             }
 
-            const notesEl = document.getElementById('athlete-log-notes');
-            if (notesEl) notesEl.value = '';
-            const isPreview = !document.getElementById('exit-preview-btn')?.classList.contains('hidden');
-            renderAthleteRoutineContent(activeAthletePayload, isPreview);
-            showToast('¡Entrenamiento guardado en tu historial!');
-        }
-
-        function openAthleteView(payload, isAdminPreview = false) {
-            activeAthletePayload = payload;
-            selectedAthleteBlockIndex = 0;
-
-            document.getElementById('admin-dashboard-wrapper').classList.add('hidden');
-            const view = document.getElementById('athlete-routine-view');
-            view.classList.remove('hidden');
-            view.classList.add('flex');
-
-            const exitBtn = document.getElementById('exit-preview-btn');
-            if (isAdminPreview) {
-                exitBtn.classList.remove('hidden');
-            } else {
-                exitBtn.classList.add('hidden');
+            if (targetStudent) {
+                if (!Array.isArray(targetStudent.dailyLogs)) targetStudent.dailyLogs = [];
+                targetStudent.dailyLogs.unshift(newLogEntry);
+                await upsertSupabaseStudent(targetStudent);
             }
 
-            renderAthleteRoutineContent(payload, isAdminPreview);
+            const notesInput = document.getElementById('athlete-log-notes');
+            if (notesInput) notesInput.value = '';
+            showToast('¡Entrenamiento guardado en tu bitácora y enviado al coach!');
         }
 
-        function renderAthleteRoutineContent(payload, isAdminPreview = false) {
-            const content = document.getElementById('athlete-routine-content');
-            const routine = payload.routine || { goal: '', notes: '', blocks: [] };
-            const blocks = Array.isArray(routine.blocks) ? routine.blocks : [];
-            const canSeeVideos = planSupportsVideos(payload.planKey);
-            const isBlocked = payload.routinePaused === true || (payload.endDate && getDaysRemaining(payload.endDate) < 0);
+        function renderAthleteView(payload, isPreviewMode = false) {
+            if (!payload || !payload.routine) return;
+            activeAthletePayload = payload;
 
-            if (isBlocked && !isAdminPreview) {
+            const adminWrapper = document.getElementById('admin-dashboard-wrapper');
+            const athleteView = document.getElementById('athlete-routine-view');
+            const exitBtn = document.getElementById('exit-preview-btn');
+            const content = document.getElementById('athlete-routine-content');
+
+            adminWrapper.classList.add('hidden');
+            athleteView.classList.remove('hidden');
+            athleteView.classList.add('flex');
+
+            if (isPreviewMode) exitBtn.classList.remove('hidden');
+            else exitBtn.classList.add('hidden');
+
+            const liveStudent = students.find(s =>
+                (payload.id && String(s.id) === String(payload.id)) ||
+                (s.name || '').toLowerCase().trim() === (payload.name || '').toLowerCase().trim()
+            );
+
+            if (liveStudent && isRoutineBlocked(liveStudent)) {
+                const status = getMembershipStatus(liveStudent);
+                const reasonText = liveStudent.routinePaused
+                    ? 'Tu entrenador ha pausado temporalmente el acceso a tu rutina privada.'
+                    : `Tu mensualidad se encuentra vencida (${status.label}).`;
+
                 content.innerHTML = `
-                    <div class="p-8 rounded-3xl bg-bandido-card border border-rose-500/40 text-center space-y-4 my-8">
-                        <div class="w-16 h-16 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center mx-auto">
+                    <div class="p-6 sm:p-8 rounded-3xl bg-bandido-card border border-rose-500/40 text-center space-y-4 shadow-2xl">
+                        <div class="w-16 h-16 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-lock text-2xl"></i>
                         </div>
-                        <h2 class="font-display text-2xl font-bold uppercase text-white">Acceso Pausado o Vencido</h2>
-                        <p class="text-sm text-zinc-300 max-w-md mx-auto">
-                            Hola <strong class="text-white">${escapeHtml(payload.name || 'Atleta')}</strong>, tu mensualidad en <strong class="text-bandido-orange">Bandidos Sur</strong> requiere renovación para visualizar tu programa de entrenamiento.
+                        <span class="inline-block px-3 py-1 rounded-full bg-rose-500/15 text-rose-300 text-[11px] font-extrabold uppercase tracking-wider">
+                            Acceso Restringido · Bandidos Sur
+                        </span>
+                        <h2 class="font-display text-2xl font-bold uppercase text-white">
+                            Hola, ${escapeHtml(payload.name || 'Atleta')}
+                        </h2>
+                        <p class="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
+                            ${escapeHtml(reasonText)}
                         </p>
-                        <p class="text-xs text-zinc-400">Acércate con tu entrenador en el gimnasio para reactivar tu acceso al instante.</p>
+                        <p class="text-xs text-zinc-400 max-w-sm mx-auto">
+                            Comunícate con tu entrenador en <strong class="text-bandido-orange">Bandidos Sur</strong> para renovar tu plan o reactivar tu programa de entrenamiento.
+                        </p>
                     </div>
                 `;
                 return;
             }
 
+            const canShowVideos = liveStudent
+                ? planSupportsVideos(liveStudent.planKey)
+                : (typeof payload.allowsVideos === 'boolean' ? payload.allowsVideos : planSupportsVideos(payload.planKey));
+
+            const blocks = (liveStudent?.routine?.blocks && liveStudent.routine.blocks.length > 0)
+                ? liveStudent.routine.blocks
+                : (payload.routine.blocks || []);
+
             if (selectedAthleteBlockIndex >= blocks.length) {
                 selectedAthleteBlockIndex = 0;
             }
 
-            const completedMap = getAthleteCompletedMap(payload);
-            const activeBlk = blocks[selectedAthleteBlockIndex] || null;
+            const activeBlock = blocks[selectedAthleteBlockIndex] || null;
+            const checkedSet = getAthleteCheckedItemsSet(payload);
 
-            const daySelectorHtml = blocks.length > 0 ? `
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                            <i class="fa-solid fa-calendar-day text-bandido-orange mr-1.5"></i>Selecciona el día que entrenarás hoy:
-                        </span>
-                        <span class="text-[11px] text-zinc-400">${blocks.length} día(s) asignados</span>
-                    </div>
-                    <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                        ${blocks.map((b, idx) => {
-                            const isSelected = idx === selectedAthleteBlockIndex;
-                            const groups = parseBlockItemsAndRounds(b.text);
-                            let totalInDay = 0;
-                            let doneInDay = 0;
-                            groups.forEach((grp, gIdx) => {
-                                grp.items.forEach((_, iIdx) => {
-                                    totalInDay++;
-                                    if (completedMap[`b${idx}_g${gIdx}_i${iIdx}`]) doneInDay++;
-                                });
-                            });
-                            const isDayCompleted = totalInDay > 0 && doneInDay === totalInDay;
-                            const hasVid = canSeeVideos && b.videoUrl && b.videoUrl.trim();
-
-                            return `
-                                <button type="button"
-                                        onclick="selectAthleteDayTab(${idx})"
-                                        class="px-4 py-2.5 rounded-2xl border text-left transition shrink-0 cursor-pointer flex items-center gap-2.5 ${isSelected
-                                            ? 'bg-bandido-orange text-black border-bandido-orange font-extrabold shadow-lg shadow-orange-500/20'
-                                            : 'bg-bandido-card hover:bg-zinc-900 text-zinc-200 border-bandido-border font-bold'}">
-                                    <span class="w-6 h-6 rounded-lg ${isSelected ? 'bg-black/20 text-black' : 'bg-bandido-dark text-bandido-orange'} text-xs font-black flex items-center justify-center">
-                                        ${isDayCompleted ? '<i class="fa-solid fa-check"></i>' : idx + 1}
-                                    </span>
-                                    <div>
-                                        <p class="text-xs leading-tight">${escapeHtml(b.title || `Día ${idx + 1}`)}</p>
-                                        <p class="text-[10px] ${isSelected ? 'text-black/80' : 'text-zinc-400'} font-semibold">
-                                            ${doneInDay}/${totalInDay} ejercicios${hasVid ? ' · <i class="fa-solid fa-video"></i>' : ''}
-                                        </p>
-                                    </div>
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>
+            const daySelectorHtml = blocks.length > 1 ? `
+                <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                    ${blocks.map((blk, i) => `
+                        <button type="button"
+                                onclick="selectAthleteDayBlock(${i})"
+                                class="px-3.5 py-2 rounded-xl border text-xs font-extrabold uppercase tracking-wider whitespace-nowrap transition cursor-pointer ${i === selectedAthleteBlockIndex ? 'bg-bandido-orange text-black border-bandido-orange shadow-md shadow-orange-500/20' : 'bg-bandido-card text-zinc-300 border-bandido-border hover:border-zinc-600'}">
+                            ${escapeHtml(blk.title || `Día ${i + 1}`)}
+                        </button>
+                    `).join('')}
                 </div>
             ` : '';
 
-            let activeDayCardHtml = '';
-            if (activeBlk) {
-                const groups = parseBlockItemsAndRounds(activeBlk.text);
-                const videoPlayerHtml = canSeeVideos && activeBlk.videoUrl
-                    ? renderReelVideoPlayerHtml(activeBlk.videoUrl, activeBlk.title || `Día ${selectedAthleteBlockIndex + 1}`, selectedAthleteBlockIndex)
+            let activeDayHtml = '';
+            if (!activeBlock) {
+                activeDayHtml = `
+                    <div class="p-8 rounded-2xl bg-bandido-card border border-bandido-border text-center text-sm text-zinc-400">
+                        Tu entrenador aún no ha cargado bloques de entrenamiento.
+                    </div>
+                `;
+            } else {
+                const circuits = parseBlockIntoCircuits(activeBlock.text);
+                let totalExercisesInDay = 0;
+                let completedExercisesInDay = 0;
+
+                const circuitsHtml = circuits.map((circuit, cIdx) => {
+                    const itemsHtml = circuit.exercises.map((ex, eIdx) => {
+                        totalExercisesInDay++;
+                        const checkKey = `b${selectedAthleteBlockIndex}_c${cIdx}_e${eIdx}`;
+                        const isChecked = checkedSet.has(checkKey);
+                        if (isChecked) completedExercisesInDay++;
+
+                        return `
+                            <button type="button"
+                                    onclick="toggleAthleteChecklistItem('${checkKey}')"
+                                    class="w-full text-left p-3 rounded-xl border transition cursor-pointer flex items-center gap-3 ${isChecked ? 'bg-emerald-500/10 border-emerald-500/35 text-zinc-400' : 'bg-bandido-dark/90 hover:bg-zinc-900 border-bandido-border/90 text-white'}">
+                                <span class="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 text-[11px] font-black transition ${isChecked ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-zinc-600 text-transparent'}">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                <span class="text-xs sm:text-sm font-medium leading-snug ${isChecked ? 'line-through text-zinc-400' : 'text-zinc-100'}">
+                                    ${escapeHtml(ex)}
+                                </span>
+                            </button>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="p-4 rounded-2xl bg-bandido-dark/70 border border-bandido-border space-y-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange">
+                                    Bloque ${cIdx + 1}
+                                </span>
+                                ${circuit.seriesLabel ? `
+                                    <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 border border-bandido-orange/40 text-bandido-orange text-[11px] font-extrabold uppercase">
+                                        <i class="fa-solid fa-repeat mr-1"></i>${escapeHtml(circuit.seriesLabel)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="space-y-2">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const progressPercent = totalExercisesInDay > 0
+                    ? Math.round((completedExercisesInDay / totalExercisesInDay) * 100)
+                    : 0;
+
+                const reelHtml = (canShowVideos && activeBlock.videoUrl && activeBlock.videoUrl.trim())
+                    ? renderReelVideoPlayerHtml(activeBlock.videoUrl, activeBlock.title || `Día ${selectedAthleteBlockIndex + 1}`, selectedAthleteBlockIndex)
                     : '';
 
-                let totalDayExercises = 0;
-                let completedDayExercises = 0;
-                groups.forEach((grp, gIdx) => {
-                    grp.items.forEach((_, iIdx) => {
-                        totalDayExercises++;
-                        if (completedMap[`b${selectedAthleteBlockIndex}_g${gIdx}_i${iIdx}`]) completedDayExercises++;
-                    });
-                });
-                const progressPct = totalDayExercises > 0 ? Math.round((completedDayExercises / totalDayExercises) * 100) : 0;
-
-                const groupsHtml = groups.length > 0 ? groups.map((grp, gIdx) => `
-                    <div class="p-4 rounded-2xl bg-bandido-dark border border-bandido-border space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-bandido-orange">
-                                Circuito ${gIdx + 1} · ${grp.rounds} ${grp.rounds === 1 ? 'Serie' : 'Series'}
-                            </span>
-                            <span class="text-[10px] text-zinc-400">Toca cada ejercicio al completarlo</span>
-                        </div>
-                        <div class="divide-y divide-bandido-border/60">
-                            ${grp.items.map((item, iIdx) => {
-                                const checkKey = `b${selectedAthleteBlockIndex}_g${gIdx}_i${iIdx}`;
-                                const isChecked = Boolean(completedMap[checkKey]);
-                                return `
-                                    <button type="button"
-                                            onclick="toggleAthleteExerciseCheck('${checkKey}')"
-                                            class="w-full py-2.5 flex items-center justify-between gap-3 text-left group cursor-pointer">
-                                        <div class="flex items-center gap-3 min-w-0">
-                                            <span class="w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 transition ${isChecked ? 'bg-emerald-500 border-emerald-500 text-black' : 'bg-bandido-card border-zinc-600 group-hover:border-bandido-orange text-transparent'}">
-                                                <i class="fa-solid fa-check text-xs"></i>
-                                            </span>
-                                            <span class="text-sm font-semibold transition ${isChecked ? 'line-through text-zinc-500' : 'text-white'}">
-                                                ${escapeHtml(item.name)}
-                                            </span>
-                                        </div>
-                                        ${item.reps ? `
-                                            <span class="px-2.5 py-1 rounded-lg bg-bandido-card border border-bandido-border text-xs font-bold text-bandido-orange shrink-0">
-                                                ${escapeHtml(item.reps)}
-                                            </span>
-                                        ` : ''}
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `).join('') : `
-                    <p class="text-xs text-zinc-400 italic">No hay ejercicios detallados en este bloque.</p>
-                `;
-
-                activeDayCardHtml = `
-                    <article class="p-5 sm:p-6 rounded-3xl bg-bandido-card border border-bandido-border space-y-5 shadow-xl">
+                activeDayHtml = `
+                    <div class="p-5 sm:p-6 rounded-3xl bg-bandido-card border border-bandido-border space-y-5 shadow-xl">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-bandido-border pb-3.5">
                             <div>
-                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-bandido-orange">Rutina del Día</span>
-                                <h3 class="font-display text-xl sm:text-2xl font-bold uppercase text-white">
-                                    ${escapeHtml(activeBlk.title || `Día ${selectedAthleteBlockIndex + 1}`)}
+                                <span class="text-[10px] font-extrabold uppercase tracking-widest text-bandido-orange">
+                                    Sesión Activa · Toca cada ejercicio al completarlo
+                                </span>
+                                <h3 class="font-display text-xl sm:text-2xl font-bold uppercase text-white mt-0.5">
+                                    ${escapeHtml(activeBlock.title || `Día ${selectedAthleteBlockIndex + 1}`)}
                                 </h3>
                             </div>
                             <div class="text-right">
-                                <span class="px-3 py-1 rounded-full ${progressPct === 100 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-bandido-orange/15 text-bandido-orange border border-bandido-orange/30'} text-xs font-extrabold">
-                                    ${progressPct}% Completado
+                                <span class="text-xs font-extrabold ${progressPercent === 100 ? 'text-emerald-400' : 'text-bandido-orange'}">
+                                    ${completedExercisesInDay}/${totalExercisesInDay} (${progressPercent}%)
                                 </span>
+                                <div class="w-24 h-1.5 rounded-full bg-bandido-dark overflow-hidden mt-1">
+                                    <div class="h-full ${progressPercent === 100 ? 'bg-emerald-400' : 'bg-bandido-orange'} transition-all" style="width: ${progressPercent}%"></div>
+                                </div>
                             </div>
                         </div>
 
-                        ${videoPlayerHtml}
-                        ${groupsHtml}
-                    </article>
-                `;
-            } else {
-                activeDayCardHtml = `
-                    <div class="p-8 rounded-3xl bg-bandido-card border border-bandido-border text-center text-sm text-zinc-400">
-                        Tu entrenador aún no ha cargado bloques de entrenamiento en tu rutina.
+                        ${reelHtml}
+
+                        <div class="space-y-3.5">
+                            ${circuitsHtml}
+                        </div>
                     </div>
                 `;
             }
 
-            const recentLogs = Array.isArray(payload.dailyLogs) ? payload.dailyLogs : [];
+            const recentLogs = Array.isArray(liveStudent?.dailyLogs) ? liveStudent.dailyLogs.slice(0, 3) : [];
             const recentLogsHtml = recentLogs.length > 0 ? `
-                <div class="space-y-2.5 pt-3 border-t border-bandido-border">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Tus Últimos Entrenamientos Registrados</h4>
+                <div class="p-4 sm:p-5 rounded-2xl bg-bandido-card border border-bandido-border space-y-3">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-clock-rotate-left text-bandido-orange"></i>
+                        <span>Tus Últimos Entrenamientos Guardados</span>
+                    </h4>
                     <div class="space-y-2">
-                        ${recentLogs.slice(0, 5).map(l => {
-                            const badge = getFeelingBadgeInfo(l.feeling);
+                        ${recentLogs.map(lg => {
+                            const bInfo = getFeelingBadgeInfo(lg.feeling);
                             return `
-                                <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <div class="p-3 rounded-xl bg-bandido-dark border border-bandido-border/80 flex flex-wrap items-center justify-between gap-2 text-xs">
                                     <div>
-                                        <span class="font-bold text-white">${escapeHtml(l.dayTitle)}</span>
-                                        <span class="text-zinc-400 ml-2">${formatDisplayDate(l.date)}</span>
-                                        ${l.notes ? `<p class="text-[11px] text-zinc-300 mt-0.5">"${escapeHtml(l.notes)}"</p>` : ''}
+                                        <span class="font-bold text-white">${escapeHtml(lg.blockTitle)}</span>
+                                        <span class="text-zinc-400 ml-1.5">· ${formatDisplayDate(lg.date)}</span>
+                                        ${lg.notes ? `<p class="text-[11px] text-zinc-400 mt-0.5 line-clamp-1">"${escapeHtml(lg.notes)}"</p>` : ''}
                                     </div>
                                     <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badge.cls}">${badge.label}</span>
-                                        <span class="px-2 py-0.5 rounded bg-bandido-card text-zinc-300 text-[10px] font-bold">RPE ${l.rpe}/10</span>
+                                        <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${bInfo.cls}">${bInfo.label}</span>
+                                        <span class="px-2 py-0.5 rounded bg-bandido-card text-bandido-orange text-[10px] font-extrabold">RPE ${lg.rpe}/10</span>
                                     </div>
                                 </div>
                             `;
@@ -5134,225 +5275,126 @@
             ` : '';
 
             content.innerHTML = `
-                <section class="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-bandido-card via-bandido-dark to-bandido-card border border-bandido-orange/40 space-y-3 shadow-xl">
+                <div class="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-bandido-card via-bandido-dark to-bandido-card border border-bandido-orange/40 space-y-2.5 shadow-xl">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div>
-                            <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
-                                ${escapeHtml(payload.planName || 'Plan Bandidos Sur')}
-                            </span>
-                            <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase text-white mt-1">
-                                Hola, ${escapeHtml(payload.name || 'Atleta')}
-                            </h2>
-                        </div>
-                        ${payload.endDate ? `
-                            <div class="px-3 py-2 rounded-2xl bg-bandido-black/60 border border-bandido-border text-right">
-                                <p class="text-[10px] uppercase tracking-wider text-zinc-400">Vigencia hasta</p>
-                                <p class="text-xs font-bold text-white">${formatDisplayDate(payload.endDate)}</p>
-                            </div>
-                        ` : ''}
+                        <span class="px-2.5 py-0.5 rounded-full bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
+                            ${escapeHtml(payload.planName || 'Plan Bandidos Sur')}
+                        </span>
+                        ${canShowVideos
+                            ? `<span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-[10px] font-extrabold"><i class="fa-solid fa-video mr-1"></i>Videos VIP Incluidos</span>`
+                            : ''
+                        }
                     </div>
-                    ${routine.goal ? `<p class="text-xs sm:text-sm text-zinc-200"><strong class="text-bandido-orange">Objetivo:</strong> ${escapeHtml(routine.goal)}</p>` : ''}
-                    ${routine.notes ? `<p class="text-xs text-zinc-300 bg-bandido-black/40 p-3 rounded-xl border border-bandido-border/70"><i class="fa-solid fa-circle-info text-bandido-orange mr-1.5"></i>${escapeHtml(routine.notes)}</p>` : ''}
-                </section>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase text-white">
+                        ¡A darle, ${escapeHtml(payload.name || 'Atleta')}!
+                    </h2>
+                    ${payload.routine.goal ? `<p class="text-xs sm:text-sm font-semibold text-bandido-orange">Objetivo: ${escapeHtml(payload.routine.goal)}</p>` : ''}
+                    ${payload.routine.notes ? `
+                        <div class="p-3 rounded-xl bg-bandido-black/60 border border-bandido-border text-xs text-zinc-300">
+                            <i class="fa-solid fa-circle-info text-bandido-orange mr-1.5"></i>${escapeHtml(payload.routine.notes)}
+                        </div>
+                    ` : ''}
+                </div>
 
                 ${daySelectorHtml}
-                ${activeDayCardHtml}
 
-                ${blocks.length > 0 ? `
-                    <section class="p-5 sm:p-6 rounded-3xl bg-bandido-card border border-bandido-border space-y-4">
+                ${activeDayHtml}
+
+                <!-- Formulario de Bitácora Diaria del Alumno -->
+                <form onsubmit="submitAthleteDailyProgress(event)" class="p-5 sm:p-6 rounded-3xl bg-bandido-card border border-emerald-500/35 space-y-4 shadow-xl">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
                         <div>
-                            <h3 class="font-display text-lg font-bold uppercase text-white flex items-center gap-2">
-                                <i class="fa-solid fa-clipboard-check text-bandido-orange"></i>
-                                <span>Registrar Bitácora del Entrenamiento</span>
-                            </h3>
-                            <p class="text-xs text-zinc-400 mt-0.5">Al terminar tu sesión, envía cómo te sentiste para que tu entrenador lleve tu seguimiento.</p>
+                            <h3 class="font-display text-base sm:text-lg font-bold uppercase text-white">Registrar Progreso de Hoy</h3>
+                            <p class="text-[11px] text-zinc-400">Guarda cómo sentiste el entrenamiento para que tu coach vea tu evolución.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">¿Cómo sentiste la sesión?</label>
+                            <select id="athlete-log-feeling"
+                                    class="w-full px-3 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-semibold text-white focus:outline-none focus:border-emerald-400 cursor-pointer">
+                                <option value="excelente">🔥 Excelente (Con mucha energía)</option>
+                                <option value="bien" selected>💪 Bien / Sólido</option>
+                                <option value="pesado">😓 Pesado (Costó sacar las reps)</option>
+                                <option value="cansado">🪫 Cansado / Fatiga acumulada</option>
+                            </select>
                         </div>
 
-                        <form onsubmit="submitAthleteDailyProgress(event)" class="space-y-3.5">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">¿Cómo sentiste la rutina?</label>
-                                    <select id="athlete-log-feeling"
-                                            class="w-full px-3 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange cursor-pointer">
-                                        <option value="excelente">🔥 Excelente (Con mucha energía)</option>
-                                        <option value="bien" selected>💪 Bien / Sólido</option>
-                                        <option value="pesado">😓 Pesado (Costó trabajo)</option>
-                                        <option value="cansado">🪫 Cansado / Fatigado</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Esfuerzo Percibido (RPE 1 al 10)</label>
-                                    <input type="number"
-                                           id="athlete-log-rpe"
-                                           min="1"
-                                           max="10"
-                                           value="7"
-                                           class="w-full px-3 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Esfuerzo Percibido (RPE 1 al 10)</label>
+                            <select id="athlete-log-rpe"
+                                    class="w-full px-3 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs font-semibold text-white focus:outline-none focus:border-emerald-400 cursor-pointer">
+                                <option value="5">RPE 5 — Ligero / Calentamiento</option>
+                                <option value="6">RPE 6 — Moderado</option>
+                                <option value="7" selected>RPE 7 — Retador (3 reps en reserva)</option>
+                                <option value="8">RPE 8 — Intenso (2 reps en reserva)</option>
+                                <option value="9">RPE 9 — Muy Intenso (1 rep en reserva)</option>
+                                <option value="10">RPE 10 — Esfuerzo Máximo</option>
+                            </select>
+                        </div>
+                    </div>
 
-                            <div>
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Notas para tu Entrenador (Opcional)</label>
-                                <textarea id="athlete-log-notes"
-                                          rows="2"
-                                          placeholder="Ej. Logré sacar todas las dominadas limpias sin ayuda..."
-                                          class="w-full px-3 py-2 rounded-xl bg-bandido-dark border border-bandido-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange"></textarea>
-                            </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Notas, pesos o repeticiones logradas</label>
+                        <textarea id="athlete-log-notes"
+                                  rows="2"
+                                  placeholder="Ej. Logré 4x8 dominadas limpias y aguanté 20 seg en L-Sit..."
+                                  class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-400"></textarea>
+                    </div>
 
-                            <button type="submit"
-                                    class="w-full py-3 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wider transition shadow-lg shadow-orange-500/20 cursor-pointer flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-paper-plane"></i>
-                                <span>Enviar Reporte de Hoy al Entrenador</span>
-                            </button>
-                        </form>
+                    <button type="submit"
+                            class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs sm:text-sm font-extrabold uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Guardar Entrenamiento de Hoy</span>
+                    </button>
+                </form>
 
-                        ${recentLogsHtml}
-                    </section>
-                ` : ''}
+                ${recentLogsHtml}
             `;
         }
 
         function exitAthletePreview() {
-            activeAthletePayload = null;
-            document.getElementById('athlete-routine-view').classList.add('hidden');
-            document.getElementById('athlete-routine-view').classList.remove('flex');
-            document.getElementById('admin-dashboard-wrapper').classList.remove('hidden');
+            const adminWrapper = document.getElementById('admin-dashboard-wrapper');
+            const athleteView = document.getElementById('athlete-routine-view');
+            athleteView.classList.add('hidden');
+            athleteView.classList.remove('flex');
+            adminWrapper.classList.remove('hidden');
             renderAll();
         }
 
         // =================================================================
-        // CARGA DE ALUMNO DESDE QR CORTO (#r=ID) O ENLACE ANTIGUO (#rutina=...)
+        // INICIALIZACIÓN DE LA APLICACIÓN
         // =================================================================
-        async function fetchSingleStudentFromCloud(studentId) {
-            const cfg = getSupabaseConfig();
-            if (!cfg.enabled || !studentId) return null;
-
-            try {
-                const res = await fetch(`${cfg.url}/rest/v1/bandidos_students?id=eq.${encodeURIComponent(studentId)}&select=id,payload`, {
-                    headers: {
-                        'apikey': cfg.key,
-                        'Authorization': `Bearer ${cfg.key}`
-                    }
-                });
-                if (res.ok) {
-                    const rows = await res.json();
-                    if (Array.isArray(rows) && rows[0]?.payload) {
-                        return rows[0].payload;
-                    }
-                }
-            } catch (e) {
-                console.warn('Error cargando alumno desde Supabase:', e);
-            }
-            return null;
-        }
-
-        async function checkUrlHashForAthleteRoutine() {
-            const hash = window.location.hash || '';
-
-            // 1. Nuevo formato ultra corto generado por el Código QR (#r=st_12345)
-            if (hash.startsWith('#r=')) {
-                const studentId = decodeURIComponent(hash.slice(3)).trim();
-                if (!studentId) return false;
-
-                // Mostrar pantalla de carga limpia mientras consulta Supabase
-                document.getElementById('admin-dashboard-wrapper').classList.add('hidden');
-                const view = document.getElementById('athlete-routine-view');
-                view.classList.remove('hidden');
-                view.classList.add('flex');
-                document.getElementById('athlete-routine-content').innerHTML = `
-                    <div class="p-10 text-center space-y-3 my-10">
-                        <div class="w-12 h-12 rounded-2xl bg-bandido-orange/20 text-bandido-orange flex items-center justify-center mx-auto animate-pulse">
-                            <i class="fa-solid fa-dumbbell text-xl"></i>
-                        </div>
-                        <p class="text-sm font-bold text-white">Cargando tu rutina privada...</p>
-                        <p class="text-xs text-zinc-400">Bandidos Sur</p>
-                    </div>
-                `;
-
-                loadLocalPlans();
-                let st = await fetchSingleStudentFromCloud(studentId);
-                if (!st) {
-                    // Respaldo local si se abrió en el mismo dispositivo
-                    try {
-                        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-                        const list = raw ? JSON.parse(raw) : [];
-                        st = list.find(item => String(item.id) === String(studentId)) || null;
-                    } catch (e) {}
-                }
-
-                if (st) {
-                    const payload = {
-                        id: st.id,
-                        name: st.name || 'Atleta',
-                        planKey: st.planKey,
-                        planName: GYM_PLANS[st.planKey]?.name || 'Plan Bandidos Sur',
-                        trainingDays: st.trainingDays,
-                        endDate: st.endDate,
-                        routinePaused: Boolean(st.routinePaused),
-                        routine: st.routine || { goal: '', notes: '', blocks: [] },
-                        dailyLogs: Array.isArray(st.dailyLogs) ? st.dailyLogs : [],
-                        evaluations: Array.isArray(st.evaluations) ? st.evaluations : []
-                    };
-                    openAthleteView(payload, false);
-                } else {
-                    document.getElementById('athlete-routine-content').innerHTML = `
-                        <div class="p-8 rounded-3xl bg-bandido-card border border-rose-500/40 text-center space-y-3 my-8">
-                            <i class="fa-solid fa-circle-exclamation text-3xl text-rose-400"></i>
-                            <h2 class="font-display text-xl font-bold uppercase text-white">Rutina no encontrada</h2>
-                            <p class="text-xs text-zinc-400">Este código QR ya no está activo o el alumno fue dado de baja. Solicita un nuevo QR a tu entrenador de Bandidos Sur.</p>
-                        </div>
-                    `;
-                }
-                return true;
-            }
-
-            // 2. Compatibilidad con enlaces anteriores (#rutina=...)
-            if (hash.startsWith('#rutina=')) {
-                try {
-                    const encoded = hash.slice('#rutina='.length);
-                    const jsonStr = decodeURIComponent(escape(atob(encoded)));
-                    const payload = JSON.parse(jsonStr);
-                    if (payload && typeof payload === 'object') {
-                        loadLocalPlans();
-                        if (payload.id) {
-                            const remoteSt = await fetchSingleStudentFromCloud(payload.id);
-                            if (remoteSt) {
-                                payload.routine = remoteSt.routine || payload.routine;
-                                payload.endDate = remoteSt.endDate || payload.endDate;
-                                payload.routinePaused = Boolean(remoteSt.routinePaused);
-                                payload.dailyLogs = Array.isArray(remoteSt.dailyLogs) ? remoteSt.dailyLogs : [];
-                            }
-                        }
-                        openAthleteView(payload, false);
-                        return true;
-                    }
-                } catch (e) {
-                    console.warn('Error decodificando rutina desde URL:', e);
-                }
-            }
-
-            return false;
-        }
-
-        // Cerrar panel de notificaciones al hacer clic fuera
         document.addEventListener('click', (e) => {
             const panel = document.getElementById('notifications-panel');
             const bellBtn = document.getElementById('notif-bell-btn');
-            if (panel && !panel.classList.contains('hidden')) {
-                if (!panel.contains(e.target) && !bellBtn.contains(e.target)) {
-                    panel.classList.add('hidden');
-                }
+            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !bellBtn?.contains(e.target)) {
+                panel.classList.add('hidden');
             }
         });
 
-        // Inicialización principal
-        window.addEventListener('DOMContentLoaded', async () => {
-            const isAthleteRoute = await checkUrlHashForAthleteRoutine();
-            if (!isAthleteRoute) {
-                await loadAllStudents();
-                renderAll();
+        window.addEventListener('hashchange', () => {
+            const athletePayload = decodeRoutineFromHash();
+            if (athletePayload) {
+                renderAthleteView(athletePayload, false);
             }
         });
+
+        async function initApp() {
+            await loadAllStudents();
+            const athletePayload = decodeRoutineFromHash();
+            if (athletePayload) {
+                renderAthleteView(athletePayload, false);
+            } else {
+                renderAll();
+            }
+        }
+
+        initApp();
     </script>
 </body>
 </html>
