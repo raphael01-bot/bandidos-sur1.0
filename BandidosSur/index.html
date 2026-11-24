@@ -673,76 +673,18 @@
                 <!-- Indicador de Nivel de Plan (Video VIP vs Plan General) -->
                 <div id="routine-plan-tier-banner" class="p-3.5 rounded-2xl border flex items-center justify-between gap-3"></div>
 
-                <!-- SECCIÓN DE PLANTILLAS DE RUTINA REUTILIZABLES (BANDIDOS SUR) -->
+                <!-- RUTINAS GENERALES POR NIVEL (PRINCIPIANTE / INTERMEDIO) -->
                 <div class="p-4 rounded-2xl bg-gradient-to-r from-bandido-dark via-zinc-900 to-bandido-dark border border-bandido-orange/45 space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-bandido-orange/20 text-bandido-orange flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-layer-group"></i>
-                            </span>
-                            <div>
-                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-white">Biblioteca de Plantillas de Rutina</h4>
-                                <p class="text-[11px] text-zinc-400">Carga una estructura base (Fuerza, EMOM, Skills, Pierna) o guarda la rutina actual como plantilla.</p>
-                            </div>
-                        </div>
-                        <button type="button"
-                                onclick="toggleSaveTemplateDrawer()"
-                                class="px-3 py-1.5 rounded-xl bg-bandido-orange/15 hover:bg-bandido-orange text-bandido-orange hover:text-black border border-bandido-orange/50 text-[11px] font-extrabold uppercase tracking-wide transition cursor-pointer flex items-center gap-1.5">
-                            <i class="fa-solid fa-bookmark"></i>
-                            <span>Guardar como Plantilla</span>
-                        </button>
-                    </div>
-
-                    <!-- Formulario rápido para guardar la rutina actual como plantilla -->
-                    <div id="save-template-drawer" class="hidden p-3 rounded-xl bg-bandido-card border border-bandido-orange/40 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <input type="text"
-                               id="new-template-name-input"
-                               placeholder="Nombre plantilla (Ej. Fuerza Pull/Push + RIR 2)"
-                               class="flex-1 px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-bandido-orange" />
-                        <select id="new-template-category-input"
-                                class="px-3 py-2 rounded-lg bg-bandido-dark border border-bandido-border text-xs text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
-                            <option value="Calistenia">Calistenia</option>
-                            <option value="EMOM / Acondicionamiento">EMOM / Acondicionamiento</option>
-                            <option value="Skills / Estáticos">Skills / Estáticos</option>
-                            <option value="Pierna / Gimnasio">Pierna / Gimnasio</option>
-                        </select>
-                        <button type="button"
-                                onclick="saveCurrentDraftAsTemplate()"
-                                class="px-3.5 py-2 rounded-lg bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase cursor-pointer shrink-0">
-                            Guardar
-                        </button>
-                    </div>
-
-                    <!-- Selector de plantilla + Vista previa rápida / aplicar / eliminar -->
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <select id="routine-template-select"
-                                onchange="previewSelectedTemplateInfo()"
-                                class="flex-1 px-3.5 py-2.5 rounded-xl bg-bandido-card border border-bandido-border text-xs font-semibold text-white focus:outline-none focus:border-bandido-orange cursor-pointer">
-                        </select>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <button type="button"
-                                    onclick="applySelectedRoutineTemplate('replace')"
-                                    title="Reemplazar los días actuales por esta plantilla"
-                                    class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-bandido-orange hover:bg-bandido-orange-hover text-black text-xs font-extrabold uppercase tracking-wide transition cursor-pointer flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                <span>Aplicar Plantilla</span>
-                            </button>
-                            <button type="button"
-                                    onclick="applySelectedRoutineTemplate('append')"
-                                    title="Añadir los días de esta plantilla al final de la rutina actual"
-                                    class="px-3 py-2.5 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-200 hover:text-bandido-orange transition cursor-pointer">
-                                + Añadir Días
-                            </button>
-                            <button type="button"
-                                    id="delete-template-btn"
-                                    onclick="deleteSelectedCustomTemplate()"
-                                    title="Eliminar plantilla personalizada"
-                                    class="hidden p-2.5 rounded-xl bg-bandido-card hover:bg-rose-500/20 border border-bandido-border text-zinc-400 hover:text-rose-400 transition cursor-pointer">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-bandido-orange/20 text-bandido-orange flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-bolt"></i>
+                        </span>
+                        <div>
+                            <h4 class="text-xs font-extrabold uppercase tracking-wider text-white">Rutinas Generales por Nivel</h4>
+                            <p class="text-[11px] text-zinc-400">Toca un botón para cargar la rutina semanal general al alumno. Define o actualiza cada rutina con "Guardar actual como general".</p>
                         </div>
                     </div>
-                    <p id="selected-template-desc" class="text-[11px] text-zinc-400 italic"></p>
+                    <div id="general-routines-panel" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 p-4 rounded-2xl bg-bandido-dark border border-bandido-border">
@@ -759,30 +701,6 @@
                                id="routine-notes-input"
                                placeholder="Ej. Descansar 90 seg entre cada serie"
                                class="w-full px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-white focus:outline-none focus:border-bandido-orange" />
-                    </div>
-                </div>
-
-                <!-- Barra rápida para Copiar / Pegar Rutina entre Alumnos del mismo grupo -->
-                <div class="p-3.5 rounded-2xl bg-bandido-dark/90 border border-bandido-border flex flex-wrap items-center justify-between gap-2.5">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" onclick="copyFullRoutineToClipboardBuffer()"
-                                class="px-3 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-orange/40 text-xs font-bold text-bandido-orange transition cursor-pointer flex items-center gap-1.5">
-                            <i class="fa-regular fa-copy"></i>
-                            <span>Copiar Rutina Completa</span>
-                        </button>
-                        <button type="button" id="paste-routine-btn" onclick="pasteFullRoutineFromBuffer()"
-                                class="px-3 py-2 rounded-xl bg-bandido-card hover:bg-zinc-800 border border-bandido-border text-xs font-bold text-zinc-200 transition cursor-pointer flex items-center gap-1.5">
-                            <i class="fa-regular fa-paste text-bandido-orange"></i>
-                            <span>Pegar Rutina Copiada</span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <select id="import-routine-from-student"
-                                onchange="importRoutineFromAnotherStudent(this.value)"
-                                class="w-full sm:w-auto px-3 py-2 rounded-xl bg-bandido-card border border-bandido-border text-xs text-zinc-300 focus:outline-none focus:border-bandido-orange cursor-pointer">
-                            <option value="">Importar rutina de otro alumno...</option>
-                        </select>
                     </div>
                 </div>
 
@@ -1473,103 +1391,11 @@
         const FINANCE_CLOUD_RECORD_ID = '__bandidos_finance_ledger__';
         const GROUPS_STORAGE_KEY = 'bandidos_sur_training_groups_v1';
         const GROUPS_CLOUD_RECORD_ID = '__bandidos_training_groups__';
-        const TEMPLATES_STORAGE_KEY = 'bandidos_sur_routine_templates_v1';
         const TEMPLATES_CLOUD_RECORD_ID = '__bandidos_routine_templates__';
+        const GENERAL_ROUTINES_STORAGE_KEY = 'bandidos_sur_general_routines_v1';
+        const GENERAL_ROUTINES_CLOUD_RECORD_ID = '__bandidos_general_routines__';
         const ATHLETE_CHECKS_PREFIX = 'bandidos_athlete_checks_v1_';
-        const ROUTINE_CLIPBOARD_KEY = 'bandidos_sur_routine_clipboard';
 
-        // Plantillas Base Prediseñadas de Calistenia & Entrenamiento
-        const DEFAULT_ROUTINE_TEMPLATES = [
-            {
-                id: 'tpl_base_pull_push',
-                name: 'Fuerza Base Pull / Push (3 Días · RIR 2)',
-                category: 'Calistenia',
-                isDefault: true,
-                description: 'Estructura base de calistenia enfocada en dominadas, fondos, empujes verticales y estabilidad escapular.',
-                goal: 'Fuerza Base Tirón & Empuje · Progresión Limpia',
-                notes: 'Descansar 90 a 120 seg entre series. Mantener RIR 2 (dejar 2 repeticiones limpias en reserva).',
-                blocks: [
-                    {
-                        title: 'Día 1 — Tirón (Pull) & Escápula',
-                        videoUrl: '',
-                        text: 'Retracciones escapulares en barra / 10 reps\nDominadas pronas estrictas / 6-8 reps\nRemo invertido en anillas o barra baja / 10-12 reps\n4 series\n\nChin-ups supinas controladas / 8 reps\nHold barbilla arriba / 15-20 seg\n3 series'
-                    },
-                    {
-                        title: 'Día 2 — Empuje (Push) & Core',
-                        videoUrl: '',
-                        text: 'Fondos en paralelas / 8-12 reps\nLagartijas declinadas o diamante / 12-15 reps\nPike Push-ups / 8-10 reps\n4 series\n\nL-Sit en paralelas / 20 seg\nPlancha abdominal hueco (Hollow Body) / 40 seg\n3 series'
-                    },
-                    {
-                        title: 'Día 3 — Fullbody & Resistencia',
-                        videoUrl: '',
-                        text: 'Australian Pull-ups / 12 reps\nFlexiones estrictas / 15 reps\nSentadilla libre profunda / 20 reps\nElevación de rodillas colgado / 12 reps\n4 series'
-                    }
-                ]
-            },
-            {
-                id: 'tpl_emom_acondicionamiento',
-                name: 'EMOM & Resistencia Metabólica (2 Días)',
-                category: 'EMOM / Acondicionamiento',
-                isDefault: true,
-                description: 'Bloques por minuto (EMOM) para mejorar capacidad de trabajo, densidad y resistencia muscular.',
-                goal: 'Capacidad Aeróbica, Densidad & Resistencia Muscular',
-                notes: 'Inicia cada ejercicio al comienzo del minuto y descansa el tiempo sobrante. Hidrátate entre bloques.',
-                blocks: [
-                    {
-                        title: 'Día 1 — EMOM 16 Minutos (Tren Superior)',
-                        videoUrl: '',
-                        text: 'Minuto 1: 6 Dominadas estrictas\nMinuto 2: 10 Fondos en paralelas\nMinuto 3: 15 Lagartijas explosivas\nMinuto 4: 35 seg Hollow Body Hold\n4 series'
-                    },
-                    {
-                        title: 'Día 2 — EMOM 15 Minutos (Pierna & Core)',
-                        videoUrl: '',
-                        text: 'Minuto 1: 20 Sentadillas aéreas\nMinuto 2: 14 Zancadas alternas\nMinuto 3: 12 Burpees completos\n5 series'
-                    }
-                ]
-            },
-            {
-                id: 'tpl_skills_estaticos',
-                name: 'Progresión Estáticos (Front Lever & Handstand)',
-                category: 'Skills / Estáticos',
-                isDefault: true,
-                description: 'Sesiones técnicas para control de pino, fuerza de hombro y palancas horizontales.',
-                goal: 'Control de Handstand & Progresión Front Lever',
-                notes: 'Calentar muñecas y manguito rotador 10 min antes. Priorizar calidad técnica sobre fatiga.',
-                blocks: [
-                    {
-                        title: 'Día 1 — Handstand & Empuje Vertical',
-                        videoUrl: '',
-                        text: 'Wall Handstand Chest-to-Wall / 30-40 seg\nIntentos de equilibrio libre en pared / 5 intentos\nPike Push-ups elevados / 8 reps\n4 series\n\nTuck Planche Lean en suelo / 15-20 seg\nFondos profundos / 10 reps\n3 series'
-                    },
-                    {
-                        title: 'Día 2 — Front Lever & Tirón Recto',
-                        videoUrl: '',
-                        text: 'Tuck / Adv. Tuck Front Lever Hold / 12-15 seg\nIce Cream Makers / 6-8 reps\nDominadas explosivas al pecho / 5 reps\n4 series\n\nDragon Flag regresiones / 6 reps\nToes to Bar estrictos / 10 reps\n3 series'
-                    }
-                ]
-            },
-            {
-                id: 'tpl_pierna_gimnasio',
-                name: 'Pierna Completa (Fuerza & Hipertrofia)',
-                category: 'Pierna / Gimnasio',
-                isDefault: true,
-                description: 'Rutina enfocada en cuádriceps, femoral, glúteo y potencia unilateral con peso corporal o carga.',
-                goal: 'Fuerza de Tren Inferior & Estabilidad Unilateral',
-                notes: 'Controlar 3 segundos la fase excéntrica (bajada) en cada sentadilla.',
-                blocks: [
-                    {
-                        title: 'Día 1 — Enfoque Cuádriceps & Potencia',
-                        videoUrl: '',
-                        text: 'Sentadilla búlgara / 10 reps por pierna\nSentadilla profunda tempo 3-1-1 / 12 reps\nBox Jumps / 10 saltos\n4 series\n\nElevación de talones a una pierna / 15 reps\n3 series'
-                    },
-                    {
-                        title: 'Día 2 — Cadena Posterior & Unilateral',
-                        videoUrl: '',
-                        text: 'Progresión Pistol Squat asistida / 6-8 reps por pierna\nPuente de glúteo unilateral / 12 reps por pierna\nNordic Curl excéntrico / 5 reps\n4 series'
-                    }
-                ]
-            }
-        ];
 
         // Catálogo base oficial de planes de Bandidos Sur
         const DEFAULT_GYM_PLANS = {
@@ -1700,7 +1526,7 @@
         let students = [];
         let financeLedger = [];
         let trainingGroups = [];
-        let customRoutineTemplates = [];
+        let generalRoutines = { principiante: null, intermedio: null };
         let activeRenewStudentId = null;
         let activeDeleteStudentId = null;
         let activeHistoryStudentId = null;
@@ -2076,18 +1902,23 @@
                 console.warn('Error leyendo grupos locales:', e);
             }
             try {
-                const rawTemplates = localStorage.getItem(TEMPLATES_STORAGE_KEY);
-                if (rawTemplates) {
-                    const parsedTemplates = JSON.parse(rawTemplates);
-                    if (Array.isArray(parsedTemplates)) customRoutineTemplates = parsedTemplates;
+                const rawGeneral = localStorage.getItem(GENERAL_ROUTINES_STORAGE_KEY);
+                if (rawGeneral) {
+                    const parsedGeneral = JSON.parse(rawGeneral);
+                    if (parsedGeneral && typeof parsedGeneral === 'object') {
+                        generalRoutines = {
+                            principiante: parsedGeneral.principiante || null,
+                            intermedio: parsedGeneral.intermedio || null
+                        };
+                    }
                 }
             } catch (e) {
-                console.warn('Error leyendo plantillas locales:', e);
+                console.warn('Error leyendo rutinas generales locales:', e);
             }
         }
 
-        async function saveCustomTemplatesToCloud() {
-            localStorage.setItem(TEMPLATES_STORAGE_KEY, JSON.stringify(customRoutineTemplates));
+        async function saveGeneralRoutinesToCloud() {
+            localStorage.setItem(GENERAL_ROUTINES_STORAGE_KEY, JSON.stringify(generalRoutines));
             const cfg = getSupabaseConfig();
             if (!cfg.enabled) return;
 
@@ -2101,12 +1932,12 @@
                         'Prefer': 'resolution=merge-duplicates'
                     },
                     body: JSON.stringify({
-                        id: TEMPLATES_CLOUD_RECORD_ID,
-                        payload: { _isRoutineTemplates: true, templates: customRoutineTemplates }
+                        id: GENERAL_ROUTINES_CLOUD_RECORD_ID,
+                        payload: { _isGeneralRoutines: true, routines: generalRoutines }
                     })
                 });
             } catch (err) {
-                console.warn('Error guardando plantillas en Supabase:', err);
+                console.warn('Error guardando rutinas generales en Supabase:', err);
             }
         }
 
@@ -2220,10 +2051,13 @@
                                 localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(trainingGroups));
                             }
 
-                            const templatesRow = rows.find(r => r.id === TEMPLATES_CLOUD_RECORD_ID || r.payload?._isRoutineTemplates);
-                            if (templatesRow && Array.isArray(templatesRow.payload?.templates)) {
-                                customRoutineTemplates = templatesRow.payload.templates;
-                                localStorage.setItem(TEMPLATES_STORAGE_KEY, JSON.stringify(customRoutineTemplates));
+                            const generalRow = rows.find(r => r.id === GENERAL_ROUTINES_CLOUD_RECORD_ID || r.payload?._isGeneralRoutines);
+                            if (generalRow && generalRow.payload?.routines && typeof generalRow.payload.routines === 'object') {
+                                generalRoutines = {
+                                    principiante: generalRow.payload.routines.principiante || null,
+                                    intermedio: generalRow.payload.routines.intermedio || null
+                                };
+                                localStorage.setItem(GENERAL_ROUTINES_STORAGE_KEY, JSON.stringify(generalRoutines));
                             }
 
                             const studentRows = rows.filter(r =>
@@ -2234,7 +2068,9 @@
                                 r.id !== GROUPS_CLOUD_RECORD_ID &&
                                 !r.payload?._isTrainingGroups &&
                                 r.id !== TEMPLATES_CLOUD_RECORD_ID &&
-                                !r.payload?._isRoutineTemplates
+                                !r.payload?._isRoutineTemplates &&
+                                r.id !== GENERAL_ROUTINES_CLOUD_RECORD_ID &&
+                                !r.payload?._isGeneralRoutines
                             );
                             if (studentRows.length > 0) {
                                 students = studentRows
@@ -3967,163 +3803,104 @@
         }
 
         // =================================================================
-        // BIBLIOTECA DE PLANTILLAS DE RUTINAS (MODAL 3)
+        // RUTINAS GENERALES POR NIVEL (PRINCIPIANTE / INTERMEDIO)
         // =================================================================
-        function getAllRoutineTemplates() {
-            return [...customRoutineTemplates, ...DEFAULT_ROUTINE_TEMPLATES];
+        const GENERAL_ROUTINE_LEVELS = {
+            principiante: { label: 'Principiante', studentLevel: 'Básico', icon: 'fa-seedling' },
+            intermedio: { label: 'Intermedio', studentLevel: 'Intermedio', icon: 'fa-fire' }
+        };
+
+        function renderGeneralRoutinesPanel() {
+            const panel = document.getElementById('general-routines-panel');
+            if (!panel) return;
+            const st = students.find(s => s.id === document.getElementById('routine-student-id')?.value);
+
+            panel.innerHTML = Object.entries(GENERAL_ROUTINE_LEVELS).map(([key, cfg]) => {
+                const gr = generalRoutines[key];
+                const daysCount = gr && Array.isArray(gr.blocks) ? gr.blocks.length : 0;
+                const isDefined = daysCount > 0;
+                const isSuggested = st && st.level === cfg.studentLevel;
+                return `
+                    <div class="p-3.5 rounded-xl bg-bandido-card border ${isSuggested ? 'border-bandido-orange' : 'border-bandido-border'} space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-xs font-extrabold uppercase tracking-wide text-white">
+                                <i class="fa-solid ${cfg.icon} text-bandido-orange mr-1.5"></i>Rutina General ${cfg.label}
+                            </p>
+                            ${isSuggested ? `<span class="px-1.5 py-0.5 rounded bg-bandido-orange/20 text-bandido-orange text-[9px] font-extrabold uppercase">Nivel del alumno</span>` : ''}
+                        </div>
+                        <p class="text-[11px] ${isDefined ? 'text-emerald-300' : 'text-zinc-500'}">
+                            ${isDefined ? `${daysCount} día(s) · ${escapeHtml(gr.goal || 'Sin objetivo definido')}` : 'Aún no definida'}
+                        </p>
+                        <div class="flex flex-col gap-1.5">
+                            <button type="button" onclick="loadGeneralRoutine('${key}')"
+                                    ${isDefined ? '' : 'disabled'}
+                                    class="w-full px-3 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wide transition flex items-center justify-center gap-1.5 ${isDefined ? 'bg-bandido-orange hover:bg-bandido-orange-hover text-black cursor-pointer' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'}">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Cargar Rutina ${cfg.label}</span>
+                            </button>
+                            <button type="button" onclick="saveDraftAsGeneralRoutine('${key}')"
+                                    class="w-full px-3 py-1.5 rounded-xl bg-bandido-dark hover:bg-zinc-800 border border-bandido-border text-[11px] font-bold text-zinc-300 hover:text-bandido-orange transition cursor-pointer flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>${isDefined ? 'Actualizar' : 'Guardar'} actual como general</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function populateRoutineTemplatesDropdown(selectedId = '') {
-            const select = document.getElementById('routine-template-select');
-            if (!select) return;
-
-            const allTemplates = getAllRoutineTemplates();
-            const customList = allTemplates.filter(t => !t.isDefault);
-            const defaultList = allTemplates.filter(t => t.isDefault);
-
-            let html = `<option value="">-- Seleccionar plantilla de rutina (${allTemplates.length} disponibles) --</option>`;
-
-            if (customList.length > 0) {
-                html += `<optgroup label="Mis Plantillas Guardadas (${customList.length})">`;
-                html += customList.map(t => `<option value="${escapeHtml(t.id)}">[${escapeHtml(t.category || 'Propia')}] ${escapeHtml(t.name)} (${t.blocks?.length || 0} días)</option>`).join('');
-                html += `</optgroup>`;
-            }
-
-            html += `<optgroup label="Plantillas Base Bandidos Sur">`;
-            html += defaultList.map(t => `<option value="${escapeHtml(t.id)}">[${escapeHtml(t.category)}] ${escapeHtml(t.name)}</option>`).join('');
-            html += `</optgroup>`;
-
-            select.innerHTML = html;
-            if (selectedId) select.value = selectedId;
-            previewSelectedTemplateInfo();
-        }
-
-        function previewSelectedTemplateInfo() {
-            const select = document.getElementById('routine-template-select');
-            const descEl = document.getElementById('selected-template-desc');
-            const delBtn = document.getElementById('delete-template-btn');
-            if (!select || !descEl || !delBtn) return;
-
-            const chosenId = select.value;
-            if (!chosenId) {
-                descEl.textContent = '';
-                delBtn.classList.add('hidden');
-                return;
-            }
-
-            const tpl = getAllRoutineTemplates().find(t => t.id === chosenId);
-            if (!tpl) {
-                descEl.textContent = '';
-                delBtn.classList.add('hidden');
-                return;
-            }
-
-            const daysSummary = (tpl.blocks || []).map(b => b.title).join(' · ');
-            descEl.textContent = `${tpl.description || 'Plantilla personalizada'} — Días: ${daysSummary}`;
-            if (!tpl.isDefault) {
-                delBtn.classList.remove('hidden');
-            } else {
-                delBtn.classList.add('hidden');
-            }
-        }
-
-        function toggleSaveTemplateDrawer(forceState) {
-            const drawer = document.getElementById('save-template-drawer');
-            if (!drawer) return;
-            const show = typeof forceState === 'boolean' ? forceState : drawer.classList.contains('hidden');
-            if (show) {
-                syncRoutineDraftFromDOM();
-                const goalVal = document.getElementById('routine-goal-input')?.value?.trim() || '';
-                document.getElementById('new-template-name-input').value = goalVal;
-                drawer.classList.remove('hidden');
-                document.getElementById('new-template-name-input').focus();
-            } else {
-                drawer.classList.add('hidden');
-            }
-        }
-
-        async function saveCurrentDraftAsTemplate() {
+        async function saveDraftAsGeneralRoutine(levelKey) {
+            const cfg = GENERAL_ROUTINE_LEVELS[levelKey];
+            if (!cfg) return;
             syncRoutineDraftFromDOM();
-            const nameInput = document.getElementById('new-template-name-input');
-            const catInput = document.getElementById('new-template-category-input');
-            const name = (nameInput?.value || '').trim();
-            const category = catInput?.value || 'Calistenia';
-
-            if (!name) {
-                showToast('Escribe un nombre para la plantilla.', true);
-                return;
-            }
 
             const validBlocks = (currentRoutineDraft.blocks || []).filter(b => (b.title || '').trim() || (b.text || '').trim());
             if (validBlocks.length === 0) {
-                showToast('Agrega al menos un bloque con ejercicios antes de guardar la plantilla.', true);
+                showToast('Escribe al menos un día con ejercicios antes de guardarlo como rutina general.', true);
+                return;
+            }
+            if (generalRoutines[levelKey] && !confirm(`Ya existe una Rutina General ${cfg.label}. ¿Reemplazarla con la rutina que estás editando?`)) {
                 return;
             }
 
-            const newTemplate = {
-                id: 'tpl_custom_' + Date.now(),
-                name,
-                category,
-                isDefault: false,
-                description: `Plantilla guardada (${validBlocks.length} día/s)`,
+            generalRoutines[levelKey] = {
                 goal: (currentRoutineDraft.goal || '').trim(),
                 notes: (currentRoutineDraft.notes || '').trim(),
+                updatedAt: getTodayStr(),
                 blocks: JSON.parse(JSON.stringify(validBlocks))
             };
-
-            customRoutineTemplates.unshift(newTemplate);
-            await saveCustomTemplatesToCloud();
-            toggleSaveTemplateDrawer(false);
-            populateRoutineTemplatesDropdown(newTemplate.id);
-            showToast(`Plantilla "${name}" guardada en tu biblioteca.`);
+            await saveGeneralRoutinesToCloud();
+            renderGeneralRoutinesPanel();
+            showToast(`Rutina General ${cfg.label} guardada (${validBlocks.length} día/s).`);
         }
 
-        function applySelectedRoutineTemplate(mode = 'replace') {
-            const chosenId = document.getElementById('routine-template-select')?.value;
-            if (!chosenId) {
-                showToast('Selecciona una plantilla de la lista primero.', true);
+        async function loadGeneralRoutine(levelKey) {
+            const cfg = GENERAL_ROUTINE_LEVELS[levelKey];
+            const gr = generalRoutines[levelKey];
+            if (!cfg || !gr || !Array.isArray(gr.blocks) || gr.blocks.length === 0) {
+                showToast(`Primero define la Rutina General ${cfg ? cfg.label : ''}.`, true);
                 return;
             }
 
-            const tpl = getAllRoutineTemplates().find(t => t.id === chosenId);
-            if (!tpl) return;
-
             syncRoutineDraftFromDOM();
-            const clonedBlocks = JSON.parse(JSON.stringify(tpl.blocks || []));
-
-            if (mode === 'append') {
-                currentRoutineDraft.blocks = [...currentRoutineDraft.blocks, ...clonedBlocks];
-                if (!currentRoutineDraft.goal && tpl.goal) {
-                    currentRoutineDraft.goal = tpl.goal;
-                    document.getElementById('routine-goal-input').value = tpl.goal;
-                }
-                if (!currentRoutineDraft.notes && tpl.notes) {
-                    currentRoutineDraft.notes = tpl.notes;
-                    document.getElementById('routine-notes-input').value = tpl.notes;
-                }
-                showToast(`Se añadieron ${clonedBlocks.length} día(s) desde "${tpl.name}".`);
-            } else {
-                currentRoutineDraft.goal = tpl.goal || '';
-                currentRoutineDraft.notes = tpl.notes || '';
-                currentRoutineDraft.blocks = clonedBlocks;
-                document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
-                document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
-                showToast(`Plantilla "${tpl.name}" aplicada.`);
+            const hasContent = (currentRoutineDraft.blocks || []).some(b => (b.text || '').trim());
+            if (hasContent && !confirm(`Este alumno ya tiene rutina escrita. ¿Reemplazarla por la Rutina General ${cfg.label}?`)) {
+                return;
             }
 
+            currentRoutineDraft = {
+                goal: gr.goal || '',
+                notes: gr.notes || '',
+                blocks: JSON.parse(JSON.stringify(gr.blocks))
+            };
+            document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
+            document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
             renderRoutineBlocksEditor();
-        }
 
-        async function deleteSelectedCustomTemplate() {
-            const chosenId = document.getElementById('routine-template-select')?.value;
-            if (!chosenId) return;
-            const tpl = customRoutineTemplates.find(t => t.id === chosenId);
-            if (!tpl) return;
-
-            customRoutineTemplates = customRoutineTemplates.filter(t => t.id !== chosenId);
-            await saveCustomTemplatesToCloud();
-            populateRoutineTemplatesDropdown('');
-            showToast(`Plantilla "${tpl.name}" eliminada.`);
+            const st = await saveStudentRoutine(true);
+            showToast(st
+                ? `Rutina General ${cfg.label} cargada y guardada para ${st.name}.`
+                : `Rutina General ${cfg.label} cargada.`);
         }
 
         // =================================================================
@@ -4166,8 +3943,7 @@
                 `;
             }
 
-            toggleSaveTemplateDrawer(false);
-            populateRoutineTemplatesDropdown('');
+            renderGeneralRoutinesPanel();
 
             const existingRoutine = st.routine || { goal: '', notes: '', blocks: [] };
             currentRoutineDraft = {
@@ -4180,11 +3956,6 @@
 
             document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
             document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
-
-            const importSelect = document.getElementById('import-routine-from-student');
-            const othersWithRoutine = students.filter(other => other.id !== st.id && other.routine?.blocks?.length > 0);
-            importSelect.innerHTML = `<option value="">Importar rutina de otro alumno...</option>` +
-                othersWithRoutine.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)} (${o.routine.blocks.length} días)</option>`).join('');
 
             renderRoutineBlocksEditor();
 
@@ -4278,45 +4049,6 @@
             syncRoutineDraftFromDOM();
             currentRoutineDraft.blocks.splice(index, 1);
             renderRoutineBlocksEditor();
-        }
-
-        function copyFullRoutineToClipboardBuffer() {
-            syncRoutineDraftFromDOM();
-            localStorage.setItem(ROUTINE_CLIPBOARD_KEY, JSON.stringify(currentRoutineDraft));
-            showToast('Rutina completa copiada. Ahora puedes pegarla en otro alumno.');
-        }
-
-        function pasteFullRoutineFromBuffer() {
-            try {
-                const raw = localStorage.getItem(ROUTINE_CLIPBOARD_KEY);
-                if (!raw) {
-                    showToast('No hay ninguna rutina copiada en memoria.', true);
-                    return;
-                }
-                const parsed = JSON.parse(raw);
-                currentRoutineDraft = {
-                    goal: parsed.goal || '',
-                    notes: parsed.notes || '',
-                    blocks: Array.isArray(parsed.blocks) ? parsed.blocks : []
-                };
-                document.getElementById('routine-goal-input').value = currentRoutineDraft.goal;
-                document.getElementById('routine-notes-input').value = currentRoutineDraft.notes;
-                renderRoutineBlocksEditor();
-                showToast('Rutina pegada correctamente.');
-            } catch (e) {
-                showToast('Error al pegar la rutina.', true);
-            }
-        }
-
-        function importRoutineFromAnotherStudent(sourceStudentId) {
-            if (!sourceStudentId) return;
-            const source = students.find(s => s.id === sourceStudentId);
-            if (!source || !source.routine) return;
-            currentRoutineDraft = JSON.parse(JSON.stringify(source.routine));
-            document.getElementById('routine-goal-input').value = currentRoutineDraft.goal || '';
-            document.getElementById('routine-notes-input').value = currentRoutineDraft.notes || '';
-            renderRoutineBlocksEditor();
-            showToast(`Rutina importada desde ${source.name}.`);
         }
 
         async function saveStudentRoutine(silent = false) {
