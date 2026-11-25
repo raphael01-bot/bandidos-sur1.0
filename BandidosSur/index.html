@@ -490,7 +490,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">Nivel Actual Calistenia</label>
                         <select id="student-level"
                                 class="w-full px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-sm text-white focus:outline-none focus:border-bandido-orange cursor-pointer">
-                            <option value="Básico">Básico (Fundamentos)</option>
+                            <option value="Básico">Principiante (Fundamentos)</option>
                             <option value="Intermedio">Intermedio (Progresiones)</option>
                             <option value="Avanzado">Avanzado (Skills & Lastre)</option>
                         </select>
@@ -651,13 +651,14 @@
         <div class="w-full max-w-4xl rounded-2xl bg-bandido-card border border-bandido-border shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
             <div class="px-5 sm:px-6 py-4 bg-bandido-dark border-b border-bandido-border flex items-center justify-between gap-4 shrink-0">
                 <div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <span class="px-2 py-0.5 rounded-md bg-bandido-orange/20 text-bandido-orange text-[10px] font-extrabold uppercase tracking-wider">
                             Programación Privada
                         </span>
                         <h3 id="routine-student-title" class="font-display text-lg sm:text-xl font-bold uppercase text-white">
                             Rutina del Alumno
                         </h3>
+                        <span id="routine-student-level-badge"></span>
                     </div>
                     <p id="routine-student-subtitle" class="text-xs text-zinc-400 mt-0.5"></p>
                 </div>
@@ -2695,6 +2696,18 @@
             });
         }
 
+        function getStudentLevelInfo(level) {
+            const lv = String(level || 'Básico');
+            if (lv === 'Avanzado') return { label: 'Avanzado', cls: 'bg-purple-500/15 border-purple-500/40 text-purple-300' };
+            if (lv === 'Intermedio') return { label: 'Intermedio', cls: 'bg-sky-500/15 border-sky-500/40 text-sky-300' };
+            return { label: 'Principiante', cls: 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' };
+        }
+
+        function renderStudentLevelBadge(level) {
+            const info = getStudentLevelInfo(level);
+            return `<span class="px-1.5 py-0.5 rounded border text-[10px] font-extrabold uppercase tracking-wide shrink-0 ${info.cls}">${info.label}</span>`;
+        }
+
         function renderTable() {
             const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
             const statusFilter = document.getElementById('filter-status')?.value || 'all';
@@ -2754,11 +2767,11 @@
                                 <div>
                                     <div class="flex items-center gap-1.5">
                                         <p class="text-sm font-bold text-white">${escapeHtml(safeName)}</p>
+                                        ${renderStudentLevelBadge(st.level)}
                                         ${hasHighFatigueAlert ? `<span title="Último entreno reportado con fatiga alta (RPE ${latestLog.rpe}/10)" class="px-1.5 py-0.2 rounded bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[9px] font-extrabold">Fatiga Alta</span>` : ''}
                                     </div>
                                     <p class="text-xs text-zinc-400">
-                                        ${st.phone ? `<i class="fa-brands fa-whatsapp text-emerald-400 mr-1"></i>${escapeHtml(st.phone)} · ` : ''}
-                                        <span class="text-zinc-300">${escapeHtml(st.level || 'Básico')}</span>
+                                        ${st.phone ? `<i class="fa-brands fa-whatsapp text-emerald-400 mr-1"></i>${escapeHtml(st.phone)}` : '<span class="text-zinc-500">Sin teléfono</span>'}
                                     </p>
                                 </div>
                             </div>
@@ -2851,7 +2864,10 @@
                                     ${escapeHtml(safeName.charAt(0).toUpperCase())}
                                 </div>
                                 <div class="min-w-0">
-                                    <h4 class="text-sm font-bold text-white truncate">${escapeHtml(safeName)}</h4>
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <h4 class="text-sm font-bold text-white truncate">${escapeHtml(safeName)}</h4>
+                                        ${renderStudentLevelBadge(st.level)}
+                                    </div>
                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                         <p class="text-[11px] text-zinc-400 truncate">${escapeHtml(plan.name)} · $${plan.price}</p>
                                         ${hasVideoBenefit
@@ -2935,6 +2951,7 @@
             } else {
                 title.textContent = 'Nuevo Alumno — Bandidos Sur';
                 document.getElementById('student-id').value = '';
+                document.getElementById('student-level').value = 'Básico';
                 document.getElementById('student-plan-select').value = firstPlanKey;
                 document.getElementById('student-pay-date').value = getTodayStr();
             }
@@ -3688,7 +3705,7 @@
 
             document.getElementById('eval-student-id').value = st.id;
             document.getElementById('eval-student-title').textContent = `Evaluación — ${st.name}`;
-            document.getElementById('eval-student-subtitle').textContent = `Nivel ${st.level || 'Básico'} · ${st.evaluations.length} evaluación(es) registrada(s)`;
+            document.getElementById('eval-student-subtitle').textContent = `Nivel ${getStudentLevelInfo(st.level).label} · ${st.evaluations.length} evaluación(es) registrada(s)`;
 
             const historySelect = document.getElementById('eval-history-select');
             let optionsHtml = `<option value="new">+ Nueva Evaluación Mensual</option>`;
@@ -3914,6 +3931,7 @@
 
             document.getElementById('routine-student-id').value = st.id;
             document.getElementById('routine-student-title').textContent = `Rutina — ${st.name}`;
+            document.getElementById('routine-student-level-badge').innerHTML = renderStudentLevelBadge(st.level);
             const plan = GYM_PLANS[st.planKey] || { name: 'Plan General' };
             activeRoutineAllowsVideos = planSupportsVideos(st.planKey);
             document.getElementById('routine-student-subtitle').textContent = `${plan.name} · Días: ${st.trainingDays || 'Sin especificar'}`;
