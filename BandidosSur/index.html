@@ -327,13 +327,13 @@
                 </div>
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                    <select id="filter-status"
+                    <select id="filter-level"
                             onchange="renderTable()"
                             class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-bandido-dark border border-bandido-border text-xs sm:text-sm text-zinc-200 focus:outline-none focus:border-bandido-orange cursor-pointer">
-                        <option value="all">Todos los estatus</option>
-                        <option value="active">Activos</option>
-                        <option value="expiring">Por vencer (≤ 3 días)</option>
-                        <option value="expired">Vencidos</option>
+                        <option value="all">Todos los niveles</option>
+                        <option value="Básico">Principiante</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Avanzado">Avanzado</option>
                     </select>
 
                     <button type="button"
@@ -2645,11 +2645,10 @@
             window.open(waUrl, '_blank', 'noopener,noreferrer');
         }
 
+        let currentStatusFilter = 'all';
+
         function filterByStatCard(statusCode) {
-            const select = document.getElementById('filter-status');
-            if (select) {
-                select.value = statusCode;
-            }
+            currentStatusFilter = statusCode;
             renderTable();
             const listSection = document.getElementById('students-list-section');
             if (listSection) {
@@ -2710,7 +2709,8 @@
 
         function renderTable() {
             const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
-            const statusFilter = document.getElementById('filter-status')?.value || 'all';
+            const statusFilter = currentStatusFilter;
+            const levelFilter = document.getElementById('filter-level')?.value || 'all';
             updateActiveStatCardHighlight(statusFilter);
 
             const filtered = students.filter(st => {
@@ -2726,7 +2726,8 @@
                     (st.phone || '').toLowerCase().includes(query);
 
                 const matchesStatus = statusFilter === 'all' || status.code === statusFilter;
-                return matchesQuery && matchesStatus;
+                const matchesLevel = levelFilter === 'all' || (st.level || 'Básico') === levelFilter;
+                return matchesQuery && matchesStatus && matchesLevel;
             });
 
             const tbody = document.getElementById('students-table-body');
